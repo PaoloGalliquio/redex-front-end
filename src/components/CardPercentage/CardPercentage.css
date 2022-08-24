@@ -1,0 +1,17 @@
+.cardPer-title{
+  font-size: 24px;
+  font-weight: 400;
+  padding-top: 18px;
+  padding-bottom: 15px;
+}
+
+.cardPer-info{
+  font-size: 16px;
+  font-weight: 400;
+  padding-bottom: 19px;
+}
+
+.cardPer-perc{
+  padding: 0px 5px 5px 0px;
+  max-width: 85px;
+}

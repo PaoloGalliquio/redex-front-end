@@ -1,0 +1,19 @@
+.opdia-pedidos-title{
+  font-weight: 400;
+  font-size: 30px;
+  text-align: center;
+  padding: 15px 0px 15px 0px;
+  border-radius: 20px 20px 0px 0px;
+}
+
+.opdia-pedidos-container{
+  border-radius: 0px 0px 20px 20px;
+}
+
+.opdia-pedidos-card1{
+  padding: 0 5px 0 0;
+}
+
+.opdia-pedidos-card2{
+  padding: 0 0 0 5px;
+}
