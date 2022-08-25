@@ -1,7 +1,11 @@
 import "./OperacionesDiarias.css";
-import CardPercentage from "../../components/CardPercentage/CardPercentage";
 import FlightIcon from '@mui/icons-material/Flight';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import ListIcon from '@mui/icons-material/List';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import CardPercentage from "../../components/CardPercentage/CardPercentage";
+import SmallCard from "../../components/SmallCard/SmallCard";
+import RedirectButton from "../../components/RedirectButton/RedirectButton";
 
 const OperacionesDiarias = () => {
   return(
@@ -34,17 +38,54 @@ const OperacionesDiarias = () => {
                   />
                 </div>
               </div>
+              <div className="row opdia-smallinfo">
+                <div className="col">
+                  <SmallCard
+                    icon = {<ListIcon/>}
+                    text = "Total de paquetes"
+                    number = {128}
+                  />
+                </div>
+              </div>
+              <div className="row opdia-smallinfo">
+                <div className="col">
+                  <SmallCard
+                    icon = {<ListIcon/>}
+                    text = "Retrasos"
+                    number = {1}
+                    warningInPositive = {true}
+                  />
+                </div>
+              </div>
+              <div className="row opdia-smallinfo">
+                <div className="col">
+                  <SmallCard
+                    icon = {<ListIcon/>}
+                    text = "Aeropuertos inactivos"
+                    number = {0}
+                    warningInPositive = {true}
+                  />
+                </div>
+              </div>
             </div>
           </div>
+          <RedirectButton
+            text = "Registrar pedido"
+            icon = {<ArrowForwardIosIcon/>}
+          />
+          <RedirectButton
+            text = "Registrar retraso(s)"
+            icon = {<ArrowForwardIosIcon/>}
+          />
         </div>
       </div>
       <div className="col-md-6 p15">
-        <div className="grayBox shadowBox">
-          Mapa
+        <div className="shadowBox">
+          
         </div>
       </div>
       <div className="col-md-3 p15">
-        <div className="grayBox shadowBox">
+        <div className="grayBox shadowBox p15">
           Viajes
         </div>
       </div>

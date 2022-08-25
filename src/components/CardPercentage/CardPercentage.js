@@ -5,7 +5,7 @@ import "react-circular-progressbar/dist/styles.css";
 const CardPercentage = (props) => {
   return(
     <>
-    <div className="greebBox cardPer-container">
+    <div className="greenBox cardPer-container">
       <div className="row">
         <div className="col text-center cardPer-title">
           <span className="me-2">

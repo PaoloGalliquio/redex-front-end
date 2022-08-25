@@ -1,0 +1,18 @@
+.smallcard{
+  padding: 12px 15px 12px 15px;
+  font-size: 20px;
+  font-weight: 400;
+}
+
+.smallcard-icon{
+  display: inline;
+}
+
+.smallcard-number{
+  display: inline;
+  padding-left: 8px;
+}
+
+.smallcard-number{
+  display: inline;
+}
