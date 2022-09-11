@@ -15,6 +15,8 @@
 #### npm i mapbox-gl
 ### Turf
 #### npm i @turf/turf
+### Geojson.terminator
+#### npm i @webgeodatavore/geojson.terminator
 ### Material-UI: 
 #### npm install @mui/material @emotion/react @emotion/styled
 #### npm install @mui/icons-material

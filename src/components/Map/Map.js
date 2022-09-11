@@ -1,9 +1,10 @@
 import mapboxgl from "mapbox-gl";
 import React, { useRef, useEffect, useState } from "react";
-import 'mapbox-gl/dist/mapbox-gl.css'; 
+import "mapbox-gl/dist/mapbox-gl.css";
+import GeoJSONTerminator from "@webgeodatavore/geojson.terminator";
 
 const Map = (props) => {
-  mapboxgl.accessToken = "pk.eyJ1IjoibWxhdGIiLCJhIjoiY2wwbDZkYWFnMDk5eDNqcGx1eGJ4Ymp5aCJ9.cexgkWqb5orLtl-EsL6wsg";
+  mapboxgl.accessToken = process.env.REACT_APP_MAP_KEY;
   const mapContainer = useRef(null);
   const [lng, setLng] = useState(0);
   const [lat, setLat] = useState(0);
@@ -17,8 +18,23 @@ const Map = (props) => {
       zoom: zoom,
     });
     map.dragRotate.disable();
-    const marker = new mapboxgl.Marker().setLngLat([-77.10, -12.02]).addTo(map);
-    map.addControl(new mapboxgl.NavigationControl(), "top-right");
+    new mapboxgl.Marker().setLngLat([-77.1, -12.02]).addTo(map);
+    new mapboxgl.Marker().setLngLat([-3.565295, 40.479901]).addTo(map);
+    map.on("load", function () {
+      var geoJSON = new GeoJSONTerminator();
+      map.addLayer({
+        id: "daynight",
+        type: "fill",
+        source: {
+          type: "geojson",
+          data: geoJSON,
+        },
+        layout: {},
+        paint: {
+          "fill-opacity": 0.1,
+        },
+      });
+    });
     return () => map.remove();
   }, []);
 
