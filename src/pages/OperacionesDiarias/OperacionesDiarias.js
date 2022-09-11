@@ -6,25 +6,27 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import CardPercentage from "../../components/CardPercentage/CardPercentage";
 import SmallCard from "../../components/SmallCard/SmallCard";
 import RedirectButton from "../../components/RedirectButton/RedirectButton";
+import Map from "../../components/Map/Map";
 
 const OperacionesDiarias = () => {
+  const enviosProceso = 38;
+  const totalEnvios = 128;
+
   return(
     <>
-    <div className="row">
-      <div className="col-md-3 p15">
-        <div className="grayBox shadowBox p15">
+    <div className="row h-100">
+      <div className="col-md-3 p15 h-100">
+        <div className="grayBox shadowBox p15 h-100">
           <div className="shadowBox">
-            <div className="purpleBox opdia-pedidos-title">
-              Pedidos
-            </div>
+            <div className="purpleBox opdia-pedidos-title">Envíos</div>
             <div className="blackBox opdia-pedidos-container p10">
               <div className="row">
                 <div className="col opdia-pedidos-card1">
                   <CardPercentage
                     icon = {<FlightIcon/>}
                     title = "En proceso"
-                    info = "38 pedidos en proceso"
-                    percentage = {29.68}
+                    info = {`${enviosProceso} envíos en proceso`}
+                    percentage = {enviosProceso/totalEnvios*100}
                     positive = {true}
                   />
                 </div>
@@ -32,8 +34,8 @@ const OperacionesDiarias = () => {
                   <CardPercentage
                     icon = {<CheckCircleIcon/>}
                     title = "Atendidos"
-                    info = "90 pedidos atendidos"
-                    percentage = {70.31}
+                    info = {`${totalEnvios-enviosProceso} envíos atendidos`}
+                    percentage = {(totalEnvios-enviosProceso)/totalEnvios*100}
                     positive = {false}
                   />
                 </div>
@@ -43,27 +45,7 @@ const OperacionesDiarias = () => {
                   <SmallCard
                     icon = {<ListIcon/>}
                     text = "Total de paquetes"
-                    number = {128}
-                  />
-                </div>
-              </div>
-              <div className="row opdia-smallinfo">
-                <div className="col">
-                  <SmallCard
-                    icon = {<ListIcon/>}
-                    text = "Retrasos"
-                    number = {1}
-                    warningInPositive = {true}
-                  />
-                </div>
-              </div>
-              <div className="row opdia-smallinfo">
-                <div className="col">
-                  <SmallCard
-                    icon = {<ListIcon/>}
-                    text = "Aeropuertos inactivos"
-                    number = {0}
-                    warningInPositive = {true}
+                    number = {totalEnvios}
                   />
                 </div>
               </div>
@@ -73,18 +55,14 @@ const OperacionesDiarias = () => {
             text = "Registrar pedido"
             icon = {<ArrowForwardIosIcon/>}
           />
-          <RedirectButton
-            text = "Registrar retraso(s)"
-            icon = {<ArrowForwardIosIcon/>}
-          />
         </div>
       </div>
-      <div className="col-md-6 p15">
-        <div className="shadowBox">
-          
+      <div className="col-md-6 p15 h-100">
+        <div className="shadowBox h-100">
+          <Map/>
         </div>
       </div>
-      <div className="col-md-3 p15">
+      <div className="col-md-3 p15 h-100">
         <div className="grayBox shadowBox p15">
           Viajes
         </div>

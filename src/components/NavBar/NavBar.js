@@ -17,11 +17,11 @@ const NavBar = () => {
     },
     {
       id: 2,
-      text: 'Colapso lógico'
+      text: 'Colapso lógístico'
     },
     {
       id: 3,
-      text: 'Clientes'
+      text: 'Configuración'
     }
   ];
 

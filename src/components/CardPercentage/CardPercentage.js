@@ -24,8 +24,8 @@ const CardPercentage = (props) => {
         <div className="col cardPer-perc">
           {props.positive ? 
           <CircularProgressbar 
-            value={props.percentage} 
-            text={`${props.percentage}%`} 
+            value={(props.percentage)} 
+            text={`${(props.percentage).toFixed(2)}%`} 
             styles={buildStyles({
               textColor: "white",
               pathColor: "white",
@@ -36,7 +36,7 @@ const CardPercentage = (props) => {
           :
           <CircularProgressbar 
             value={props.percentage} 
-            text={`${props.percentage}%`} 
+            text={`${(props.percentage).toFixed(2)}%`} 
             styles={buildStyles({
               textColor: "white",
               pathColor: "white",
