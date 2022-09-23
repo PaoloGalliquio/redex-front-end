@@ -1,0 +1,12 @@
+.cardShip-envio-title{
+  font-weight: 400;
+  font-size: 20px;
+  text-align: center;
+  padding: 15px 0px 15px 0px;
+  border-radius: 20px 20px 0px 0px;
+}
+
+.cardShip-envio-container{
+  border-radius: 0px 0px 20px 20px;
+  margin-bottom: 15px;
+}

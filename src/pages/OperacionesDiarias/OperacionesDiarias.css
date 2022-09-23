@@ -1,4 +1,4 @@
-.opdia-pedidos-title{
+.opdia-envio-title{
   font-weight: 400;
   font-size: 20px;
   text-align: center;
@@ -6,18 +6,71 @@
   border-radius: 20px 20px 0px 0px;
 }
 
-.opdia-pedidos-container{
+.opdia-relative{
+  position: relative;
+}
+
+.opdia-envio-container{
   border-radius: 0px 0px 20px 20px;
 }
 
-.opdia-pedidos-card1{
+.opdia-envio-card1{
   padding: 0 5px 0 0;
 }
 
-.opdia-pedidos-card2{
+.opdia-envio-card2{
   padding: 0 0 0 5px;
 }
 
 .opdia-smallinfo{
   margin-top: 10px;
+}
+
+.opdia-bottom-button{
+  position: absolute;
+  width: 100%;
+  left: 0;
+  bottom: 0;
+  padding: 0px 15px 15px 15px;
+}
+
+.opdia-envios-detalle{
+  padding: 15px 8px 15px 15px;
+}
+
+.opdia-height-overflow{
+  overflow-x: hidden;
+  padding-right: 8px;
+  max-height: 625px;
+}
+
+.opdia-table-container{
+  overflow: scroll;
+  overflow-x: hidden;
+  padding-bottom: 0px;
+  height: 98%;
+}
+
+.opdia-table-container table{
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.opdia-table-container th {
+  padding: 10px;
+  font-size: larger;
+  font-weight: 400;
+}
+
+.opdia-table-container td {
+  padding: 10px;
+}
+
+.opdia-table-container tr:nth-child(even) {
+  height: 50px;
+  background-color: #393E46;
+}
+
+.opdia-table-container tr:nth-child(odd) {
+  height: 50px;
 }

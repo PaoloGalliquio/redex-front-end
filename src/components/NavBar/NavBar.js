@@ -9,19 +9,23 @@ const NavBar = () => {
   const tabs = [
     {
       id: 0,
-      text: 'Operaciones Diarias'
+      text: 'Operaciones Diarias',
+      link: '/OperacionesDiarias'
     },
     {
       id: 1,
-      text: 'Simulador'
+      text: 'Simulador',
+      link: '/Simulador'
     },
     {
       id: 2,
-      text: 'Colapso lógístico'
+      text: 'Colapso lógístico',
+      link: '/ColapsoLogistico'
     },
     {
       id: 3,
-      text: 'Configuración'
+      text: 'Configuración',
+      link: '/Configuracion'
     }
   ];
 
@@ -62,10 +66,12 @@ const NavBar = () => {
       <Navbar.Collapse>
         {tabs.map((tab) => {
           return (
-            <Nav key = {tab.id}>
-              <div className="my-auto mx-auto">{tab.text}</div>
-              {activeIndex === tab.id ? <div className="navbar-nav-selected"></div> : <></>}
-            </Nav>
+            <a href={tab.link}>
+              <Nav key = {tab.id}>
+                <div className="my-auto mx-auto">{tab.text}</div>
+                {activeIndex === tab.id ? <div className="navbar-nav-selected"></div> : <></>}
+              </Nav>
+            </a>
           );
         })}
       </Navbar.Collapse>

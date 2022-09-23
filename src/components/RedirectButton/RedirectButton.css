@@ -14,3 +14,7 @@
   margin-right: 10px;
   position: absolute;
 }
+
+.redirectbutton-button:hover{
+  -webkit-filter: brightness(90%);
+}

@@ -14,6 +14,7 @@ code {
 
 .map-container {
   height: 100%;
+  border-radius: 20px;
 }
 
 .mapboxgl-control-container{
