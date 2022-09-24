@@ -66,8 +66,8 @@ const NavBar = () => {
       <Navbar.Collapse>
         {tabs.map((tab) => {
           return (
-            <a href={tab.link}>
-              <Nav key = {tab.id}>
+            <a href={tab.link} key = {tab.id}>
+              <Nav>
                 <div className="my-auto mx-auto">{tab.text}</div>
                 {activeIndex === tab.id ? <div className="navbar-nav-selected"></div> : <></>}
               </Nav>

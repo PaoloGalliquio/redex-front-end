@@ -36,12 +36,21 @@
 
 .opdia-envios-detalle{
   padding: 15px 8px 15px 15px;
+  position: relative;
 }
 
 .opdia-height-overflow{
   overflow-x: hidden;
+  overflow-y: scroll;
+  max-height: 90%;
   padding-right: 8px;
-  max-height: 625px;
+}
+
+.opdia-ver-todos{
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  padding: 0px 15px 15px 15px;
 }
 
 .opdia-table-container{

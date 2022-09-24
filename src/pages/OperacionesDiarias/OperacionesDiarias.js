@@ -105,7 +105,7 @@ const OperacionesDiarias = () => {
             <div className="row">
               <div className="col opdia-envio-card1">
                 <CardPercentage
-                  icon = {<FlightIcon/>}
+                  icon = {<FlightIcon className="rotate45"/>}
                   title = "En proceso"
                   info = {`${enviosProceso} envíos en proceso`}
                   percentage = {enviosProceso/totalEnvios*100}
@@ -132,23 +132,23 @@ const OperacionesDiarias = () => {
               </div>
             </div>
           </div>
-          {!showTable && <>
-            <span className="opdia-bottom-button" onClick={() => {setShowTable(false)}}>
-              <RedirectButton
-                text = "Registrar envío"
-                icon = {<ArrowForwardIosIcon/>}
-              />
-            </span>
-          </>}
-          {showTable && <>
-            <span className="opdia-bottom-button" onClick={() => {setShowTable(false)}}>
-              <RedirectButton
-                text = "Mapa de envíos"
-                icon = {<ArrowBackIosNewIcon/>}
-              />
-            </span>
-          </>}
         </div>
+        {!showTable && <>
+          <span onClick={() => {setShowTable(false)}}>
+            <RedirectButton
+              text = "Registrar envío"
+              icon = {<ArrowForwardIosIcon/>}
+            />
+          </span>
+        </>}
+        {showTable && <>
+          <span className="opdia-bottom-button" onClick={() => {setShowTable(false)}}>
+            <RedirectButton
+              text = "Mapa de envíos"
+              icon = {<ArrowBackIosNewIcon/>}
+            />
+          </span>
+        </>}
       </div>
     </div>
     </>
@@ -167,13 +167,13 @@ const OperacionesDiarias = () => {
   const enviosDetalle = (
     <>
     <div className="col-md-2 p15 h-100">
-      <div className="grayBox shadowBox opdia-envios-detalle">
+      <div className="grayBox shadowBox opdia-envios-detalle h-100">
         <div className="opdia-height-overflow">
           {envios.map(envio => {
             return <CardShipping envio = {envio}/>
           })}
         </div>
-        <span onClick={() => {setShowTable(true)}}>
+        <span className="opdia-ver-todos w-100" onClick={() => {setShowTable(true)}}>
           <RedirectButton
             text = "Ver todos"
             icon = {<ArrowForwardIosIcon/>}

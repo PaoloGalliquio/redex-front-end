@@ -2,6 +2,7 @@ import mapboxgl from "mapbox-gl";
 import React, { useRef, useEffect, useState } from "react";
 import "mapbox-gl/dist/mapbox-gl.css";
 import GeoJSONTerminator from "@webgeodatavore/geojson.terminator";
+import Legend from "../Legend/Legend";
 
 const Map = (props) => {
   mapboxgl.accessToken = process.env.REACT_APP_MAP_KEY;
@@ -40,7 +41,10 @@ const Map = (props) => {
 
   return (
     <>
+    <span className="has-legend">
       <div ref={mapContainer} className="map-container" />
+      <Legend/>
+    </span>
     </>
   );
 };

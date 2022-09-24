@@ -1,0 +1,80 @@
+.legend-absolute{
+  position: absolute;
+  border-radius: 20px;
+  overflow: hidden;
+  left: 0;
+  bottom: 0;
+  margin-left: 10px;
+  margin-bottom: 10px;
+}
+
+.has-legend{
+  position: relative;
+}
+
+.legend-container{
+  width: 250px;
+  border-radius: 0px 0px 20px 20px;
+}
+
+.legend-title{
+  font-weight: 400;
+  font-size: 20px;
+  text-align: center;
+  height: 40px;
+  border-radius: 20px 20px 0px 0px;
+  padding: 5px 0px 5px 0px;
+}
+
+.legend-line{
+  color: #00ADB5;
+}
+
+.square-green{
+  height: 20px;
+  width: 50px;
+  background-color: #56F000;
+  display: inline-block;
+  position: relative;
+}
+
+.square-yellow{
+  height: 20px;
+  width: 50px;
+  background-color: #FCE83A;
+  display: inline-block;
+  position: relative;
+}
+
+.square-orange{
+  height: 20px;
+  width: 50px;
+  background-color: #FFB302;
+  display: inline-block;
+  position: relative;
+}
+
+.square-red{
+  height: 20px;
+  width: 50px;
+  background-color: #FF3838;
+  display: inline-block;
+  position: relative;
+}
+
+.legend-capacity{
+  position: absolute;
+  margin-top: 25px;
+  margin-left: -8px;
+}
+
+.legend-capacity-end{
+  position: absolute;
+  right: 0;
+  margin-top: 25px;
+  margin-right: -13px;
+}
+
+.legend-capacity-container{
+  padding-left: 15px;
+}
