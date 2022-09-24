@@ -50,9 +50,9 @@ const NavBar = () => {
   );
 
   useEffect(() => {
-    const currentPath = window.location.pathname.split("/")[1];
+    const currentPath = "/" + window.location.pathname.split("/")[1];
     const activeItem = tabs.findIndex(
-      (tab) => tab.text === currentPath
+      (tab) => tab.link === currentPath
     );
     setActiveIndex(currentPath.length === 0 ? 0 : activeItem);
   })

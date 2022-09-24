@@ -1,0 +1,53 @@
+.config-title{
+  font-weight: 400;
+  font-size: 25px;
+  text-align: center;
+  padding: 15px 0px 15px 0px;
+  margin-bottom: 5px;
+  border-radius: 20px 20px 0px 0px;
+  /* border-bottom: 2px solid white; */
+}
+
+.config-container{
+  border-radius: 0px 0px 20px 20px;
+}
+
+.config-table-id{
+  width: 70px;
+}
+
+.config-table-container{
+  border-radius: 20px;
+  overflow: hidden;
+  padding-bottom: 0px;
+}
+
+.config-table-container th {
+  padding: 10px;
+  font-size: larger;
+  font-weight: 400;
+}
+
+.config-table-container td {
+  padding: 10px;
+}
+
+.config-table-container tr {
+  height: 50px;
+}
+
+.config-table-container tr:nth-child(even) {
+  background-color: #424955;
+}
+
+.config-table-container table tbody {
+  display: block;
+  max-height: 665px;
+  overflow-y: scroll;
+}
+
+.config-table-container table thead, table tbody tr {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}

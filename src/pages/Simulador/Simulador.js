@@ -1,18 +1,18 @@
 import { useState } from "react";
 import * as React from 'react';
 import dayjs from 'dayjs';
-import CardPercentage from "../../components/CardPercentage/CardPercentage";
 import FlightIcon from '@mui/icons-material/Flight';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import ListIcon from '@mui/icons-material/List';
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
-import SmallCard from "../../components/SmallCard/SmallCard";
-import RedirectButton from "../../components/RedirectButton/RedirectButton";
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import TextField from '@mui/material/TextField';
+import ListIcon from '@mui/icons-material/List';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+import CardPercentage from "../../components/CardPercentage/CardPercentage";
+import RedirectButton from "../../components/RedirectButton/RedirectButton";
+import SmallCard from "../../components/SmallCard/SmallCard";
 
 const Simulador = () => {
   const enviosProceso = 0;

@@ -54,15 +54,9 @@
 }
 
 .opdia-table-container{
-  overflow: scroll;
-  overflow-x: hidden;
-  padding-bottom: 0px;
-  height: 98%;
-}
-
-.opdia-table-container table{
   border-radius: 20px;
   overflow: hidden;
+  padding-bottom: 0px;
 }
 
 .opdia-table-container th {
@@ -75,11 +69,22 @@
   padding: 10px;
 }
 
-.opdia-table-container tr:nth-child(even) {
+.opdia-table-container tr {
   height: 50px;
+}
+
+.opdia-table-container tr:nth-child(even) {
   background-color: #393E46;
 }
 
-.opdia-table-container tr:nth-child(odd) {
-  height: 50px;
+.opdia-table-container table tbody {
+  display: block;
+  max-height: 825px;
+  overflow-y: scroll;
+}
+
+.opdia-table-container table thead, table tbody tr {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
 }

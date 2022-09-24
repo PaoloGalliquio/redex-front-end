@@ -186,70 +186,72 @@ const OperacionesDiarias = () => {
 
   const tablaEnvios = (
     <>
-    <div className="col-md-9 p15 opdia-table-container">
-      <table className="shadowBox w-100">
-        <thead>
-          <tr className="purpleBox">
-            {headerTable.map(header => {
-              return <th key={header.id} className="text-center">{header.name}</th>
+    <div className="col-md-9 p15">
+      <div className="opdia-table-container shadowBox">
+        <table className="w-100">
+          <thead>
+            <tr className="purpleBox">
+              {headerTable.map(header => {
+                return <th key={header.id} className="text-center">{header.name}</th>
+              })}
+            </tr>
+          </thead>
+          <tbody>
+            {envios.map(envio => {
+              return (
+                <tr key={envio.id}>
+                  <td>{envio.id}</td>
+                  <td>{envio.carga} paquetes</td>
+                  <td>{envio.origen}</td>
+                  <td>{envio.detino}</td>
+                  <td className="text-center">{envio.horaSalida}</td>
+                  <td className="text-center">{envio.horaLlegada}</td>
+                  <td className="text-center">{envio.tiempoRecorrido}</td>
+                </tr>
+              );
             })}
-          </tr>
-        </thead>
-        <tbody>
-          {envios.map(envio => {
-            return (
-              <tr key={envio.id}>
-                <td>{envio.id}</td>
-                <td>{envio.carga} paquetes</td>
-                <td>{envio.origen}</td>
-                <td>{envio.detino}</td>
-                <td className="text-center">{envio.horaSalida}</td>
-                <td className="text-center">{envio.horaLlegada}</td>
-                <td className="text-center">{envio.tiempoRecorrido}</td>
-              </tr>
-            );
-          })}
-          {envios.map(envio => {
-            return (
-              <tr key={envio.id}>
-                <td>{envio.id}</td>
-                <td>{envio.carga} paquetes</td>
-                <td>{envio.origen}</td>
-                <td>{envio.detino}</td>
-                <td className="text-center">{envio.horaSalida}</td>
-                <td className="text-center">{envio.horaLlegada}</td>
-                <td className="text-center">{envio.tiempoRecorrido}</td>
-              </tr>
-            );
-          })}
-          {envios.map(envio => {
-            return (
-              <tr key={envio.id}>
-                <td>{envio.id}</td>
-                <td>{envio.carga} paquetes</td>
-                <td>{envio.origen}</td>
-                <td>{envio.detino}</td>
-                <td className="text-center">{envio.horaSalida}</td>
-                <td className="text-center">{envio.horaLlegada}</td>
-                <td className="text-center">{envio.tiempoRecorrido}</td>
-              </tr>
-            );
-          })}
-          {envios.map(envio => {
-            return (
-              <tr key={envio.id}>
-                <td>{envio.id}</td>
-                <td>{envio.carga} paquetes</td>
-                <td>{envio.origen}</td>
-                <td>{envio.detino}</td>
-                <td className="text-center">{envio.horaSalida}</td>
-                <td className="text-center">{envio.horaLlegada}</td>
-                <td className="text-center">{envio.tiempoRecorrido}</td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+            {envios.map(envio => {
+              return (
+                <tr key={envio.id}>
+                  <td>{envio.id}</td>
+                  <td>{envio.carga} paquetes</td>
+                  <td>{envio.origen}</td>
+                  <td>{envio.detino}</td>
+                  <td className="text-center">{envio.horaSalida}</td>
+                  <td className="text-center">{envio.horaLlegada}</td>
+                  <td className="text-center">{envio.tiempoRecorrido}</td>
+                </tr>
+              );
+            })}
+            {envios.map(envio => {
+              return (
+                <tr key={envio.id}>
+                  <td>{envio.id}</td>
+                  <td>{envio.carga} paquetes</td>
+                  <td>{envio.origen}</td>
+                  <td>{envio.detino}</td>
+                  <td className="text-center">{envio.horaSalida}</td>
+                  <td className="text-center">{envio.horaLlegada}</td>
+                  <td className="text-center">{envio.tiempoRecorrido}</td>
+                </tr>
+              );
+            })}
+            {envios.map(envio => {
+              return (
+                <tr key={envio.id}>
+                  <td>{envio.id}</td>
+                  <td>{envio.carga} paquetes</td>
+                  <td>{envio.origen}</td>
+                  <td>{envio.detino}</td>
+                  <td className="text-center">{envio.horaSalida}</td>
+                  <td className="text-center">{envio.horaLlegada}</td>
+                  <td className="text-center">{envio.tiempoRecorrido}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
     </div>
     </>
   );
