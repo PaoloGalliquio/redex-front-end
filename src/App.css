@@ -88,11 +88,6 @@ a:hover{
   padding: 0px;
 }
 
-.col{
-  margin: 0px;
-  padding: 0px;
-}
-
 .rotate45{
   transform: rotate(45deg);
 }
@@ -104,6 +99,10 @@ a:hover{
 
 .fileLabel:hover{
   color: rgb(51, 124, 192);
+}
+
+.pointer{
+  cursor: pointer;
 }
 
 ::-webkit-scrollbar {

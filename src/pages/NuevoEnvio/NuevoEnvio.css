@@ -1,0 +1,30 @@
+.nuevoEnvio-Tittle{
+  padding-top: 8px;
+  padding-bottom: 8px;
+  text-align: center;
+  position: relative;
+}
+
+.nuevoEnvio-Container{
+  position: relative;
+}
+
+.nuevoEnvio-Footer{
+  position: absolute;
+  bottom: 10px;
+}
+
+.nuevoEnvio-Icon{
+  position: absolute;
+  right: 10px;
+}
+
+.nuevoEnvio-IconLeft{
+  position: absolute;
+  left: 10px;
+}
+
+.nuevoEnvio-Regresar{
+  padding-bottom: 8px;
+  border-bottom: 3px solid #5351B7;
+}
