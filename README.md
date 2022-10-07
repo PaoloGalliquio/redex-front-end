@@ -51,3 +51,7 @@
 ### Toastify:
 
 #### npm i react-toastify
+
+### Axios:
+
+#### npm i axios

@@ -1,5 +1,5 @@
 import "./OperacionesDiarias.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import FlightIcon from "@mui/icons-material/Flight";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import ListIcon from "@mui/icons-material/List";
@@ -10,10 +10,12 @@ import SmallCard from "../../components/SmallCard/SmallCard";
 import RedirectButton from "../../components/RedirectButton/RedirectButton";
 import Map from "../../components/Map/Map";
 import CardShipping from "../../components/CardShipping/CardShipping";
+import { getEnvios } from "../../services/Envios";
 
 const OperacionesDiarias = () => {
   const enviosProceso = 38;
   const totalEnvios = 128;
+  const [envios, setEnvios] = useState([]);
   const [showTable, setShowTable] = useState(false);
 
   const headerTable = [
@@ -47,7 +49,7 @@ const OperacionesDiarias = () => {
     },
   ];
 
-  const envios = [
+  const enviosData = [
     {
       id: 90584,
       carga: "320",
@@ -183,7 +185,7 @@ const OperacionesDiarias = () => {
       <div className="col-md-2 p15 h-100">
         <div className="grayBox shadowBox opdia-envios-detalle h-100">
           <div className="opdia-height-overflow">
-            {envios.map((envio) => {
+            {enviosData.map((envio) => {
               return <CardShipping envio={envio} />;
             })}
           </div>
@@ -216,7 +218,7 @@ const OperacionesDiarias = () => {
               </tr>
             </thead>
             <tbody>
-              {envios.map((envio) => {
+              {enviosData.map((envio) => {
                 return (
                   <tr key={envio.id}>
                     <td>{envio.id}</td>
@@ -229,7 +231,7 @@ const OperacionesDiarias = () => {
                   </tr>
                 );
               })}
-              {envios.map((envio) => {
+              {enviosData.map((envio) => {
                 return (
                   <tr key={envio.id}>
                     <td>{envio.id}</td>
@@ -242,7 +244,7 @@ const OperacionesDiarias = () => {
                   </tr>
                 );
               })}
-              {envios.map((envio) => {
+              {enviosData.map((envio) => {
                 return (
                   <tr key={envio.id}>
                     <td>{envio.id}</td>
@@ -255,7 +257,7 @@ const OperacionesDiarias = () => {
                   </tr>
                 );
               })}
-              {envios.map((envio) => {
+              {enviosData.map((envio) => {
                 return (
                   <tr key={envio.id}>
                     <td>{envio.id}</td>
@@ -274,6 +276,12 @@ const OperacionesDiarias = () => {
       </div>
     </>
   );
+
+  useEffect(() => {
+    (async () => {
+      setEnvios(await getEnvios());
+    })();
+  }, []);
 
   return (
     <>
