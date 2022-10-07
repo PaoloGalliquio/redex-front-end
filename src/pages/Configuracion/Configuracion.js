@@ -4,10 +4,56 @@ import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import UploadIcon from '@mui/icons-material/Upload';
 import DownloadIcon from '@mui/icons-material/Download';
 import { useState } from "react";
+import { TextField } from "@mui/material";
 
 const Configuracion = () => {
   const [archAero, setArchAero] = useState(null);
   const [archVuel, setArchVuel] = useState(null);
+  const styles = {
+    field: {
+      "& .MuiInputBase-root": {
+        color: "white",
+      },
+      "& .MuiFormLabel-root": {
+        color: "gray",
+      },
+      "& .MuiFormLabel-root.Mui-focused": {
+        color: "white",
+      },
+      "& .MuiInput-underline:after": {
+        borderBottom: "3px solid #5351B7",
+      },
+      "& .MuiInput-underline:before": {
+        borderBottom: "3px solid #5351B7",
+      },
+      "& .MuiFormLabel-root.Mui-focused:hover": {
+        borderBottom: "3px solid #5351B7",
+      },
+      "& .MuiSvgIcon-root": {
+        color: "white",
+      },
+    },
+    select: {
+      "&": {
+        color: "gray",
+      },
+      "&.Mui-focused": {
+        color: "white",
+      },
+      "& .MuiSelect-select": {
+        color: "white",
+      },
+      "&:after": {
+        borderBottom: "3px solid #5351B7",
+      },
+      "&:before": {
+        borderBottom: "3px solid #5351B7",
+      },
+      "& .MuiSvgIcon-root": {
+        color: "white",
+      },
+    },
+  };
 
   const aeropuertosData = [
     {
@@ -210,8 +256,8 @@ const Configuracion = () => {
 
   const aeropuertos = (
     <>
-    <div className="col-md-6 p15 h-100">
-      <div className="shadowbox grayBox h-100">
+    <div className="col-md-5 p15 h-100">
+      <div className="shadowbox grayBox h-100 overflow-hidden">
         <div className="config-title purpleBox">Aeropuertos <PlayArrowIcon style={{transform: "rotate(-90deg)"}}/></div>
         <div className="p15">
           <div className="row">
@@ -268,9 +314,9 @@ const Configuracion = () => {
 
   const vuelos = (
     <>
-    <div className="col-md-6 p15 h-100">
-      <div className="shadowbox grayBox h-100">
-        <div className="config-title purpleBox">Vuelos <AirplanemodeActiveIcon className="rotate45"/></div>
+    <div className="col-md-5 p15 h-100">
+      <div className="shadowbox grayBox h-100 overflow-hidden">
+        <div className="config-title purpleBox">Vuelos diarios <AirplanemodeActiveIcon className="rotate45"/></div>
         <div className="p15">
           <div className="row">
             <div className="col-md-4 my-auto">Archivo de vuelos:</div>
@@ -293,10 +339,123 @@ const Configuracion = () => {
     </>
   );
 
+  const reglasNegocio = (
+    <>
+      <div className="col-md-2 p15 h-100">
+        <div className="shadowbox grayBox h-100">
+          <div className="config-title purpleBox">Reglas de negocio</div>
+          <div className="p15">
+            <div id="tiempo-envio">
+              <div className="row">
+                <div className="col ps-0">Tiempo de envio máximo:</div>
+              </div>
+              <div className="row mt-1">
+                <div className="col ps-0">
+                  <TextField
+                    id="max-Vuelo-Cont"
+                    required
+                    label="Contiental"
+                    defaultValue={24}
+                    variant="standard"
+                    type="number"
+                    sx={styles.field}
+                  />
+                </div>
+                <div className="col ps-0">
+                  <TextField
+                    id="max-Vuelo-Cont"
+                    required
+                    label="Intercontiental"
+                    defaultValue={48}
+                    variant="standard"
+                    type="number"
+                    sx={styles.field}
+                  />
+                </div>
+              </div>
+            </div>
+            <div id="capacidad-almacenes">
+              <div className="row mt-5">
+                <div className="col ps-0">Capacidad de almacenes:</div>
+              </div>
+              <div className="row mt-1">
+                <div className="col ps-0">
+                  <TextField
+                    id="max-Vuelo-Intcont"
+                    label="América"
+                    required
+                    defaultValue={850}
+                    variant="standard"
+                    type="number"
+                    sx={styles.field}
+                  />
+                </div>
+                <div className="col ps-0">
+                  <TextField
+                    id="max-Vuelo-Intcont"
+                    label="Europa"
+                    required
+                    defaultValue={900}
+                    variant="standard"
+                    type="number"
+                    sx={styles.field}
+                  />
+                </div>
+              </div>
+            </div>
+            <div id="capacidad-aviones">
+              <div className="row mt-5">
+                <div className="col ps-0">Capacidad de aviones:</div>
+              </div>
+              <div className="row mt-1">
+                <div className="col ps-0">
+                  <TextField
+                    id="max-Vuelo-Intcont"
+                    label="America"
+                    required
+                    defaultValue={300}
+                    variant="standard"
+                    type="number"
+                    sx={styles.field}
+                  />
+                </div>
+                <div className="col ps-0">
+                  <TextField
+                    id="max-Vuelo-Intcont"
+                    label="Europa"
+                    required
+                    defaultValue={250}
+                    variant="standard"
+                    type="number"
+                    sx={styles.field}
+                  />
+                </div>
+                <div className="row mt-3">
+                  <div className="col ps-0">
+                    <TextField
+                      id="max-Vuelo-Intcont"
+                      label="Intecontinentales"
+                      required
+                      defaultValue={350}
+                      variant="standard"
+                      type="number"
+                      sx={styles.field}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+
   return(
     <div className="row h-100">
       {aeropuertos}
       {vuelos}
+      {reglasNegocio}
     </div>
   );
 }

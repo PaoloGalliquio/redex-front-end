@@ -26,6 +26,11 @@ const NavBar = () => {
       id: 3,
       text: 'Configuración',
       link: '/Configuracion'
+    },
+    {
+      id: 4,
+      text: 'Nuevo envío',
+      link: '/NuevoEnvio'
     }
   ];
 

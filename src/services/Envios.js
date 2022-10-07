@@ -3,7 +3,7 @@ import ajax from "../tools/ajax";
 export const getEnvios = async () => {
   const optionsRequest = {
     method: "GET",
-    url: "",
+    url: process.env.REACT_APP_BACK_UL,
   };
   return await ajax(optionsRequest);
 };
@@ -11,7 +11,7 @@ export const getEnvios = async () => {
 export const saveEnvio = async () => {
   const optionsRequest = {
     method: "POST",
-    url: "",
+    url: process.env.REACT_APP_BACK_UL,
   };
   return await ajax(optionsRequest);
 };

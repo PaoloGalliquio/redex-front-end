@@ -1,6 +1,5 @@
+import "./Simulador.css"
 import { useState } from "react";
-import * as React from 'react';
-import dayjs from 'dayjs';
 import FlightIcon from '@mui/icons-material/Flight';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -13,16 +12,58 @@ import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import CardPercentage from "../../components/CardPercentage/CardPercentage";
 import RedirectButton from "../../components/RedirectButton/RedirectButton";
 import SmallCard from "../../components/SmallCard/SmallCard";
+import UploadIcon from '@mui/icons-material/Upload';
 
 const Simulador = () => {
   const enviosProceso = 0;
   const totalEnvios = 0;
   const [showTable, setShowTable] = useState(false);
-  const [fechaInicio, setFechaInicio] = React.useState(dayjs('2014-08-18T21:11:54'));
-  const estilo = {
-    svg: { color : '#fff' },
-    input: { color: '#fff' },
-    label: { color: '#fff' }
+  const [archEnvios, setArchEnvios] = useState(null);
+  const [fechaInicio, setFechaInicio] = useState(new Date());
+  const styles = {
+    field: {
+      "& .MuiInputBase-root": {
+        color: "white",
+      },
+      "& .MuiFormLabel-root": {
+        color: "gray",
+      },
+      "& .MuiFormLabel-root.Mui-focused": {
+        color: "white",
+      },
+      "& .MuiInput-underline:after": {
+        borderBottom: "3px solid #5351B7",
+      },
+      "& .MuiInput-underline:before": {
+        borderBottom: "3px solid #5351B7",
+      },
+      "& .MuiFormLabel-root.Mui-focused:hover": {
+        borderBottom: "3px solid #5351B7",
+      },
+      "& .MuiSvgIcon-root": {
+        color: "white",
+      },
+    },
+    select: {
+      "&": {
+        color: "gray",
+      },
+      "&.Mui-focused": {
+        color: "white",
+      },
+      "& .MuiSelect-select": {
+        color: "white",
+      },
+      "&:after": {
+        borderBottom: "3px solid #5351B7",
+      },
+      "&:before": {
+        borderBottom: "3px solid #5351B7",
+      },
+      "& .MuiSvgIcon-root": {
+        color: "white",
+      },
+    },
   };
 
   const headerTable = [
@@ -129,7 +170,7 @@ const Simulador = () => {
         </div>
       </div>
       <div className="row opdia-smallinfo">
-        <div className="col">
+        <div className="col ps-0 pe-0">
           <SmallCard
             icon = {<ListIcon/>}
             text = "Total de paquetes"
@@ -143,69 +184,43 @@ const Simulador = () => {
 
   const simulacionData = (
     <>
-    <div className="purpleBox opdia-envio-title">Simulación</div>
-    <div className="blackBox opdia-envio-container p10">
-      <div className="row mb-3 mt-3">
-        <div className="col my-auto">Fecha de inicio:</div>
-        <div className="col">
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DesktopDatePicker
-              label="Fecha de inicio"
-              inputFormat="DD/MM/YYYY"
-              value={fechaInicio}
-              onChange={(nuevaFecha) => {setFechaInicio(nuevaFecha)}}
-              renderInput={(params) => 
-                <TextField 
-                  {...params}
-                  variant= "standard" 
-                  sx={estilo}
-                />
-              }
+      <div className="purpleBox opdia-envio-title">Simulación</div>
+      <div className="blackBox opdia-envio-container p10">
+        <div className="row mb-3 mt-3">
+          <div className="col my-auto">Fecha de inicio:</div>
+          <div className="col">
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DesktopDatePicker
+                label="Fecha de inicio"
+                inputFormat="DD/MM/YYYY"
+                value={fechaInicio}
+                onChange={(nuevaFecha) => {
+                  setFechaInicio(nuevaFecha);
+                }}
+                renderInput={(params) => (
+                  <TextField {...params} variant="standard" sx={styles.field} />
+                )}
+              />
+            </LocalizationProvider>
+          </div>
+        </div>
+        <div className="row mb-3">
+          <div className="col my-auto">Archivo de envíos:</div>
+          <div className="col">
+            <label className="my-auto fileLabel" for="enviosFile">
+              <UploadIcon /> Subir archivo
+            </label>
+            <input
+              id="enviosFile"
+              type="file"
+              className="fileInput"
+              onChange={(e) => {
+                setArchEnvios(e.target.files[0]);
+              }}
             />
-          </LocalizationProvider>
+          </div>
         </div>
       </div>
-      <div className="row mb-3">
-        <div className="col my-auto">Hora de inicio:</div>
-        <div className="col">
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DesktopDatePicker
-              label="Hora de inicio"
-              inputFormat="DD/MM/YYYY"
-              value={fechaInicio}
-              onChange={(nuevaFecha) => {setFechaInicio(nuevaFecha)}}
-              renderInput={(params) => 
-                <TextField 
-                  {...params} 
-                  variant= "standard" 
-                  sx={estilo}
-                />
-              }
-            />
-          </LocalizationProvider>
-        </div>
-      </div>
-      <div className="row mb-3">
-        <div className="col my-auto">Archivo de envíos:</div>
-        <div className="col">
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DesktopDatePicker
-              label="Archivo de envíos"
-              inputFormat="DD/MM/YYYY"
-              value={fechaInicio}
-              onChange={(nuevaFecha) => {setFechaInicio(nuevaFecha)}}
-              renderInput={(params) => 
-                <TextField 
-                  {...params} 
-                  variant= "standard" 
-                  sx={estilo}
-                />
-              }
-            />
-          </LocalizationProvider>
-        </div>
-      </div>
-    </div>
     </>
   );
 
@@ -214,7 +229,7 @@ const Simulador = () => {
     <div className="col-md-3 p15 h-100">
       <div className="grayBox shadowBox p15 h-100 opdia-relative">
         <div className="shadowBox">{enviosGraficos}</div>
-        <div className="shadowBox">{simulacionData}</div>
+        <div className="shadowBox simulador-SimulacionData">{simulacionData}</div>
       </div>
     </div>
     </>
