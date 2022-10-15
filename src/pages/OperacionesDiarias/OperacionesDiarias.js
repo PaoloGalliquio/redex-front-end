@@ -1,5 +1,5 @@
 import "./OperacionesDiarias.css";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import FlightIcon from "@mui/icons-material/Flight";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import ListIcon from "@mui/icons-material/List";

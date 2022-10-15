@@ -1,5 +1,5 @@
 import "./Simulador.css"
-import { useState } from "react";
+import React, { useState } from "react";
 import FlightIcon from '@mui/icons-material/Flight';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -13,6 +13,7 @@ import CardPercentage from "../../components/CardPercentage/CardPercentage";
 import RedirectButton from "../../components/RedirectButton/RedirectButton";
 import SmallCard from "../../components/SmallCard/SmallCard";
 import UploadIcon from '@mui/icons-material/Upload';
+import Map from "../../components/Map/MapSimulador";
 
 const Simulador = () => {
   const enviosProceso = 0;
@@ -235,10 +236,21 @@ const Simulador = () => {
     </>
   );
 
+  const mapaSimulador = (
+    <>
+    <div className="col-md-9 p15 h-100">
+      <div className="grayBox shadowBox p15 h-100 opdia-relative">
+        <Map />
+      </div>
+    </div>
+    </>
+  );
+
   return(
     <>
     <div className="row h-100">
       {enviosEstadisticas}
+      {mapaSimulador}
       {!showTable && <>
       </>}
       {showTable && <>

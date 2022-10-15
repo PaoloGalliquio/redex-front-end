@@ -1,6 +1,6 @@
 import "./NavBar.css"
 import { Navbar, Nav } from "react-bootstrap";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import brandLogo from "../../logo.svg";
 
 const NavBar = () => {

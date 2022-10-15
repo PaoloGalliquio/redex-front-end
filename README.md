@@ -55,3 +55,8 @@
 ### Axios:
 
 #### npm i axios
+
+#### El mapa no funcionaba :;v
+#### npm i --save-dev @types/mapbox-gl
+#### npm install worker-loader --save-dev
+#### npm i react-toastify@8.0.0

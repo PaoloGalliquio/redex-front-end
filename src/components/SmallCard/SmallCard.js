@@ -1,4 +1,5 @@
 import "./SmallCard.css"
+import React from "react";
 
 const SmallCard = (props) => {
   return(

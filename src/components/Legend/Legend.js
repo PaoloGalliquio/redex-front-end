@@ -2,6 +2,7 @@ import "./Legend.css";
 import AirplanemodeActiveIcon from '@mui/icons-material/AirplanemodeActive';
 import HorizontalRuleIcon from '@mui/icons-material/HorizontalRule';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import React from "react";
 
 const Legend = () => {
   return(

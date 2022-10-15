@@ -1,4 +1,5 @@
 import "./RedirectButton.css";
+import React from "react";
 
 const RedirectButton = (props) => {
   return (

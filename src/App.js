@@ -4,6 +4,7 @@ import OperacionesDiarias from "./pages/OperacionesDiarias/OperacionesDiarias";
 import Simulador from "./pages/Simulador/Simulador";
 import Configuracion from "./pages/Configuracion/Configuracion";
 import NuevoEnvio from "./pages/NuevoEnvio/NuevoEnvio";
+import React from 'react';
 
 function App() {
   return (

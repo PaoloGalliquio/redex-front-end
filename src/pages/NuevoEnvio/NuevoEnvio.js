@@ -14,7 +14,7 @@ import "react-toastify/dist/ReactToastify.css";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import AddIcon from "@mui/icons-material/Add";
 import UploadIcon from "@mui/icons-material/Upload";
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 
 const NuevoEnvio = () => {
   const notifyError = (mensaje) => toast.error(mensaje);

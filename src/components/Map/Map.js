@@ -1,4 +1,6 @@
-import mapboxgl from "mapbox-gl";
+import mapboxgl from 'mapbox-gl/dist/mapbox-gl-csp';
+// eslint-disable-next-line import/no-webpack-loader-syntax
+import MapboxWorker from 'worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker'; // Load worker code separately with worker-loader
 import React, { useRef, useEffect, useState } from "react";
 import "mapbox-gl/dist/mapbox-gl.css";
 import GeoJSONTerminator from "@webgeodatavore/geojson.terminator";
@@ -90,6 +92,7 @@ const Map = (props) => {
 
   useEffect(() => {
     if (map.current) return;
+    mapboxgl.workerClass = MapboxWorker;
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
       style: "mapbox://styles/mapbox/streets-v11",

@@ -3,7 +3,7 @@ import AirplanemodeActiveIcon from '@mui/icons-material/AirplanemodeActive';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import UploadIcon from '@mui/icons-material/Upload';
 import DownloadIcon from '@mui/icons-material/Download';
-import { useState } from "react";
+import React, { useState } from "react";
 import { TextField } from "@mui/material";
 
 const Configuracion = () => {

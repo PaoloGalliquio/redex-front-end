@@ -1,4 +1,5 @@
-import "./CardShipping.css"
+import "./CardShipping.css";
+import React from "react";
 
 const CardShipping = (props) => {
   const envio = props.envio;
