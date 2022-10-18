@@ -288,7 +288,7 @@ const NuevoEnvio = () => {
               setCiudadOrigen(null);
               setPaisOrigen(
                 data.find((pais) => {
-                  return pais.id == e.target.value;
+                  return pais.id === e.target.value;
                 })
               );
             }}>
@@ -394,7 +394,7 @@ const NuevoEnvio = () => {
               setCiudadDestino(null);
               setPaisDestino(
                 data.find((pais) => {
-                  return pais.id == e.target.value;
+                  return pais.id === e.target.value;
                 })
               );
             }}>
@@ -577,35 +577,35 @@ const NuevoEnvio = () => {
   );
 
   const estaCompleto = () => {
-    if (paquetes == 0) {
+    if (paquetes === 0) {
       notifyError("Ingrese la cantidad de paquetes");
       return false;
     }
-    if (fechaSalida == null) {
+    if (fechaSalida === null) {
       notifyError("Ingrese la fecha de salida");
       return false;
     }
-    if (paisOrigen == null) {
+    if (paisOrigen === null) {
       notifyError("Seleccione un país de origen");
       return false;
     }
-    if (ciudadOrigen == null) {
+    if (ciudadOrigen === null) {
       notifyError("Seleccione una ciudad de origen");
       return false;
     }
-    if (aeropuertoOrigen == null) {
+    if (aeropuertoOrigen === null) {
       notifyError("Seleccione un aeropuerto de origen");
       return false;
     }
-    if (paisDestino == null) {
+    if (paisDestino === null) {
       notifyError("Seleccione un país de destino");
       return false;
     }
-    if (ciudadDestino == null) {
+    if (ciudadDestino === null) {
       notifyError("Seleccione una ciudad de destino");
       return false;
     }
-    if (aeropuertoDestino == null) {
+    if (aeropuertoDestino === null) {
       notifyError("Seleccione un aeropuerto de destino");
       return false;
     }
