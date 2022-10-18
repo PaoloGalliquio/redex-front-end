@@ -15,7 +15,7 @@ mapboxgl.workerClass = MapboxWorker;
 
 const MapSimulador = (props) => {
   mapboxgl.accessToken = process.env.REACT_APP_MAP_KEY;
-  const [lng, setLng] = useState(0);
+  const [longitud, setlongitud] = useState(0);
   const [lat, setLat] = useState(0);
   const [zoom, setZoom] = useState(1);
   const mapContainer = useRef(null);
@@ -369,7 +369,7 @@ const MapSimulador = (props) => {
 
         //al posar el cursor sobre el ícono de aeropuerto..
         el.addEventListener('mouseenter', () => {
-          popup.setLngLat([element.lng, element.lat]).setHTML(description).addTo(map.current);
+          popup.setLngLat([element.longitud, element.latitud]).setHTML(description).addTo(map.current);
         });
 
         //al retirar el cursor sobre el ícono de aeropuerto...
@@ -412,7 +412,7 @@ const MapSimulador = (props) => {
                   type: "Feature",
                   geometry: {
                     type: "LineString",
-                    coordinates: [[aeropuertos[vuelos[nroVuelos-1].idPartida].lng,aeropuertos[vuelos[nroVuelos-1].idPartida].lat],[aeropuertos[vuelos[nroVuelos-1].idDestino].lng,aeropuertos[vuelos[nroVuelos-1].idDestino].lat]]
+                    coordinates: [[aeropuertos[vuelos[nroVuelos-1].idPartida].longitud,aeropuertos[vuelos[nroVuelos-1].idPartida].latitud],[aeropuertos[vuelos[nroVuelos-1].idDestino].longitud,aeropuertos[vuelos[nroVuelos-1].idDestino].latitud]]
                   }
                 });
 
@@ -421,15 +421,15 @@ const MapSimulador = (props) => {
                   properties: {},
                   geometry: {
                     type: "Point",
-                    coordinates: [aeropuertos[vuelos[nroVuelos-1].idPartida].lng,aeropuertos[vuelos[nroVuelos-1].idPartida].lat]
+                    coordinates: [aeropuertos[vuelos[nroVuelos-1].idPartida].longitud,aeropuertos[vuelos[nroVuelos-1].idPartida].latitud]
                   }
                 });
 
 
               }else{
                 //1er vuelo
-                route.features[0].geometry.coordinates = [[aeropuertos[vuelos[nroVuelos-1].idPartida].lng,aeropuertos[vuelos[nroVuelos-1].idPartida].lat],[aeropuertos[vuelos[nroVuelos-1].idDestino].lng,aeropuertos[vuelos[nroVuelos-1].idDestino].lat]];
-                point.features[0].geometry.coordinates = [aeropuertos[vuelos[nroVuelos-1].idPartida].lng,aeropuertos[vuelos[nroVuelos-1].idPartida].lat];
+                route.features[0].geometry.coordinates = [[aeropuertos[vuelos[nroVuelos-1].idPartida].longitud,aeropuertos[vuelos[nroVuelos-1].idPartida].latitud],[aeropuertos[vuelos[nroVuelos-1].idDestino].longitud,aeropuertos[vuelos[nroVuelos-1].idDestino].latitud]];
+                point.features[0].geometry.coordinates = [aeropuertos[vuelos[nroVuelos-1].idPartida].longitud,aeropuertos[vuelos[nroVuelos-1].idPartida].latitud];
               }
               trazarRutas(index);
             }, 1000);
@@ -443,7 +443,7 @@ const MapSimulador = (props) => {
         
         // Add markers to the map.
         new mapboxgl.Marker(el)
-        .setLngLat([element.lng, element.lat])
+        .setLngLat([element.longitud, element.latitud])
         .addTo(map.current);
 
         //#124d12: verde, #f6fa02: amarillo, #fa0202:rojo
@@ -455,15 +455,15 @@ const MapSimulador = (props) => {
   }
 
   useEffect(() => {
-    (async () => {
+    /*(async () => {
       setAeropuertos(await getAeropuertos());
-    })();
+    })();*/
 
     if (map.current) return;
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
       style: "mapbox://styles/mapbox/streets-v11",
-      center: [lng, lat],
+      center: [longitud, lat],
       zoom: zoom,
       dragRotate: false
     });
