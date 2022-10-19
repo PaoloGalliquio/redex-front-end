@@ -301,40 +301,44 @@ const MapSimulador = (props) => {
     ],
   };
 
-  const steps = 500;
-  let counter = 0;
-
-  function animate() {
-    const start =
-      route.features[nroVuelos - 1].geometry.coordinates[
+  const animarVuelos = (index, counter, steps) => {
+    setTimeout(() => {
+      const start =
+      route.features[index].geometry.coordinates[
         counter >= steps ? counter - 1 : counter
       ];
-    const end =
-      route.features[nroVuelos - 1].geometry.coordinates[
-        counter >= steps ? counter : counter + 1
-      ];
-    if (!start || !end) {
-      counter = 0;
-      return;
-    }
+      const end =
+        route.features[index].geometry.coordinates[
+          counter >= steps ? counter : counter + 1
+        ];
+      if (!start || !end) {
+        point.features[index].geometry.coordinates = [];
+        route.features[index].geometry.coordinates = [];
+        setTimeout(() => {
+          map.current.getSource("point").setData(point);
+          map.current.getSource("route").setData(route);
+        }, 500);
+        return;
+      }
 
-    point.features[nroVuelos - 1].geometry.coordinates =
-      route.features[nroVuelos - 1].geometry.coordinates[counter];
+      point.features[index].geometry.coordinates =
+        route.features[index].geometry.coordinates[counter];
 
-    point.features[nroVuelos - 1].properties.bearing = turf.bearing(
-      turf.point(start),
-      turf.point(end)
-    );
+      point.features[index].properties.bearing = turf.bearing(
+        turf.point(start),
+        turf.point(end)
+      );
 
-    map.current.getSource("point").setData(point);
-    map.current.getSource("route").setData(route);
+      map.current.getSource("point").setData(point);
+      map.current.getSource("route").setData(route);
 
-    if (counter < steps) {
-      requestAnimationFrame(animate);
-    }
-
-    counter = counter + 1;
-  }
+      counter = counter + 1;
+      if (counter < steps) {
+        animarVuelos(index,counter,steps);
+        //requestAnimationFrame(animate);
+      }
+    }, 200);
+  };
 
   const trazarRutas = (index) => {
     const lineDistance = turf.length(route.features[index]);
@@ -347,12 +351,10 @@ const MapSimulador = (props) => {
     }
 
     route.features[index].geometry.coordinates = arc;
-    //let counter = 0;
+    let counter = 0;
 
     setTimeout(() => {
-      //animate(counter, index);
-      //animacion(counter, index);
-      animate(counter);
+      animarVuelos(index, counter, steps);
     }, 1000);
   };
 
