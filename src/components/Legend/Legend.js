@@ -13,7 +13,7 @@ const Legend = () => {
           <div><AirplanemodeActiveIcon className="rotate45"/> Avión</div>
           <div><PlayArrowIcon style={{transform: "rotate(-90deg)"}}/> Aeropuerto</div>
           <div><HorizontalRuleIcon className="legend-line"/> Ruta de avión</div>
-          <div className="mb-1">Capacidad</div>
+          <div className="mb-1">Capacidad (%)</div>
           <div className="legend-capacity-container">
             <div className="square-green">
               <div className="legend-capacity">0</div>
