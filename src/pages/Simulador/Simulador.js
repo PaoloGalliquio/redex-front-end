@@ -14,13 +14,17 @@ import RedirectButton from "../../components/RedirectButton/RedirectButton";
 import SmallCard from "../../components/SmallCard/SmallCard";
 import UploadIcon from '@mui/icons-material/Upload';
 import Map from "../../components/Map/MapSimulador";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Simulador = () => {
+  const notifyError = (mensaje) => toast.error(mensaje);
   const enviosProceso = 0;
   const totalEnvios = 0;
   const [showTable, setShowTable] = useState(false);
   const [archEnvios, setArchEnvios] = useState(null);
   const [fechaInicio, setFechaInicio] = useState(new Date());
+
   const styles = {
     field: {
       "& .MuiInputBase-root": {
@@ -146,6 +150,25 @@ const Simulador = () => {
     }
   ];
 
+  const comprobaciones = () => {
+    if (archEnvios == null){
+      notifyError("Seleccione un archivo de envíos");
+      return false;
+    }
+    if (fechaInicio == null){
+      notifyError("Seleccione una fecha de inicio");
+      return false;
+    }
+    return true;
+  }
+
+  const iniciarSimulacion = () => {
+    if (!comprobaciones()) return;
+    console.log(archEnvios);
+    var formData = new FormData();
+    formData.append("file", archEnvios);
+  }
+
   const enviosGraficos = (
     <>
     <div className="purpleBox opdia-envio-title">Envíos</div>
@@ -206,8 +229,8 @@ const Simulador = () => {
           </div>
         </div>
         <div className="row mb-3">
-          <div className="col my-auto">Archivo de envíos:</div>
-          <div className="col">
+          <div className="col-md-6 my-auto">Archivo de envíos:</div>
+          <div className="col-md-6">
             <label className="my-auto fileLabel" htmlFor="enviosFile">
               <UploadIcon /> Subir archivo
             </label>
@@ -215,13 +238,30 @@ const Simulador = () => {
               id="enviosFile"
               type="file"
               className="fileInput"
+              accept=".txt"
               onChange={(e) => {
                 setArchEnvios(e.target.files[0]);
               }}
             />
           </div>
+          {archEnvios ? 
+            <>
+              <div className="col-md-6"></div>
+              <div className="col-md-6 text-center">{archEnvios.name}</div>
+            </>
+            :
+            <></>
+          }
         </div>
       </div>
+      <span 
+        className="bottomButton w-100" 
+        onClick = {() => {
+          iniciarSimulacion();
+        }}
+      >
+        <RedirectButton text="Iniciar simulación" icon={<ArrowForwardIosIcon/>}/>
+      </span>
     </>
   );
 
@@ -248,6 +288,7 @@ const Simulador = () => {
 
   return(
     <>
+    <ToastContainer theme="dark" />
     <div className="row h-100">
       {enviosEstadisticas}
       {mapaSimulador}

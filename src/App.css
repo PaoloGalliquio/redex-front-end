@@ -97,12 +97,23 @@ a:hover{
   position: absolute;
 }
 
+.fileLabel{
+  transition: 0.3s;
+}
+
 .fileLabel:hover{
   color: rgb(51, 124, 192);
 }
 
 .pointer{
   cursor: pointer;
+}
+
+.bottomButton{
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  padding: 0px 15px 15px 15px;
 }
 
 ::-webkit-scrollbar {

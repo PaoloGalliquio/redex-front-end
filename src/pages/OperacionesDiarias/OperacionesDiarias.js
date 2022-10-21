@@ -140,6 +140,7 @@ const OperacionesDiarias = () => {
           {!showTable && (
             <>
               <span
+                className="bottomButton w-100"
                 onClick={() => {
                   setShowTable(false);
                 }}>
@@ -154,7 +155,7 @@ const OperacionesDiarias = () => {
           {showTable && (
             <>
               <span
-                className="opdia-bottom-button"
+                className="bottomButton w-100"
                 onClick={() => {
                   setShowTable(false);
                 }}>

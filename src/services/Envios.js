@@ -17,3 +17,17 @@ export const saveEnvio = async () => {
   };
   return await ajax(optionsRequest);
 };
+
+export const sendFile = async (file) => {
+  const optionsRequest = {
+    method: "POST",
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    },
+    data: {
+      envios: file
+    },
+    url: process.env.REACT_APP_BACK_UL + url + "/sendFile",
+  };
+  return await ajax(optionsRequest);
+}
