@@ -16,6 +16,10 @@ import UploadIcon from '@mui/icons-material/Upload';
 import Map from "../../components/Map/MapSimulador";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import FormData from 'form-data';
+
+import { sendFile } from "../../services/Envios";
+import axios from "axios";
 
 const Simulador = () => {
   const notifyError = (mensaje) => toast.error(mensaje);
@@ -164,9 +168,15 @@ const Simulador = () => {
 
   const iniciarSimulacion = () => {
     if (!comprobaciones()) return;
-    console.log(archEnvios);
     var formData = new FormData();
     formData.append("file", archEnvios);
+    axios.post(process.env.REACT_APP_BACK_UL + "/envio/sendFile", formData,{
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    }).then(response => {
+      console.log(response.data);
+    })
   }
 
   const enviosGraficos = (
