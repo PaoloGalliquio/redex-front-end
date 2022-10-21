@@ -1,6 +1,6 @@
 import ajax from "../tools/ajax";
 
-const url = "/aeropuerto";
+const url = "/aeropuertos";
 
 export const getAeropuertos = async () => {
   const optionsRequest = {

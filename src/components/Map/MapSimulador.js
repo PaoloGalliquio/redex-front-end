@@ -22,7 +22,7 @@ const MapSimulador = (props) => {
   const map = useRef(null);
   var geoJSON = new GeoJSONTerminator();
 
-  const [aeropuertos, setAeropuertos] = useState([
+  /*const [aeropuertos, setAeropuertos] = useState([
     {
       id: 1,
       codigo: "SKBO",
@@ -263,7 +263,9 @@ const MapSimulador = (props) => {
       latitud: 46.91260059480198,
       longitud: 7.4989953374621265,
     },
-  ]);
+  ]);*/
+
+  const [aeropuertos, setAeropuertos] = useState([]);
 
   let nroVuelos = 0;
   let vueloListo = 1;
@@ -360,7 +362,7 @@ const MapSimulador = (props) => {
 
   const setearAeropuertosEnMapa = () => {
     aeropuertos.forEach((element) => {
-      let description = `<b>${element.codigo}</b> (GMT-)<br>Capacidad: 100`;
+      let description = `<b>${element.codigo}</b> (UTC: ${element.utc})<br>Capacidad: 100`;
       const el = document.createElement("div");
       el.className = "marker";
       el.style.backgroundImage = `url(${myImage})`;
@@ -482,9 +484,18 @@ const MapSimulador = (props) => {
   };
 
   useEffect(() => {
-    /*(async () => {
+    if(aeropuertos.length>0){
+      setearAeropuertosEnMapa();
+    }
+    
+  }, [aeropuertos]);
+
+  useEffect(() => {
+    (async () => {
       setAeropuertos(await getAeropuertos());
-    })();*/
+    })().then(() => {
+      
+    });
 
     if (map.current) return;
     map.current = new mapboxgl.Map({
@@ -499,8 +510,6 @@ const MapSimulador = (props) => {
     map.current.setRenderWorldCopies(false);
 
     setTimeout(() => {
-      setearAeropuertosEnMapa();
-
       map.current.addLayer({
         id: "daynight",
         type: "fill",
