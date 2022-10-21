@@ -21,13 +21,11 @@ export const saveEnvio = async () => {
 export const sendFile = async (file) => {
   const optionsRequest = {
     method: "POST",
+    url: process.env.REACT_APP_BACK_UL + url + "/sendFile",
     headers: {
       'Content-Type': 'multipart/form-data'
     },
-    data: {
-      envios: file
-    },
-    url: process.env.REACT_APP_BACK_UL + url + "/sendFile",
+    data: file
   };
   return await ajax(optionsRequest);
 }

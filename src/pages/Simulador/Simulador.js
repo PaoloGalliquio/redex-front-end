@@ -170,13 +170,9 @@ const Simulador = () => {
     if (!comprobaciones()) return;
     var formData = new FormData();
     formData.append("file", archEnvios);
-    axios.post(process.env.REACT_APP_BACK_UL + "/envio/sendFile", formData,{
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
-    }).then(response => {
-      console.log(response.data);
-    })
+    formData.append("fecha", fechaInicio);
+    const dataE = sendFile(formData);
+    console.log(dataE);
   }
 
   const enviosGraficos = (
