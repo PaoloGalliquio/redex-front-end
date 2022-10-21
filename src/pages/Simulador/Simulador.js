@@ -208,7 +208,7 @@ const Simulador = () => {
         <div className="row mb-3">
           <div className="col my-auto">Archivo de envíos:</div>
           <div className="col">
-            <label className="my-auto fileLabel" for="enviosFile">
+            <label className="my-auto fileLabel" htmlFor="enviosFile">
               <UploadIcon /> Subir archivo
             </label>
             <input
@@ -239,7 +239,7 @@ const Simulador = () => {
   const mapaSimulador = (
     <>
     <div className="col-md-9 p15 h-100">
-      <div className="grayBox shadowBox p15 h-100 opdia-relative">
+      <div className="grayBox shadowBox h-100 opdia-relative">
         <Map />
       </div>
     </div>

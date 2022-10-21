@@ -263,7 +263,7 @@ const Configuracion = () => {
           <div className="row">
             <div className="col-md-4 my-auto">Archivo de aeropuertos:</div>
             <div className="col-md-4 my-auto">
-              <label className="my-auto fileLabel" for="aeroFile"><UploadIcon/> Subir archivo</label>
+              <label className="my-auto fileLabel" htmlFor="aeroFile"><UploadIcon/> Subir archivo</label>
               <input id="aeroFile" type="file" className="fileInput" onChange={(e) => {setArchAero(e.target.files[0])}}/>
             </div>
             <div className={`col-md-4 my-auto ${archAero ? "fileLabel" : ""}`}>
@@ -321,7 +321,7 @@ const Configuracion = () => {
           <div className="row">
             <div className="col-md-4 my-auto">Archivo de vuelos:</div>
             <div className="col-md-4 my-auto">
-              <label className="my-auto fileLabel" for="vuelosFile"><UploadIcon/> Subir archivo</label>
+              <label className="my-auto fileLabel" htmlFor="vuelosFile"><UploadIcon/> Subir archivo</label>
               <input id="vuelosFile" type="file" className="fileInput" onChange={(e) => {setArchVuel(e.target.files[0])}}/>
             </div>
             <div className={`col-md-4 my-auto ${archVuel ? "fileLabel" : ""}`}>

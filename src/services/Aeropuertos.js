@@ -5,7 +5,7 @@ const url = "/aeropuerto";
 export const getAeropuertos = async () => {
   const optionsRequest = {
     method: "GET",
-    url: process.env.REACT_APP_BACK_UL + url + "/list",
+    url: process.env.REACT_APP_BACK_UL + "/getAeropuertos",
   };
   return await ajax(optionsRequest);
 };
