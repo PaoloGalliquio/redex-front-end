@@ -22,7 +22,7 @@ const MapSimulador = (props) => {
   const map = useRef(null);
   var geoJSON = new GeoJSONTerminator();
 
-  /*const [aeropuertos, setAeropuertos] = useState([
+  const [aeropuertos, setAeropuertos] = useState([
     {
       id: 1,
       codigo: "SKBO",
@@ -263,102 +263,188 @@ const MapSimulador = (props) => {
       latitud: 46.91260059480198,
       longitud: 7.4989953374621265,
     },
-  ]);*/
+  ]);
 
-  const [aeropuertos, setAeropuertos] = useState([]);
+  const [vuelosProgramados, setVuelosProgramados] = useState([
+    {
+      id: 1,
+      idPartida: 0,
+      idDestino: 29,
+    },
+    {
+      id: 2,
+      idPartida: 4,
+      idDestino: 23,
+    },
+    {
+      id: 3,
+      idPartida: 6,
+      idDestino: 28,
+    },
+    {
+      id: 4,
+      idPartida: 35,
+      idDestino: 2,
+    }
+  ]);
 
-  let nroVuelos = 0;
-  let vueloListo = 1;
-  const vuelos = [];
+  //const [aeropuertos, setAeropuertos] = useState([]);
 
-  const origin = [-122.414, 37.776];
-  const destination = [-77.032, 38.913];
+  const eliminarVuelos = (index, route, point) => {
+    //elimina componentes visuales para liberar memoria
+    route.features[0].geometry.coordinates = [];
+    point.features[0].geometry.coordinates = [];
+    
+    if(map.current.getLayer("route"+index)){
+      map.current.removeLayer("route"+index);
+    }
+    if(map.current.getLayer("point"+index)){
+      map.current.removeLayer("point"+index);
+    }
+    if(map.current.getSource("route"+index)){
+      map.current.removeSource("route"+index);
+    }
+    if(map.current.getSource("point"+index)){
+      map.current.removeSource("point"+index);
+    }
+  }
 
-  //declarar la línea para recorrer
-  let route = {
-    type: "FeatureCollection",
-    features: [
-      {
-        type: "Feature",
-        geometry: {
-          type: "LineString",
-          coordinates: [origin, destination],
-        },
-      },
-    ],
-  };
-
-  //el punto que estará en animación, comienza en 'origin'
-  let point = {
-    type: "FeatureCollection",
-    features: [
-      {
-        type: "Feature",
-        properties: {},
-        geometry: {
-          type: "Point",
-          coordinates: origin,
-        },
-      },
-    ],
-  };
-
-  const animarVuelos = (index, counter, steps) => {
+  const animarVuelos = (index, route, point, counter, steps) => {
     setTimeout(() => {
       const start =
-      route.features[index].geometry.coordinates[
-        counter >= steps ? counter - 1 : counter
-      ];
+        route.features[0].geometry.coordinates[
+          counter >= steps ? counter - 1 : counter
+        ];
       const end =
-        route.features[index].geometry.coordinates[
+        route.features[0].geometry.coordinates[
           counter >= steps ? counter : counter + 1
         ];
       if (!start || !end) {
-        point.features[index].geometry.coordinates = [];
-        route.features[index].geometry.coordinates = [];
-        setTimeout(() => {
-          map.current.getSource("point").setData(point);
-          map.current.getSource("route").setData(route);
-        }, 500);
+        eliminarVuelos(index, route, point);
         return;
       }
 
-      point.features[index].geometry.coordinates =
-        route.features[index].geometry.coordinates[counter];
+      point.features[0].geometry.coordinates =
+        route.features[0].geometry.coordinates[counter];
 
-      point.features[index].properties.bearing = turf.bearing(
+      point.features[0].properties.bearing = turf.bearing(
         turf.point(start),
         turf.point(end)
       );
 
-      map.current.getSource("point").setData(point);
-      map.current.getSource("route").setData(route);
+      map.current.getSource("point"+index).setData(point);
+      map.current.getSource("route"+index).setData(route);
 
       counter = counter + 1;
       if (counter < steps) {
-        animarVuelos(index,counter,steps);
-        //requestAnimationFrame(animate);
+        animarVuelos(index, route, point, counter, steps);
+      }else{
+        eliminarVuelos(index, route, point);
       }
     }, 200);
   };
 
-  const trazarRutas = (index) => {
-    const lineDistance = turf.length(route.features[index]);
+  const trazarRutas = (index, route, point, steps) => {
+    const lineDistance = turf.length(route.features[0]);
     let arc = [];
-    const steps = 100;
 
     for (let i = 0; i < lineDistance; i += lineDistance / steps) {
-      const segment = turf.along(route.features[index], i);
+      const segment = turf.along(route.features[0], i);
       arc.push(segment.geometry.coordinates);
     }
 
-    route.features[index].geometry.coordinates = arc;
+    route.features[0].geometry.coordinates = arc;
     let counter = 0;
 
     setTimeout(() => {
-      animarVuelos(index, counter, steps);
+      animarVuelos(index, route, point, counter, steps);
     }, 1000);
   };
+
+  const vuelosEnMapa = (index) => {
+    //declarar la línea para recorrer
+    let route = {
+      type: "FeatureCollection",
+      features: [
+        {
+          type: "Feature",
+          geometry: {
+            type: "LineString",
+            coordinates: [
+              [
+                aeropuertos[vuelosProgramados[index].idPartida].longitud,
+                aeropuertos[vuelosProgramados[index].idPartida].latitud,
+              ],
+              [
+                aeropuertos[vuelosProgramados[index].idDestino].longitud,
+                aeropuertos[vuelosProgramados[index].idDestino].latitud,
+              ],
+            ]
+          }
+        }
+      ]
+    };
+
+    //el punto que estará en animación, comienza en 'origin'
+    let point = {
+      type: "FeatureCollection",
+      features: [
+        {
+          type: "Feature",
+          properties: {},
+          geometry: {
+            type: "Point",
+            coordinates: [
+              aeropuertos[vuelosProgramados[index].idPartida].longitud,
+              aeropuertos[vuelosProgramados[index].idPartida].latitud,
+            ]
+          }
+        }
+      ]
+    };
+
+    map.current.addSource("route"+index, {
+      type: "geojson",
+      data: route,
+    });
+
+    map.current.addSource("point"+index, {
+      type: "geojson",
+      data: point,
+    });
+
+    map.current.addLayer({
+      id: "route"+index,
+      source: "route"+index,
+      type: "line",
+      paint: {
+        "line-width": 2,
+        "line-color": "#007cbf",
+      },
+    });
+
+    map.current.addLayer({
+      id: "point"+index,
+      source: "point"+index,
+      type: "symbol",
+      layout: {
+        "icon-image": "airport-15",
+        "icon-size": 2,
+        "icon-rotate": ["get", "bearing"],
+        "icon-rotation-alignment": "map",
+        "icon-allow-overlap": true,
+        "icon-ignore-placement": true,
+      },
+    });
+
+    trazarRutas(index, route, point, 100);
+  }
+
+  const setearVuelosEnMapa = () => {
+    vuelosProgramados.forEach((element) => {
+      vuelosEnMapa(element.id-1);
+    });
+  }
 
   const setearAeropuertosEnMapa = () => {
     aeropuertos.forEach((element) => {
@@ -392,77 +478,6 @@ const MapSimulador = (props) => {
       //al clickear sobre el ícono de aeropuerto...
       //adicionalment, se podría configurar algún evento que se active cuando se actualicen cantidades
       el.addEventListener("click", () => {
-        if (vueloListo == 1) {
-          //selecciona punto de origen
-          //agregar vuelo
-          vuelos.push({
-            id: nroVuelos + 1,
-            idPartida: element.id - 1,
-            idDestino: 0,
-          });
-
-          //en la espera del punto de destino
-          vueloListo++;
-        } else if (vueloListo == 2) {
-          let index = nroVuelos;
-          //selecciona punto de destino
-          vuelos[nroVuelos].idDestino = element.id - 1;
-
-          //se reinicia la cuenta
-          nroVuelos++;
-          vueloListo = 1;
-          setTimeout(() => {
-            //console.log(aeropuertos[vuelos[nroVuelos-1].idPartida].codigo+' -> '
-            //+aeropuertos[vuelos[nroVuelos-1].idDestino].codigo);
-            if (nroVuelos > 1) {
-              route.features.push({
-                type: "Feature",
-                geometry: {
-                  type: "LineString",
-                  coordinates: [
-                    [
-                      aeropuertos[vuelos[nroVuelos - 1].idPartida].longitud,
-                      aeropuertos[vuelos[nroVuelos - 1].idPartida].latitud,
-                    ],
-                    [
-                      aeropuertos[vuelos[nroVuelos - 1].idDestino].longitud,
-                      aeropuertos[vuelos[nroVuelos - 1].idDestino].latitud,
-                    ],
-                  ],
-                },
-              });
-
-              point.features.push({
-                type: "Feature",
-                properties: {},
-                geometry: {
-                  type: "Point",
-                  coordinates: [
-                    aeropuertos[vuelos[nroVuelos - 1].idPartida].longitud,
-                    aeropuertos[vuelos[nroVuelos - 1].idPartida].latitud,
-                  ],
-                },
-              });
-            } else {
-              //1er vuelo
-              route.features[0].geometry.coordinates = [
-                [
-                  aeropuertos[vuelos[nroVuelos - 1].idPartida].longitud,
-                  aeropuertos[vuelos[nroVuelos - 1].idPartida].latitud,
-                ],
-                [
-                  aeropuertos[vuelos[nroVuelos - 1].idDestino].longitud,
-                  aeropuertos[vuelos[nroVuelos - 1].idDestino].latitud,
-                ],
-              ];
-              point.features[0].geometry.coordinates = [
-                aeropuertos[vuelos[nroVuelos - 1].idPartida].longitud,
-                aeropuertos[vuelos[nroVuelos - 1].idPartida].latitud,
-              ];
-            }
-            trazarRutas(index);
-          }, 1000);
-        }
       });
 
       const popup = new mapboxgl.Popup({
@@ -483,19 +498,20 @@ const MapSimulador = (props) => {
     });
   };
 
-  useEffect(() => {
+  /*useEffect(() => {
     if(aeropuertos.length>0){
       setearAeropuertosEnMapa();
+      setearVuelosEnMapa();
     }
     
-  }, [aeropuertos]);
+  }, [aeropuertos]);*/
 
   useEffect(() => {
-    (async () => {
+    /*(async () => {
       setAeropuertos(await getAeropuertos());
     })().then(() => {
       
-    });
+    });*/
 
     if (map.current) return;
     map.current = new mapboxgl.Map({
@@ -524,40 +540,9 @@ const MapSimulador = (props) => {
         },
       });
 
-      map.current.addSource("route", {
-        type: "geojson",
-        data: route,
-      });
-
-      map.current.addSource("point", {
-        type: "geojson",
-        data: point,
-      });
-
-      map.current.addLayer({
-        id: "route",
-        source: "route",
-        type: "line",
-        paint: {
-          "line-width": 2,
-          "line-color": "#007cbf",
-        },
-      });
-
-      map.current.addLayer({
-        id: "point",
-        source: "point",
-        type: "symbol",
-        layout: {
-          "icon-image": "airport-15",
-          "icon-size": 2,
-          "icon-rotate": ["get", "bearing"],
-          "icon-rotation-alignment": "map",
-          "icon-allow-overlap": true,
-          "icon-ignore-placement": true,
-        },
-      });
-    }, 2000);
+      setearAeropuertosEnMapa();
+      setearVuelosEnMapa();
+    }, 1000);
   }, []);
 
   return (
