@@ -28,6 +28,7 @@ const Simulador = () => {
   const [showTable, setShowTable] = useState(false);
   const [archEnvios, setArchEnvios] = useState(null);
   const [fechaInicio, setFechaInicio] = useState(new Date());
+  const [inicia, setInicia] = useState(0);
 
   const styles = {
     field: {
@@ -167,6 +168,7 @@ const Simulador = () => {
   }
 
   const iniciarSimulacion = () => {
+    setInicia(inicia+1);
     if (!comprobaciones()) return;
     var formData = new FormData();
     formData.append("file", archEnvios);
@@ -225,7 +227,7 @@ const Simulador = () => {
                 inputFormat="DD/MM/YYYY"
                 value={fechaInicio}
                 onChange={(nuevaFecha) => {
-                  setFechaInicio(nuevaFecha);
+                  setFechaInicio(nuevaFecha.$d);
                 }}
                 renderInput={(params) => (
                   <TextField {...params} variant="standard" sx={styles.field} />
@@ -286,7 +288,7 @@ const Simulador = () => {
     <>
     <div className="col-md-9 p15 h-100">
       <div className="grayBox shadowBox h-100 opdia-relative">
-        <Map />
+        <Map inicia={inicia} fechaInicio={fechaInicio}/>
       </div>
     </div>
     </>

@@ -14,15 +14,20 @@ import { getAeropuertos } from "../../services/Aeropuertos";
 
 mapboxgl.workerClass = MapboxWorker;
 
-const MapSimulador = (props) => {
+const MapSimulador = ({inicia, fechaInicio}) => {
   mapboxgl.accessToken = process.env.REACT_APP_MAP_KEY;
   const [longitud, setlongitud] = useState(0);
   const [lat, setLat] = useState(0);
   const [zoom, setZoom] = useState(1);
   const mapContainer = useRef(null);
   const map = useRef(null);
+  const [clock, setClock] = useState();
   var geoJSON = new GeoJSONTerminator();
   let htmlAeropuertos = [document.createElement("div")];
+  const [iniciaSimu, setIniciaSimu] = useState(0);
+  const [fechaSimu, setFechaSimu] = useState(new Date());
+  const [previosInterval, setPreviousInterval] = useState(-1);
+  const [currentInterval, setCurrentInterval] = useState(-1);
 
   const [aeropuertos, setAeropuertos] = useState([
     {
@@ -639,7 +644,7 @@ const MapSimulador = (props) => {
       popup.remove();
     });
 
-    trazarRutas(index, route, point, 100);
+    //trazarRutas(index, route, point, 100);
   }
 
   const setearVuelosEnMapa = () => {
@@ -709,6 +714,47 @@ const MapSimulador = (props) => {
     });
   };
 
+  useEffect(() => {
+    if(iniciaSimu>1){
+      clearInterval(previosInterval);
+    }
+    
+  }, [currentInterval]);
+
+  useEffect(() => {
+    let refreshId, date;
+    if(iniciaSimu>0){
+      refreshId = setInterval(() => {
+        setFechaSimu(new Date(fechaSimu.setMinutes(fechaSimu.getMinutes()+10)));
+        let [yyyy,mm,dd,hh,mi] = fechaSimu.toISOString().split(/[/:\-T]/);
+        setClock(`${dd}/${mm}/${yyyy} ${hh}:${mi}`);
+      }, 1600);
+
+
+      if(iniciaSimu == 1){
+        setPreviousInterval(refreshId);
+        setCurrentInterval(refreshId); 
+      }else if(iniciaSimu>1){
+        setPreviousInterval(currentInterval);
+        setCurrentInterval(refreshId);
+      }
+    }
+    
+  }, [iniciaSimu]);
+
+  useEffect(() => {
+    if(inicia>0){
+      let date = new Date(fechaInicio);
+      date.setHours(0,0,0);
+      date = new Date(new Date(date).getTime() - new Date(date).getTimezoneOffset() * 60000);
+      setFechaSimu(date);
+      let [yyyy,mm,dd,hh,mi] = date.toISOString().split(/[/:\-T]/);
+      setClock(`${dd}/${mm}/${yyyy} ${hh}:${mi}`);
+      setIniciaSimu(iniciaSimu+1);
+    }
+    
+  }, [inicia]);
+
   /*useEffect(() => {
     if(aeropuertos.length>0){
       setearAeropuertosEnMapa();
@@ -771,14 +817,19 @@ const MapSimulador = (props) => {
         }
         console.log(aeropuertos);
       }, 5000);*/
-    }, 2000);
+    }, 3000);
   }, []);
 
   return (
     <>
       <span className="has-legend">
         <div ref={mapContainer} className="map-container" />
-        <Legend />
+        
+          <Legend />
+          <div className="reloj">
+            <div className="reloj-texto">{clock}</div>
+          </div>
+        
       </span>
     </>
   );

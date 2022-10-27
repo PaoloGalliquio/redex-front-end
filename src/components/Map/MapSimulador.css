@@ -3,3 +3,19 @@
     font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
     color:black;
     }
+
+.reloj {
+    position: absolute;
+    justify-content: flex-end;
+    display: flex;
+    top: 10px;
+    width: 100%;
+    }
+
+.reloj-texto {
+    background: #292323;
+    font-size: 18px;
+    padding: 10px 20px;
+    border-radius: 20px;
+    margin-right: 10px;
+    }
