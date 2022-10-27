@@ -22,10 +22,12 @@ const MapSimulador = ({inicia, fechaInicio}) => {
   const mapContainer = useRef(null);
   const map = useRef(null);
   const [clock, setClock] = useState();
+  const [tiempoTranscurrido, setTiempoTranscurrido] = useState();
   var geoJSON = new GeoJSONTerminator();
   let htmlAeropuertos = [document.createElement("div")];
   const [iniciaSimu, setIniciaSimu] = useState(0);
   const [fechaSimu, setFechaSimu] = useState(new Date());
+  const [fechaZero, setFechaZero] = useState(new Date());
   const [previosInterval, setPreviousInterval] = useState(-1);
   const [currentInterval, setCurrentInterval] = useState(-1);
 
@@ -722,10 +724,15 @@ const MapSimulador = ({inicia, fechaInicio}) => {
   }, [currentInterval]);
 
   useEffect(() => {
-    let refreshId, date;
+    let refreshId, difFechas, difDD, difHH, difMM;
     if(iniciaSimu>0){
       refreshId = setInterval(() => {
         setFechaSimu(new Date(fechaSimu.setMinutes(fechaSimu.getMinutes()+10)));
+        difFechas = fechaSimu.getTime() - fechaZero.getTime();
+        difMM = (difFechas / (1000 * 60)) % 60;
+        difHH = (difFechas / (1000 * 60 * 60)) % 24;
+        difDD = (difFechas / (1000 * 60 * 60 * 24)) % 365;
+        setTiempoTranscurrido(`${Math.trunc(difDD)}d ${Math.trunc(difHH)}h ${Math.trunc(difMM)}m`);
         let [yyyy,mm,dd,hh,mi] = fechaSimu.toISOString().split(/[/:\-T]/);
         setClock(`${dd}/${mm}/${yyyy} ${hh}:${mi}`);
       }, 1600);
@@ -744,12 +751,16 @@ const MapSimulador = ({inicia, fechaInicio}) => {
 
   useEffect(() => {
     if(inicia>0){
-      let date = new Date(fechaInicio);
+      let date = new Date(fechaInicio), dateZ = new Date(fechaInicio);
       date.setHours(0,0,0);
       date = new Date(new Date(date).getTime() - new Date(date).getTimezoneOffset() * 60000);
+      dateZ.setHours(0,0,0);
+      dateZ = new Date(new Date(dateZ).getTime() - new Date(dateZ).getTimezoneOffset() * 60000);
+      setFechaZero(dateZ);
       setFechaSimu(date);
       let [yyyy,mm,dd,hh,mi] = date.toISOString().split(/[/:\-T]/);
       setClock(`${dd}/${mm}/${yyyy} ${hh}:${mi}`);
+      setTiempoTranscurrido(`0d 0h 0m`);
       setIniciaSimu(iniciaSimu+1);
     }
     
@@ -826,9 +837,10 @@ const MapSimulador = ({inicia, fechaInicio}) => {
         <div ref={mapContainer} className="map-container" />
         
           <Legend />
+          {inicia>0 && 
           <div className="reloj">
-            <div className="reloj-texto">{clock}</div>
-          </div>
+            <div className="reloj-texto">{clock}<hr className="linea-reloj"></hr>{tiempoTranscurrido}</div>
+          </div>}
         
       </span>
     </>
