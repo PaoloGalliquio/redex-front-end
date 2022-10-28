@@ -25,13 +25,14 @@ const MapSimulador = ({inicia, fechaInicio}) => {
   const [clock, setClock] = useState();
   const [tiempoTranscurrido, setTiempoTranscurrido] = useState();
   var geoJSON = new GeoJSONTerminator();
-  let htmlAeropuertos = [document.createElement("div")];
+  const [htmlAeropuertos, setHtmlAeropuertos] = useState([]);
   const [iniciaSimu, setIniciaSimu] = useState(0);
   const [fechaSimu, setFechaSimu] = useState(new Date());
   const [fechaZero, setFechaZero] = useState(new Date());
   const [previosInterval, setPreviousInterval] = useState(-1);
   const [currentInterval, setCurrentInterval] = useState(-1);
   const [aeropuertosCargados, setAeropuertosCargados] = useState(0);
+  const [aeroEventosCargados, setAeroEventosCargados] = useState(0);
   const [indexVuelo, setIndexVuelo] = useState(-1);
 
   /*const [aeropuertos, setAeropuertos] = useState([
@@ -462,8 +463,7 @@ const MapSimulador = ({inicia, fechaInicio}) => {
         cantidad: cant
       }
     });
-    console.log('en aeropuerto '+cod+' entrego '+cant+' paquetes');
-    //htmlAeropuertos[cod].dispatchEvent(event);
+    htmlAeropuertos[cod].dispatchEvent(event);
   }
 
   function ordenarFechas( a, b ) {
@@ -582,7 +582,7 @@ const MapSimulador = ({inicia, fechaInicio}) => {
         {
           type: "Feature",
           properties: {
-            description: `<b>${aeropuertos[vuelos[index].idPartida].codigo}-${aeropuertos[vuelos[index].idDestino].codigo}</b><br>Duración: <b>${vuelos[index].duracionTexto}</b><br>Capacidad: <b>${vuelos[index].capacidad}</b> paquetes<br>Uso efectivo: ${vuelos[index].ocupado}/${vuelos[index].capacidad} <b>(${vuelos[index].ocupado*100/vuelos[index].capacidad}% usado)</b>`
+            description: `<b>${aeropuertos[vuelos[index].idPartida].codigo}-${aeropuertos[vuelos[index].idDestino].codigo}</b><br>Duración: <b>${vuelos[index].duracionTexto}</b><br>Capacidad: <b>${vuelos[index].capacidad}</b> paquetes<br>Uso efectivo: ${vuelos[index].ocupado}/${vuelos[index].capacidad} <b>(${Math.round((vuelos[index].ocupado*100/vuelos[index].capacidad)*10)/10}% usado)</b>`
           },
           geometry: {
             type: "Point",
@@ -624,7 +624,7 @@ const MapSimulador = ({inicia, fechaInicio}) => {
       source: "route"+index,
       type: "line",
       paint: {
-        "line-width": 1.8,
+        "line-width": 1,
         "line-color": vuelos[index].intercontinental==true ? "#1a638a" : "#565902" //continental: #565902, intercontinental: #1a638a
       }
     });
@@ -675,23 +675,22 @@ const MapSimulador = ({inicia, fechaInicio}) => {
   }
 
   const setearAeropuertosEnMapa = () => {
+    let arrayHtml = [];
     aeropuertos.forEach((element) => {
       ocupadoAero.push(0);
-      let description = `<b>${element.codigo}</b> (UTC: ${element.utc})<br>Capacidad: <b>${element.capacidad}</b> paquetes<br>Uso efectivo: ${ocupadoAero[element.id-1]}/${element.capacidad} <b>(${ocupadoAero[element.id-1]*100/element.capacidad}% en uso)</b>`;
-      if(element.id>1){
-        htmlAeropuertos.push(document.createElement("div"));
-      }
-      htmlAeropuertos[element.id-1].className = "marker";
-      htmlAeropuertos[element.id-1].style.backgroundImage = `url(${airportImage})`;
-      htmlAeropuertos[element.id-1].style.filter = element.capacidad*0.75<ocupadoAero[element.id-1] ? "invert(21%) sepia(79%) saturate(6123%) hue-rotate(355deg) brightness(92%) contrast(116%)" :
+      let description = `<b>${element.codigo}</b> (UTC: ${element.utc})<br>Capacidad: <b>${element.capacidad}</b> paquetes<br>Uso efectivo: ${ocupadoAero[element.id-1]}/${element.capacidad} <b>(${Math.round((ocupadoAero[element.id-1]*100/element.capacidad)*10)/10}% en uso)</b>`;
+      arrayHtml.push(document.createElement("div"));
+      arrayHtml[element.id-1].className = "marker";
+      arrayHtml[element.id-1].style.backgroundImage = `url(${airportImage})`;
+      arrayHtml[element.id-1].style.filter = element.capacidad*0.75<ocupadoAero[element.id-1] ? "invert(21%) sepia(79%) saturate(6123%) hue-rotate(355deg) brightness(92%) contrast(116%)" :
       element.capacidad*0.50<ocupadoAero[element.id-1] ? "invert(58%) sepia(33%) saturate(3553%) hue-rotate(3deg) brightness(105%) contrast(96%)" :
       element.capacidad*0.25<ocupadoAero[element.id-1] ? "invert(82%) sepia(63%) saturate(882%) hue-rotate(11deg) brightness(113%) contrast(107%)" : "invert(75%) sepia(53%) saturate(5119%) hue-rotate(73deg) brightness(96%) contrast(95%)";
-      htmlAeropuertos[element.id-1].style.width = `20px`;
-      htmlAeropuertos[element.id-1].style.height = `20px`;
-      htmlAeropuertos[element.id-1].style.backgroundSize = "100%";
+      arrayHtml[element.id-1].style.width = `20px`;
+      arrayHtml[element.id-1].style.height = `20px`;
+      arrayHtml[element.id-1].style.backgroundSize = "100%";
 
       //al posar el cursor sobre el ícono de aeropuerto..
-      htmlAeropuertos[element.id-1].addEventListener("mouseenter", () => {
+      arrayHtml[element.id-1].addEventListener("mouseenter", () => {
         popup
           .setLngLat([element.longitud, element.latitud])
           .setHTML(description)
@@ -699,7 +698,7 @@ const MapSimulador = ({inicia, fechaInicio}) => {
       });
 
       //al retirar el cursor sobre el ícono de aeropuerto...
-      htmlAeropuertos[element.id-1].addEventListener("mouseleave", () => {
+      arrayHtml[element.id-1].addEventListener("mouseleave", () => {
         popup.remove();
         //actualizar descripcion del aeropuerto
         //description = 'cambio a <b>'+Math.random()+'</b>';
@@ -708,11 +707,11 @@ const MapSimulador = ({inicia, fechaInicio}) => {
       });
 
       //evento personalizado: al llegar un avion, actualiza la cantidad de paquetes en el almacen en el aeropuerto arribado
-      htmlAeropuertos[element.id-1].addEventListener("updateCant", (e) => {
+      arrayHtml[element.id-1].addEventListener("updateCant", (e) => {
         //console.log('soy '+element.codigo + " y han llegado " + e.detail.cantidad + " paquetes");
         ocupadoAero[element.id-1] += e.detail.cantidad;
-        description = `<b>${element.codigo}</b> (UTC: ${element.utc})<br>Capacidad: <b>${element.capacidad}</b> paquetes<br>Uso efectivo: ${ocupadoAero[element.id-1]}/${element.capacidad} <b>(${ocupadoAero[element.id-1]*100/element.capacidad}% en uso)</b>`;
-        htmlAeropuertos[element.id-1].style.filter = element.capacidad*0.75<ocupadoAero[element.id-1] ? "invert(21%) sepia(79%) saturate(6123%) hue-rotate(355deg) brightness(92%) contrast(116%)" :
+        description = `<b>${element.codigo}</b> (UTC: ${element.utc})<br>Capacidad: <b>${element.capacidad}</b> paquetes<br>Uso efectivo: ${ocupadoAero[element.id-1]}/${element.capacidad} <b>(${Math.round((ocupadoAero[element.id-1]*100/element.capacidad)*10)/10}% en uso)</b>`;
+        arrayHtml[element.id-1].style.filter = element.capacidad*0.75<ocupadoAero[element.id-1] ? "invert(21%) sepia(79%) saturate(6123%) hue-rotate(355deg) brightness(92%) contrast(116%)" :
         element.capacidad*0.50<ocupadoAero[element.id-1] ? "invert(58%) sepia(33%) saturate(3553%) hue-rotate(3deg) brightness(105%) contrast(96%)" :
         element.capacidad*0.25<ocupadoAero[element.id-1] ? "invert(82%) sepia(63%) saturate(882%) hue-rotate(11deg) brightness(113%) contrast(107%)" : "invert(75%) sepia(53%) saturate(5119%) hue-rotate(73deg) brightness(96%) contrast(95%)";
       });
@@ -723,7 +722,7 @@ const MapSimulador = ({inicia, fechaInicio}) => {
       });
 
       // Add markers to the map.
-      new mapboxgl.Marker(htmlAeropuertos[element.id-1])
+      new mapboxgl.Marker(arrayHtml[element.id-1])
         .setLngLat([element.longitud, element.latitud])
         .addTo(map.current);
 
@@ -734,6 +733,7 @@ const MapSimulador = ({inicia, fechaInicio}) => {
       //rojo: invert(21%) sepia(79%) saturate(6123%) hue-rotate(355deg) brightness(92%) contrast(116%)
       //codeColor to filter: https://codepen.io/sosuke/pen/Pjoqqp
     });
+    setHtmlAeropuertos(arrayHtml);
   };
 
   useEffect(() => {
@@ -746,7 +746,6 @@ const MapSimulador = ({inicia, fechaInicio}) => {
   useEffect(() => {
     if(indexVuelo>=0 && indexVuelo<vuelos.length && vuelos.length>0){
       if(vuelos[indexVuelo].fechaPartidaUTC.getTime()<=(fechaSimu.getTime()+18000000)){
-        //console.log('salio vuelo '+indexVuelo);
         vuelosEnMapa(indexVuelo);
         setIndexVuelo(indexVuelo+1);
       }
@@ -849,10 +848,10 @@ const MapSimulador = ({inicia, fechaInicio}) => {
           fechaPartida: dateOrig,
           fechaPartidaUTC: dateUTC,
           fechaDestino: dateFinal,
-          duracion: Math.round((element.duracion*1.6/10)*10)/10,
+          duracion: Math.round((element.duracion*1.6/10)*10)/10, //20   o    Math.round((element.duracion*1.6/10)*10)/10,
           duracionTexto: `${String(Math.trunc(element.duracion/60)).padStart(2,'0')}:${String(element.duracion%60).padStart(2,'0')} hrs.`,
           capacidad: element.capacidad,
-          ocupado: element.capacidad - element.capacidadActual,
+          ocupado: element.capacidad - element.capacidadActual, //100   o   element.capacidad - element.capacidadActual,
           intercontinental: (element.aeropuertoPartida.id<=10 && element.aeropuertoDestino.id<=10) || (element.aeropuertoPartida.id>10 && element.aeropuertoDestino.id>10) ? false : true,
           idPartida: element.aeropuertoPartida.id-1,
           idDestino: element.aeropuertoDestino.id-1,
@@ -861,7 +860,7 @@ const MapSimulador = ({inicia, fechaInicio}) => {
       });
       vuelosPreparados.sort(ordenarFechas);
       vuelosPreparados.splice(0, 1000);
-      vuelosPreparados.splice(100);
+      vuelosPreparados.splice(5);
       setVuelos(vuelosPreparados);
       
     }
@@ -869,7 +868,7 @@ const MapSimulador = ({inicia, fechaInicio}) => {
   }, [vuelosProgramados]);
 
   useEffect(() => {
-    if(aeropuertosCargados>0){
+    if(aeropuertosCargados==1 && aeroEventosCargados==1){
       (async () => {
         setVuelosProgramados(await getVuelos());
       })().then(() => {
@@ -877,15 +876,19 @@ const MapSimulador = ({inicia, fechaInicio}) => {
       });
     }
     
-  }, [aeropuertosCargados]);
+  }, [aeropuertosCargados, aeroEventosCargados]);
+
+  useEffect(() => {
+    if(htmlAeropuertos.length>0 && aeroEventosCargados==0){
+      setAeroEventosCargados(aeroEventosCargados+1);
+    }
+    
+  }, [htmlAeropuertos]);
 
   useEffect(() => {
     if(aeropuertos.length>0 && aeropuertosCargados==0){
-      //prueba.sort(ordenarPrueba);
-      //console.log(prueba);
       setearAeropuertosEnMapa();
       setAeropuertosCargados(aeropuertosCargados+1);
-      //setearVuelosEnMapa();
     }
     
   }, [aeropuertos]);
