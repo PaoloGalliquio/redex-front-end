@@ -24,7 +24,6 @@ const MapSimulador = ({inicia, fechaInicio}) => {
   const map = useRef(null);
   const [clock, setClock] = useState();
   const [tiempoTranscurrido, setTiempoTranscurrido] = useState();
-  //var geoJSON = new GeoJSONTerminator(options);
   const [htmlAeropuertos, setHtmlAeropuertos] = useState([]);
   const [iniciaSimu, setIniciaSimu] = useState(0);
   const [fechaSimu, setFechaSimu] = useState(new Date());
