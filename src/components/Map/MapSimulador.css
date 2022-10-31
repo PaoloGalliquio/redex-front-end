@@ -25,3 +25,8 @@
     margin: 5px -20px;
     border-top: white 4px solid;
     }
+
+.linea-vuelo {
+    margin: 0;
+    border-top: black 4px solid;
+    }

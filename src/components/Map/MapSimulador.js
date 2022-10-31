@@ -475,9 +475,10 @@ const MapSimulador = ({inicia, fechaInicio}) => {
     return 0;
   }
   
-
   const eliminarVuelos = (index, route, point) => {
-    almacenarEnAeropuerto(vuelos[index].idDestino, vuelos[index].ocupado);
+    if(vuelos[index].ocupado>0){
+      almacenarEnAeropuerto(vuelos[index].idDestino, vuelos[index].ocupado);
+    }
 
     //elimina componentes visuales para liberar memoria
     route.features[0].geometry.coordinates = [];
@@ -551,6 +552,9 @@ const MapSimulador = ({inicia, fechaInicio}) => {
   };
 
   const vuelosEnMapa = (index) => {
+    let descColor = vuelos[index].capacidad*0.75<vuelos[index].ocupado ? "#fa0202" :
+    vuelos[index].capacidad*0.50<vuelos[index].ocupado ? "#f79205" :
+    vuelos[index].capacidad*0.25<vuelos[index].ocupado ? "#f6fa02" : "#25c71a";
     //declarar la línea para recorrer
     let route = {
       type: "FeatureCollection",
@@ -581,7 +585,7 @@ const MapSimulador = ({inicia, fechaInicio}) => {
         {
           type: "Feature",
           properties: {
-            description: `<b>${aeropuertos[vuelos[index].idPartida].codigo}-${aeropuertos[vuelos[index].idDestino].codigo}</b><br>Duración: <b>${vuelos[index].duracionTexto}</b><br>Capacidad: <b>${vuelos[index].capacidad}</b> paquetes<br>Uso efectivo: ${vuelos[index].ocupado}/${vuelos[index].capacidad} <b>(${Math.round((vuelos[index].ocupado*100/vuelos[index].capacidad)*10)/10}% usado)</b>`
+            description: `De <b style="font-weight:800;">${aeropuertos[vuelos[index].idPartida].codigo}</b> ${vuelos[index].fechaPartidaTexto}<br>A <b style="font-weight:800;">${aeropuertos[vuelos[index].idDestino].codigo}</b> ${vuelos[index].fechaDestinoTexto}<br><hr style="margin: 0; border-top: black 3px solid;">Duración total: <b style="font-weight:800;">${vuelos[index].duracionTexto}</b><br>Capacidad del vuelo: <b style="font-weight:800;">${vuelos[index].capacidad}</b> paquetes<br>Uso efectivo: ${vuelos[index].ocupado}/${vuelos[index].capacidad} <b style="font-weight:900; background: ${descColor};">(${Math.round((vuelos[index].ocupado*100/vuelos[index].capacidad)*10)/10}% usado)</b>`
           },
           geometry: {
             type: "Point",
@@ -641,7 +645,7 @@ const MapSimulador = ({inicia, fechaInicio}) => {
         "icon-ignore-placement": true,
       },
       paint: {
-        "icon-color": "#5c0275"
+        "icon-color": "#186a7a"
         /* vuelos[index].capacidad*0.75<vuelos[index].ocupado ? "#fa0202" :
         vuelos[index].capacidad*0.50<vuelos[index].ocupado ? "#f79205" :
         vuelos[index].capacidad*0.25<vuelos[index].ocupado ? "#f6fa02" : "#25c71a"*/
@@ -672,7 +676,13 @@ const MapSimulador = ({inicia, fechaInicio}) => {
     let arrayHtml = [];
     aeropuertos.forEach((element) => {
       ocupadoAero.push(0);
-      let description = `<b>${element.codigo}</b> (UTC: ${element.utc})<br>Capacidad: <b>${element.capacidad}</b> paquetes<br>Uso efectivo: ${ocupadoAero[element.id-1]}/${element.capacidad} <b>(${Math.round((ocupadoAero[element.id-1]*100/element.capacidad)*10)/10}% en uso)</b>`;
+      let descColor = element.capacidad*0.75<ocupadoAero[element.id-1] ? "#fa0202" :
+      element.capacidad*0.50<ocupadoAero[element.id-1] ? "#f79205" :
+      element.capacidad*0.25<ocupadoAero[element.id-1] ? "#f6fa02" : "#25c71a";
+      let UTC = "UTC";
+      UTC += element.utc>=0 ? " + " : " - ";
+      UTC += String(Math.abs(element.utc)).padStart(2,'0')+":00";
+      let description = `Aeropuerto <b style="font-weight:800;">${element.codigo}</b> (<b style="font-weight:800;">${UTC}</b>)<br><hr style="margin: 0; border-top: black 3px solid;">Capacidad: <b style="font-weight:800;">${element.capacidad}</b> paquetes<br>Uso efectivo: ${ocupadoAero[element.id-1]}/${element.capacidad} <b style="font-weight:800; background: ${descColor};">(${Math.round((ocupadoAero[element.id-1]*100/element.capacidad)*10)/10}% en uso)</b>`;
       arrayHtml.push(document.createElement("div"));
       arrayHtml[element.id-1].className = "marker";
       arrayHtml[element.id-1].style.backgroundImage = `url(${airportImage})`;
@@ -704,7 +714,10 @@ const MapSimulador = ({inicia, fechaInicio}) => {
       arrayHtml[element.id-1].addEventListener("updateCant", (e) => {
         //console.log('soy '+element.codigo + " y han llegado " + e.detail.cantidad + " paquetes");
         ocupadoAero[element.id-1] += e.detail.cantidad;
-        description = `<b>${element.codigo}</b> (UTC: ${element.utc})<br>Capacidad: <b>${element.capacidad}</b> paquetes<br>Uso efectivo: ${ocupadoAero[element.id-1]}/${element.capacidad} <b>(${Math.round((ocupadoAero[element.id-1]*100/element.capacidad)*10)/10}% en uso)</b>`;
+        descColor = element.capacidad*0.75<ocupadoAero[element.id-1] ? "#fa0202" :
+        element.capacidad*0.50<ocupadoAero[element.id-1] ? "#f79205" :
+        element.capacidad*0.25<ocupadoAero[element.id-1] ? "#f6fa02" : "#25c71a";
+        description = `Aeropuerto <b style="font-weight:800;">${element.codigo}</b> (<b style="font-weight:800;">${UTC}</b>)<br><hr style="margin: 0; border-top: black 3px solid;">Capacidad: <b style="font-weight:800;">${element.capacidad}</b> paquetes<br>Uso efectivo: ${ocupadoAero[element.id-1]}/${element.capacidad} <b style="font-weight:800; background: ${descColor};">(${Math.round((ocupadoAero[element.id-1]*100/element.capacidad)*10)/10}% en uso)</b>`;
         arrayHtml[element.id-1].style.filter = element.capacidad*0.75<ocupadoAero[element.id-1] ? "invert(21%) sepia(79%) saturate(6123%) hue-rotate(355deg) brightness(92%) contrast(116%)" :
         element.capacidad*0.50<ocupadoAero[element.id-1] ? "invert(58%) sepia(33%) saturate(3553%) hue-rotate(3deg) brightness(105%) contrast(96%)" :
         element.capacidad*0.25<ocupadoAero[element.id-1] ? "invert(82%) sepia(63%) saturate(882%) hue-rotate(11deg) brightness(113%) contrast(107%)" : "invert(75%) sepia(53%) saturate(5119%) hue-rotate(73deg) brightness(96%) contrast(95%)";
@@ -804,6 +817,7 @@ const MapSimulador = ({inicia, fechaInicio}) => {
 
   useEffect(() => {
     if(vuelos.length>0){
+      console.log(vuelos);
       setIndexVuelo(indexVuelo+1);
       let date = new Date(fechaInicio), dateZ = new Date(fechaInicio);
       date.setHours(0,0,0);
@@ -843,33 +857,35 @@ const MapSimulador = ({inicia, fechaInicio}) => {
 
   useEffect(() => {
     if(vuelosProgramados.length>0){
-      let dateOrig, dateAux, dateUTC, dateFinal;
+      let datePartida, datePartidaUTC, dateDestino, datePartidaTexto, dateDestinoTexto;
+      let yyyy,mm,dd,hh,mi;
       let vuelosPreparados = [];
       vuelosProgramados.forEach((element) => {
-        dateOrig = new Date(new Date(element.fechaPartida).getTime() + new Date(element.fechaPartida).getTimezoneOffset() * 60000);
-        dateAux = new Date(new Date(element.fechaPartida).getTime() + new Date(element.fechaPartida).getTimezoneOffset() * 60000);
-        dateFinal = new Date(new Date(element.fechaPartida).getTime() + new Date(element.fechaPartida).getTimezoneOffset() * 60000);
-        dateFinal = new Date(dateFinal.setHours(dateFinal.getHours() - element.aeropuertoPartida.husoHorario));
-        dateUTC = new Date(dateAux.setHours(dateAux.getHours() - element.aeropuertoPartida.husoHorario));
-        dateFinal = new Date(dateFinal.setMinutes(dateFinal.getMinutes() + element.duracion));
-        dateFinal = new Date(dateFinal.setHours(dateFinal.getHours() + element.aeropuertoDestino.husoHorario));
+        datePartida = new Date(new Date(element.fechaPartida).getTime() + new Date(element.fechaPartida).getTimezoneOffset() * 60000);
+        [yyyy,mm,dd,hh,mi] = new Date(element.fechaPartida).toISOString().split(/[/:\-T]/);
+        datePartidaTexto = `${dd}/${mm}/${yyyy} ${hh}:${mi}`;
+        datePartidaUTC = new Date(new Date(element.fechaPartidaUTC0).getTime() + new Date(element.fechaPartidaUTC0).getTimezoneOffset() * 60000);
+        dateDestino = new Date(new Date(element.fechaDestino).getTime() + new Date(element.fechaDestino).getTimezoneOffset() * 60000);
+        [yyyy,mm,dd,hh,mi] = new Date(element.fechaDestino).toISOString().split(/[/:\-T]/);
+        dateDestinoTexto = `${dd}/${mm}/${yyyy} ${hh}:${mi}`;
         vuelosPreparados.push({
-          fechaPartida: dateOrig,
-          fechaPartidaUTC: dateUTC,
-          fechaDestino: dateFinal,
+          fechaPartida: datePartida,
+          fechaPartidaTexto: datePartidaTexto,
+          fechaPartidaUTC: datePartidaUTC,
+          fechaDestino: dateDestino,
+          fechaDestinoTexto: dateDestinoTexto,
           duracion: Math.round((element.duracion*1.6/10)*10)/10, //20   o    Math.round((element.duracion*1.6/10)*10)/10,
           duracionTexto: `${String(Math.trunc(element.duracion/60)).padStart(2,'0')}:${String(element.duracion%60).padStart(2,'0')} hrs.`,
           capacidad: element.capacidad,
           ocupado: element.capacidad - element.capacidadActual, //100   o   element.capacidad - element.capacidadActual,
-          intercontinental: (element.aeropuertoPartida.id<=10 && element.aeropuertoDestino.id<=10) || (element.aeropuertoPartida.id>10 && element.aeropuertoDestino.id>10) ? false : true,
           idPartida: element.aeropuertoPartida.id-1,
           idDestino: element.aeropuertoDestino.id-1,
           estado: 0 //0: no atendido, 1: en vuelo, 2: termina
         });
       });
-      vuelosPreparados.sort(ordenarFechas);
-      vuelosPreparados.splice(0, 1000);
-      vuelosPreparados.splice(5);
+      vuelosPreparados.reverse();
+      vuelosPreparados.splice(0, 300);
+      vuelosPreparados.splice(20);
       setVuelos(vuelosPreparados);
       
     }
