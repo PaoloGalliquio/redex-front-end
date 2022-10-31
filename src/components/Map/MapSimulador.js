@@ -24,7 +24,7 @@ const MapSimulador = ({inicia, fechaInicio}) => {
   const map = useRef(null);
   const [clock, setClock] = useState();
   const [tiempoTranscurrido, setTiempoTranscurrido] = useState();
-  var geoJSON = new GeoJSONTerminator();
+  //var geoJSON = new GeoJSONTerminator(options);
   const [htmlAeropuertos, setHtmlAeropuertos] = useState([]);
   const [iniciaSimu, setIniciaSimu] = useState(0);
   const [fechaSimu, setFechaSimu] = useState(new Date());
@@ -619,7 +619,7 @@ const MapSimulador = ({inicia, fechaInicio}) => {
     });
     */
 
-    map.current.addLayer({
+    /*map.current.addLayer({
       id: "route"+index,
       source: "route"+index,
       type: "line",
@@ -627,7 +627,7 @@ const MapSimulador = ({inicia, fechaInicio}) => {
         "line-width": 1,
         "line-color": vuelos[index].intercontinental==true ? "#1a638a" : "#565902" //continental: #565902, intercontinental: #1a638a
       }
-    });
+    });*/
 
     map.current.addLayer({
       id: "point"+index,
@@ -642,9 +642,10 @@ const MapSimulador = ({inicia, fechaInicio}) => {
         "icon-ignore-placement": true,
       },
       paint: {
-        "icon-color": vuelos[index].capacidad*0.75<vuelos[index].ocupado ? "#fa0202" :
+        "icon-color": "#5c0275"
+        /* vuelos[index].capacidad*0.75<vuelos[index].ocupado ? "#fa0202" :
         vuelos[index].capacidad*0.50<vuelos[index].ocupado ? "#f79205" :
-        vuelos[index].capacidad*0.25<vuelos[index].ocupado ? "#f6fa02" : "#25c71a"
+        vuelos[index].capacidad*0.25<vuelos[index].ocupado ? "#f6fa02" : "#25c71a"*/
         //capacidad: [0-25]=>verde, ]25,50]=>amarillo, ]50,75]=>naranja, ]75,100]=>rojo
         //#25c71a: verde, #f6fa02: amarillo, #f79205:naranja, #fa0202:rojo
       }
@@ -666,12 +667,6 @@ const MapSimulador = ({inicia, fechaInicio}) => {
     });
 
     trazarRutas(index, route, point, 100);
-  }
-
-  const setearVuelosEnMapa = () => {
-    vuelosProgramados.forEach((element) => {
-      vuelosEnMapa(element.id-1);
-    });
   }
 
   const setearAeropuertosEnMapa = () => {
@@ -750,13 +745,41 @@ const MapSimulador = ({inicia, fechaInicio}) => {
         setIndexVuelo(indexVuelo+1);
       }
     }
+    if(fechaSimu.getTime()%3600000==0){
+      let options;
+      if(map.current.getLayer("daynight")){
+        map.current.getSource("daynight").setData(new GeoJSONTerminator(options={
+          resolution:2,
+          time: fechaSimu
+        }));
+      }
+    }
     
   }, [indexVuelo, fechaSimu]);
 
   useEffect(() => {
-    let refreshId, difFechas, difDD, difHH, difMM;
+    let refreshId, difFechas, difDD, difHH, difMM, options;
     if(iniciaSimu>0){
       console.log(vuelos);
+      map.current.addSource("daynight", {
+        type: "geojson",
+        data: new GeoJSONTerminator(options={
+          resolution:2,
+          time: fechaSimu
+        })
+      });
+
+      map.current.addLayer({
+        id: "daynight",
+        type: "fill",
+        source: "daynight",
+        layout: {},
+        paint: {
+          "fill-color": "#000",
+          "fill-opacity": 0.2,
+        },
+      });
+    
       refreshId = setInterval(() => {
         setFechaSimu(new Date(fechaSimu.setMinutes(fechaSimu.getMinutes()+10)));
         difFechas = fechaSimu.getTime() - fechaZero.getTime();
@@ -804,19 +827,6 @@ const MapSimulador = ({inicia, fechaInicio}) => {
         setAeropuertos(await getAeropuertos());
       })().then(() => {
         
-      });
-      map.current.addLayer({
-        id: "daynight",
-        type: "fill",
-        source: {
-          type: "geojson",
-          data: geoJSON,
-        },
-        layout: {},
-        paint: {
-          "fill-color": "#000",
-          "fill-opacity": 0.2,
-        },
       });
 
       map.current.loadImage(airplaneImage,
