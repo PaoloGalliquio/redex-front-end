@@ -455,16 +455,6 @@ const MapSimulador = ({inicia, fechaInicio}) => {
   const [vuelos, setVuelos] = useState([]);
   const [vuelosProgramados, setVuelosProgramados] = useState([]);
 
-
-  function almacenarEnAeropuerto (cod, cant) {
-    const event = new CustomEvent('updateCant', {
-      detail:{
-        cantidad: cant
-      }
-    });
-    htmlAeropuertos[cod].dispatchEvent(event);
-  }
-
   function ordenarFechas( a, b ) {
     if ( a.fechaPartidaUTC.getTime() < b.fechaPartidaUTC.getTime() ){
       return -1;
@@ -476,10 +466,6 @@ const MapSimulador = ({inicia, fechaInicio}) => {
   }
   
   const eliminarVuelos = (index, route, point) => {
-    if(vuelos[index].ocupado>0){
-      almacenarEnAeropuerto(vuelos[index].idDestino, vuelos[index].ocupado);
-    }
-
     //elimina componentes visuales para liberar memoria
     route.features[0].geometry.coordinates = [];
     point.features[0].geometry.coordinates = [];
@@ -622,15 +608,15 @@ const MapSimulador = ({inicia, fechaInicio}) => {
     });
     */
 
-    /*map.current.addLayer({
+    map.current.addLayer({
       id: "route"+index,
       source: "route"+index,
       type: "line",
       paint: {
         "line-width": 1,
-        "line-color": vuelos[index].intercontinental==true ? "#1a638a" : "#565902" //continental: #565902, intercontinental: #1a638a
+        "line-color": "#1a638a"
       }
-    });*/
+    });
 
     map.current.addLayer({
       id: "point"+index,
@@ -708,19 +694,6 @@ const MapSimulador = ({inicia, fechaInicio}) => {
         //description = 'cambio a <b>'+Math.random()+'</b>';
         //actualizar color del aeropuerto de acuerdo a la capacidad
         //el.style.filter = 'invert(21%) sepia(79%) saturate(6123%) hue-rotate(355deg) brightness(92%) contrast(116%)';
-      });
-
-      //evento personalizado: al llegar un avion, actualiza la cantidad de paquetes en el almacen en el aeropuerto arribado
-      arrayHtml[element.id-1].addEventListener("updateCant", (e) => {
-        //console.log('soy '+element.codigo + " y han llegado " + e.detail.cantidad + " paquetes");
-        ocupadoAero[element.id-1] += e.detail.cantidad;
-        descColor = element.capacidad*0.75<ocupadoAero[element.id-1] ? "#fa0202" :
-        element.capacidad*0.50<ocupadoAero[element.id-1] ? "#f79205" :
-        element.capacidad*0.25<ocupadoAero[element.id-1] ? "#f6fa02" : "#25c71a";
-        description = `Aeropuerto <b style="font-weight:800;">${element.codigo}</b> (<b style="font-weight:800;">${UTC}</b>)<br><hr style="margin: 0; border-top: black 3px solid;">Capacidad: <b style="font-weight:800;">${element.capacidad}</b> paquetes<br>Uso efectivo: ${ocupadoAero[element.id-1]}/${element.capacidad} <b style="font-weight:800; background: ${descColor};">(${Math.round((ocupadoAero[element.id-1]*100/element.capacidad)*10)/10}% en uso)</b>`;
-        arrayHtml[element.id-1].style.filter = element.capacidad*0.75<ocupadoAero[element.id-1] ? "invert(21%) sepia(79%) saturate(6123%) hue-rotate(355deg) brightness(92%) contrast(116%)" :
-        element.capacidad*0.50<ocupadoAero[element.id-1] ? "invert(58%) sepia(33%) saturate(3553%) hue-rotate(3deg) brightness(105%) contrast(96%)" :
-        element.capacidad*0.25<ocupadoAero[element.id-1] ? "invert(82%) sepia(63%) saturate(882%) hue-rotate(11deg) brightness(113%) contrast(107%)" : "invert(75%) sepia(53%) saturate(5119%) hue-rotate(73deg) brightness(96%) contrast(95%)";
       });
 
       const popup = new mapboxgl.Popup({
