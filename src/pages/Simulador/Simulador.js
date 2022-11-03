@@ -170,13 +170,13 @@ const Simulador = () => {
 
   const iniciarSimulacion = () => {
     setInicia(inicia+1);
-    if (!comprobaciones()) return;
-    var formData = new FormData();
-    fechaInicio.setHours(0,0,0,0);
-    formData.append("file", archEnvios);
-    formData.append("fecha", fechaInicio);
-    //const dataE = simulador(formData);
-    //console.log(dataE);
+    // if (!comprobaciones()) return;
+    // var formData = new FormData();
+    // fechaInicio.setHours(0,0,0,0);
+    // formData.append("file", archEnvios);
+    // formData.append("fecha", fechaInicio);
+    // const dataE = simulador(formData);
+    // console.log(dataE);
   }
 
   const enviosGraficos = (
