@@ -29,15 +29,3 @@ export const sendFile = async (file) => {
   };
   return await ajax(optionsRequest);
 }
-
-export const simulador = async (file) => {
-  const optionsRequest = {
-    method: "POST",
-    url: process.env.REACT_APP_BACK_UL + "/simulador",
-    headers: {
-      'Content-Type': 'multipart/form-data'
-    },
-    data: file
-  };
-  return await ajax(optionsRequest);
-}
