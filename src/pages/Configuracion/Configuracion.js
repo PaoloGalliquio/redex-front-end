@@ -5,10 +5,27 @@ import UploadIcon from '@mui/icons-material/Upload';
 import DownloadIcon from '@mui/icons-material/Download';
 import React, { useState } from "react";
 import { TextField } from "@mui/material";
+import { useEffect } from "react";
+
+import { getAeropuertos } from "../../services/Aeropuertos";
+import { getVuelos } from "../../services/Vuelos";
 
 const Configuracion = () => {
   const [archAero, setArchAero] = useState(null);
   const [archVuel, setArchVuel] = useState(null);
+  const [aeropuertosData, setAeropuertosData] = useState([
+    {
+      id: 1,
+      codigo: "SKBO",
+      ciudad: "Bogota",
+      pais: "Colombia",
+      continente: "America del Sur",
+      latitud: "4.704457",
+      longitud: "-74.145925"
+    }
+  ]);
+  const [vuelosData, setVuelosData] = useState(null);
+
   const styles = {
     field: {
       "& .MuiInputBase-root": {
@@ -55,132 +72,132 @@ const Configuracion = () => {
     },
   };
 
-  const aeropuertosData = [
-    {
-      id: 1,
-      codigo: "SKBO",
-      ciudad: "Bogota",
-      pais: "Colombia",
-      continente: "America del Sur",
-      latitud: "4.704457",
-      longitud: "-74.145925"
-    },
-    {
-      id: 2,
-      codigo: "SKBO",
-      ciudad: "Bogota",
-      pais: "Colombia",
-      continente: "America del Sur",
-      latitud: "4.704457",
-      longitud: "-74.145925"
-    },
-    {
-      id: 3,
-      codigo: "SKBO",
-      ciudad: "Bogota",
-      pais: "Colombia",
-      continente: "America del Sur",
-      latitud: "4.704457",
-      longitud: "-74.145925"
-    },
-    {
-      id: 4,
-      codigo: "SKBO",
-      ciudad: "Bogota",
-      pais: "Colombia",
-      continente: "America del Sur",
-      latitud: "4.704457",
-      longitud: "-74.145925"
-    },
-    {
-      id: 5,
-      codigo: "SKBO",
-      ciudad: "Bogota",
-      pais: "Colombia",
-      continente: "America del Sur",
-      latitud: "4.704457",
-      longitud: "-74.145925"
-    },
-    {
-      id: 6,
-      codigo: "SKBO",
-      ciudad: "Bogota",
-      pais: "Colombia",
-      continente: "America del Sur",
-      latitud: "4.704457",
-      longitud: "-74.145925"
-    },
-    {
-      id: 7,
-      codigo: "SKBO",
-      ciudad: "Bogota",
-      pais: "Colombia",
-      continente: "America del Sur",
-      latitud: "4.704457",
-      longitud: "-74.145925"
-    },
-    {
-      id: 8,
-      codigo: "SKBO",
-      ciudad: "Bogota",
-      pais: "Colombia",
-      continente: "America del Sur",
-      latitud: "4.704457",
-      longitud: "-74.145925"
-    },
-    {
-      id: 9,
-      codigo: "SKBO",
-      ciudad: "Bogota",
-      pais: "Colombia",
-      continente: "America del Sur",
-      latitud: "4.704457",
-      longitud: "-74.145925"
-    }
-  ];
+  // const aeropuertosData = [
+  //   {
+  //     id: 1,
+  //     codigo: "SKBO",
+  //     ciudad: "Bogota",
+  //     pais: "Colombia",
+  //     continente: "America del Sur",
+  //     latitud: "4.704457",
+  //     longitud: "-74.145925"
+  //   },
+  //   {
+  //     id: 2,
+  //     codigo: "SKBO",
+  //     ciudad: "Bogota",
+  //     pais: "Colombia",
+  //     continente: "America del Sur",
+  //     latitud: "4.704457",
+  //     longitud: "-74.145925"
+  //   },
+  //   {
+  //     id: 3,
+  //     codigo: "SKBO",
+  //     ciudad: "Bogota",
+  //     pais: "Colombia",
+  //     continente: "America del Sur",
+  //     latitud: "4.704457",
+  //     longitud: "-74.145925"
+  //   },
+  //   {
+  //     id: 4,
+  //     codigo: "SKBO",
+  //     ciudad: "Bogota",
+  //     pais: "Colombia",
+  //     continente: "America del Sur",
+  //     latitud: "4.704457",
+  //     longitud: "-74.145925"
+  //   },
+  //   {
+  //     id: 5,
+  //     codigo: "SKBO",
+  //     ciudad: "Bogota",
+  //     pais: "Colombia",
+  //     continente: "America del Sur",
+  //     latitud: "4.704457",
+  //     longitud: "-74.145925"
+  //   },
+  //   {
+  //     id: 6,
+  //     codigo: "SKBO",
+  //     ciudad: "Bogota",
+  //     pais: "Colombia",
+  //     continente: "America del Sur",
+  //     latitud: "4.704457",
+  //     longitud: "-74.145925"
+  //   },
+  //   {
+  //     id: 7,
+  //     codigo: "SKBO",
+  //     ciudad: "Bogota",
+  //     pais: "Colombia",
+  //     continente: "America del Sur",
+  //     latitud: "4.704457",
+  //     longitud: "-74.145925"
+  //   },
+  //   {
+  //     id: 8,
+  //     codigo: "SKBO",
+  //     ciudad: "Bogota",
+  //     pais: "Colombia",
+  //     continente: "America del Sur",
+  //     latitud: "4.704457",
+  //     longitud: "-74.145925"
+  //   },
+  //   {
+  //     id: 9,
+  //     codigo: "SKBO",
+  //     ciudad: "Bogota",
+  //     pais: "Colombia",
+  //     continente: "America del Sur",
+  //     latitud: "4.704457",
+  //     longitud: "-74.145925"
+  //   }
+  // ];
 
-  const vuelosData = [
-    {
-      id: 1,
-      origen: "Lima - Perú",
-      detino: "Madrid - España",
-      horaDePartida: "00:40",
-      horaDeLlegada: "06:25",
-      tiempoDeVuelo: "11h 45m"
-    },
-    {
-      id: 3,
-      origen: "Lima - Perú",
-      detino: "Madrid - España",
-      horaDePartida: "00:40",
-      horaDeLlegada: "06:25",
-      tiempoDeVuelo: "11h 45m"
-    },
-    {
-      id: 4,
-      origen: "Lima - Perú",
-      detino: "Madrid - España",
-      horaDePartida: "00:40",
-      horaDeLlegada: "06:25",
-      tiempoDeVuelo: "11h 45m"
-    },
-    {
-      id: 5,
-      origen: "Lima - Perú",
-      detino: "Madrid - España",
-      horaDePartida: "00:40",
-      horaDeLlegada: "06:25",
-      tiempoDeVuelo: "11h 45m"
-    },
-    {
-      id: 6,
-      origen: "Lima - Perú",
-      detino: "Madrid - España",
-      horaDePartida: "00:40",
-      horaDeLlegada: "06:25",
-      tiempoDeVuelo: "11h 45m"
-    }
-  ];
+  // const vuelosData = [
+  //   {
+  //     id: 1,
+  //     origen: "Lima - Perú",
+  //     detino: "Madrid - España",
+  //     horaDePartida: "00:40",
+  //     horaDeLlegada: "06:25",
+  //     tiempoDeVuelo: "11h 45m"
+  //   },
+  //   {
+  //     id: 3,
+  //     origen: "Lima - Perú",
+  //     detino: "Madrid - España",
+  //     horaDePartida: "00:40",
+  //     horaDeLlegada: "06:25",
+  //     tiempoDeVuelo: "11h 45m"
+  //   },
+  //   {
+  //     id: 4,
+  //     origen: "Lima - Perú",
+  //     detino: "Madrid - España",
+  //     horaDePartida: "00:40",
+  //     horaDeLlegada: "06:25",
+  //     tiempoDeVuelo: "11h 45m"
+  //   },
+  //   {
+  //     id: 5,
+  //     origen: "Lima - Perú",
+  //     detino: "Madrid - España",
+  //     horaDePartida: "00:40",
+  //     horaDeLlegada: "06:25",
+  //     tiempoDeVuelo: "11h 45m"
+  //   },
+  //   {
+  //     id: 6,
+  //     origen: "Lima - Perú",
+  //     detino: "Madrid - España",
+  //     horaDePartida: "00:40",
+  //     horaDeLlegada: "06:25",
+  //     tiempoDeVuelo: "11h 45m"
+  //   }
+  // ];
 
   const tableAeropuertos =(
     <div className="config-table-container">
@@ -189,9 +206,9 @@ const Configuracion = () => {
           <tr className="purpleBox">
             <th className="text-center config-table-id">ID</th>
             <th className="text-center">Código</th>
-            <th className="text-center">Ciudad</th>
+            {/* <th className="text-center">Ciudad</th>
             <th className="text-center">País</th>
-            <th className="text-center">Contiente</th>
+            <th className="text-center">Contiente</th> */}
             <th className="text-center">Latitud</th>
             <th className="text-center">Longitud</th>
           </tr>
@@ -202,50 +219,11 @@ const Configuracion = () => {
               <tr key={aeropuerto.id}>
                 <td className="text-end config-table-id">{aeropuerto.id}</td>
                 <td className="text-center">{aeropuerto.codigo}</td>
-                <td>{aeropuerto.ciudad}</td>
+                {/* <td>{aeropuerto.ciudad}</td>
                 <td>{aeropuerto.pais}</td>
-                <td>{aeropuerto.continente}</td>
-                <td>{aeropuerto.latitud}</td>
-                <td>{aeropuerto.longitud}</td>
-              </tr>
-            );
-          })}
-          {aeropuertosData.map(aeropuerto => {
-            return (
-              <tr key={aeropuerto.id + 9}>
-                <td className="text-end config-table-id">{aeropuerto.id + 9}</td>
-                <td className="text-center">{aeropuerto.codigo}</td>
-                <td>{aeropuerto.ciudad}</td>
-                <td>{aeropuerto.pais}</td>
-                <td>{aeropuerto.continente}</td>
-                <td>{aeropuerto.latitud}</td>
-                <td>{aeropuerto.longitud}</td>
-              </tr>
-            );
-          })}
-          {aeropuertosData.map(aeropuerto => {
-            return (
-              <tr key={aeropuerto.id + 18}>
-                <td className="text-end config-table-id">{aeropuerto.id + 18}</td>
-                <td className="text-center">{aeropuerto.codigo}</td>
-                <td>{aeropuerto.ciudad}</td>
-                <td>{aeropuerto.pais}</td>
-                <td>{aeropuerto.continente}</td>
-                <td>{aeropuerto.latitud}</td>
-                <td>{aeropuerto.longitud}</td>
-              </tr>
-            );
-          })}
-          {aeropuertosData.map(aeropuerto => {
-            return (
-              <tr key={aeropuerto.id + 18}>
-                <td className="text-end config-table-id">{aeropuerto.id + 18}</td>
-                <td className="text-center">{aeropuerto.codigo}</td>
-                <td>{aeropuerto.ciudad}</td>
-                <td>{aeropuerto.pais}</td>
-                <td>{aeropuerto.continente}</td>
-                <td>{aeropuerto.latitud}</td>
-                <td>{aeropuerto.longitud}</td>
+                <td>{aeropuerto.continente}</td> */}
+                <td>{Math.round(aeropuerto.latitud * 1000000) / 1000000}</td>
+                <td>{Math.round(aeropuerto.longitud * 1000000) / 1000000}</td>
               </tr>
             );
           })}
@@ -295,18 +273,23 @@ const Configuracion = () => {
           </tr>
         </thead>
         <tbody>
-          {vuelosData.map(vuelo => {
+          {vuelosData != null ? vuelosData.map(vuelo => {
             return (
               <tr key={vuelo.id}>
                 <td className="text-end config-table-id">{vuelo.id}</td>
-                <td>{vuelo.origen}</td>
-                <td>{vuelo.detino}</td>
-                <td>{vuelo.horaDePartida}</td>
-                <td>{vuelo.horaDeLlegada}</td>
-                <td>{vuelo.tiempoDeVuelo}</td>
+                <td>{vuelo.aeropuertoPartida.codigo}</td>
+                <td>{vuelo.aeropuertoDestino.codigo}</td>
+                <td>{(vuelo.fechaPartida).split('T')[1].split('.')[0]}</td>
+                <td>{(vuelo.fechaDestino).split('T')[1].split('.')[0]}</td>
+                <td>{vuelo.duracion} min</td>
               </tr>
-            );
-          })}
+              );
+            })
+            :
+            <tr>
+              <td className="text-center">No hay registros para mostrar</td>
+            </tr>
+          }
         </tbody>
       </table>
     </div>
@@ -450,6 +433,15 @@ const Configuracion = () => {
       </div>
     </>
   );
+
+  useEffect(() => {
+    (async () => {
+      setAeropuertosData(await getAeropuertos());
+    })();
+    (async () => {
+      setVuelosData(await getVuelos());
+    })();
+  }, []);
 
   return(
     <div className="row h-100">
