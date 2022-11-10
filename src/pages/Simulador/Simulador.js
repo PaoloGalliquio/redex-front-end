@@ -30,6 +30,7 @@ const Simulador = () => {
   const [archEnvios, setArchEnvios] = useState(null);
   const [fechaInicio, setFechaInicio] = useState(new Date());
   const [inicia, setInicia] = useState(0);
+  const [vuelos, setVuelos] = useState([]);
 
   const styles = {
     field: {
@@ -176,6 +177,10 @@ const Simulador = () => {
     formData.append("file", archEnvios);
     formData.append("fecha", fechaInicio);
     const dataE = simulatorInitialDay(formData);
+    (async () => {
+      const dataResult = await simulatorInitialDay(formData);
+      setVuelos(dataResult.vuelos);
+    })();
     console.log(dataE);
   }
 
