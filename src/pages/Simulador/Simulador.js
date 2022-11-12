@@ -19,7 +19,8 @@ import "react-toastify/dist/ReactToastify.css";
 import FormData from 'form-data';
 
 import { sendFile } from "../../services/Envios";
-import { simulatorInitialDay } from "../../services/Simulator";
+import { simulatorInitial } from "../../services/Simulator";
+import { simulatorPerBlock } from "../../services/Simulator";
 import axios from "axios";
 
 const Simulador = () => {
@@ -176,12 +177,10 @@ const Simulador = () => {
     fechaInicio.setHours(0,0,0,0);
     formData.append("file", archEnvios);
     formData.append("fecha", fechaInicio);
-    const dataE = simulatorInitialDay(formData);
     (async () => {
-      const dataResult = await simulatorInitialDay(formData);
+      const dataResult = await simulatorInitial(formData);
       setVuelos(dataResult.vuelos);
     })();
-    console.log(dataE);
   }
 
   const enviosGraficos = (

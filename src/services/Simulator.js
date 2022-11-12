@@ -2,10 +2,10 @@ import ajax from "../tools/ajax";
 
 const url = "/simulator";
 
-export const simulatorInitialDay = async (file) => {
+export const simulatorInitial = async (file) => {
   const optionsRequest = {
     method: "POST",
-    url: process.env.REACT_APP_BACK_UL + url + "/initialDay",
+    url: process.env.REACT_APP_BACK_UL + url + "/initial",
     headers: {
       'Content-Type': 'multipart/form-data'
     },
@@ -14,10 +14,10 @@ export const simulatorInitialDay = async (file) => {
   return await ajax(optionsRequest);
 }
 
-export const simulatorPerDay = async (indexParameter) => {
+export const simulatorPerBlock = async (indexParameter) => {
   const optionsRequest = {
     method: "POST",
-    url: process.env.REACT_APP_BACK_UL + url + "/perDay",
+    url: process.env.REACT_APP_BACK_UL + url + "/perBlock",
     index: indexParameter
   };
   return await ajax(optionsRequest);
