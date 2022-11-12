@@ -14,11 +14,13 @@ export const simulatorInitial = async (file) => {
   return await ajax(optionsRequest);
 }
 
-export const simulatorPerBlock = async (indexParameter) => {
+export const simulatorPerBlock = async (blockNumber) => {
   const optionsRequest = {
     method: "POST",
     url: process.env.REACT_APP_BACK_UL + url + "/perBlock",
-    index: indexParameter
+    params: {
+      block: blockNumber
+    }
   };
   return await ajax(optionsRequest);
 }

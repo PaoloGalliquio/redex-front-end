@@ -181,6 +181,12 @@ const Simulador = () => {
       const dataResult = await simulatorInitial(formData);
       setVuelos(dataResult.vuelos);
     })();
+    setTimeout(() => {
+      (async () => {
+        const dataResult = await simulatorPerBlock(1);
+        setVuelos(dataResult.vuelos);
+      })()
+    },10000);
   }
 
   const enviosGraficos = (
