@@ -26,6 +26,7 @@ const MapSimulador = ({inicia, fechaInicio}) => {
   const [tiempoTranscurrido, setTiempoTranscurrido] = useState();
   const [htmlAeropuertos, setHtmlAeropuertos] = useState([]);
   const [iniciaSimu, setIniciaSimu] = useState(0);
+  const [planificador, setPlanificador] = useState(1);
   const [fechaSimu, setFechaSimu] = useState(new Date());
   const [fechaZero, setFechaZero] = useState(new Date());
   const [previosInterval, setPreviousInterval] = useState(-1);
@@ -478,7 +479,7 @@ const MapSimulador = ({inicia, fechaInicio}) => {
     if(vuelos[index].ocupado>0){
       almacenarEnAeropuerto(vuelos[index].idDestino, vuelos[index].ocupado);
     }
-    console.log('elimina '+index);
+    //console.log('elimina '+index);
 
     //elimina componentes visuales para liberar memoria
     route.features[0].geometry.coordinates = [];
@@ -638,7 +639,7 @@ const MapSimulador = ({inicia, fechaInicio}) => {
       type: "symbol",
       layout: {
         "icon-image": 'myAirplane',
-        "icon-size": 0.15,
+        "icon-size": 0.20,
         "icon-rotate": ["get", "bearing"],
         "icon-rotation-alignment": "map",
         "icon-allow-overlap": true,
@@ -757,7 +758,7 @@ const MapSimulador = ({inicia, fechaInicio}) => {
         setIndexVuelo(indexVuelo+1);
       }
     }
-    if(fechaSimu.getTime()%3600000==0){
+    if(fechaSimu.getTime()%3600000==0 && fechaZero.getTime()<fechaSimu.getTime()){
       let options;
       if(map.current.getLayer("daynight")){
         map.current.getSource("daynight").setData(new GeoJSONTerminator(options={
@@ -765,6 +766,10 @@ const MapSimulador = ({inicia, fechaInicio}) => {
           time: fechaSimu
         }));
       }
+    }
+    if(fechaSimu.getTime()%21600000==0 && fechaZero.getTime()<fechaSimu.getTime()){
+      console.log('llamo al planificador: '+planificador);
+      setPlanificador(planificador+1);
     }
     
   }, [indexVuelo, fechaSimu]);
@@ -817,7 +822,7 @@ const MapSimulador = ({inicia, fechaInicio}) => {
 
   useEffect(() => {
     if(vuelos.length>0){
-      console.log(vuelos);
+      //console.log(vuelos);
       setIndexVuelo(indexVuelo+1);
       let date = new Date(fechaInicio), dateZ = new Date(fechaInicio);
       date.setHours(0,0,0);
@@ -884,7 +889,7 @@ const MapSimulador = ({inicia, fechaInicio}) => {
         });
       });
       //vuelosPreparados.splice(0, 300);
-      vuelosPreparados.splice(500);
+      vuelosPreparados.splice(20);
       setVuelos(vuelosPreparados);
       
     }

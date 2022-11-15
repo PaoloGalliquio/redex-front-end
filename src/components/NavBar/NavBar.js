@@ -2,6 +2,7 @@ import "./NavBar.css"
 import { Navbar, Nav } from "react-bootstrap";
 import React, { useEffect, useState } from "react";
 import brandLogo from "../../logo.svg";
+import RedexLogo from "../../images/avionRedex.png";
 
 const NavBar = () => {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -37,9 +38,9 @@ const NavBar = () => {
   const brand = (
     <div className="row p-0 m-0">
       <div className="col p-0 m-0">
-        <img src={brandLogo} height="100px" width="100px"/>
+        <img src={RedexLogo} height="80px" width="80px"/>
       </div>
-      <div className="col p-0 my-auto">
+      <div className="col p-2 my-auto">
         <div className="row p-0 m-0">
           <div className="navbar-brand-title col p-0 m-0">
             RedEx
