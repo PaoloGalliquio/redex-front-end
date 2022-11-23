@@ -11,12 +11,16 @@ import RedirectButton from "../../components/RedirectButton/RedirectButton";
 import Map from "../../components/Map/Map";
 import CardShipping from "../../components/CardShipping/CardShipping";
 import { getEnvios } from "../../services/Envios";
+import Modal from "../../components/Modal/Modal.js";
+import {useModal} from "../../components/Modal/useModal";
 
 const OperacionesDiarias = () => {
   const enviosProceso = 38;
   const totalEnvios = 128;
   const [envios, setEnvios] = useState([]);
   const [showTable, setShowTable] = useState(false);
+
+  const [isOpenModal1, openModal1, closeModal1] = useModal(false);
 
   const headerTable = [
     {
@@ -167,6 +171,11 @@ const OperacionesDiarias = () => {
             </>
           )}
         </div>
+        <Modal isOpen={isOpenModal1} closeModal={closeModal1}>
+          <h3>Simulación interrumpida</h3>
+          <p>Se ha producido un colapso logístico</p>
+          <img src="https://placeimg.com/400/400/animals" alt="Animals" />
+        </Modal>
       </div>
     </>
   );
