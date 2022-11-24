@@ -15,19 +15,28 @@
     display: flex;
 }
 
-.modal.container{
+.modal-container{
     position: relative;
     padding: 1rem;
     min-width: 320px;
-    max-width: 480px;
+    max-width: 2000px;
     min-height: 200px;
     max-height: 600px;
+    height: 370px;
+    width: 850px;
+    border-radius: 20px;
     overflow-y: auto;
-    background-color: #fff;
+    background-color: #393E46;
 }
 
 .modal-close{
     position: absolute;
+    top: 1rem;
+    right: 1rem;
+    padding: 15px 15px 0 0;
+}
+
+.opdia-titulo-modal{
     top: 1rem;
     right: 1rem;
 }

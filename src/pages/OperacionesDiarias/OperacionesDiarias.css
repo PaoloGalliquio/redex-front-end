@@ -88,3 +88,15 @@
   width: 100%;
   table-layout: fixed;
 }
+
+.opdia-titulo-modal{
+  padding: 15px 0 20px 0;
+}
+
+.opdia-subtitulo-modal{
+  padding: 0 0 10px 50px;
+}
+
+.opdia-mensaje-modal{
+  padding: 0 0 0 60px;
+}
