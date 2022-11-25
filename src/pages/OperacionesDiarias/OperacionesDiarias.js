@@ -5,18 +5,24 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import ListIcon from "@mui/icons-material/List";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
+import CloseIcon from '@mui/icons-material/Close';
 import CardPercentage from "../../components/CardPercentage/CardPercentage";
 import SmallCard from "../../components/SmallCard/SmallCard";
 import RedirectButton from "../../components/RedirectButton/RedirectButton";
+import Button from "../../components/Button/Button";
 import Map from "../../components/Map/Map";
 import CardShipping from "../../components/CardShipping/CardShipping";
 import { getEnvios } from "../../services/Envios";
+import Modal from "../../components/Modal/Modal.js";
+import {useModal} from "../../components/Modal/useModal";
 
 const OperacionesDiarias = () => {
   const enviosProceso = 38;
   const totalEnvios = 128;
   const [envios, setEnvios] = useState([]);
   const [showTable, setShowTable] = useState(false);
+
+  const [isOpenModal1, openModal1, closeModal1] = useModal(true);
 
   const headerTable = [
     {
@@ -167,6 +173,42 @@ const OperacionesDiarias = () => {
             </>
           )}
         </div>
+        <Modal isOpen={isOpenModal1} closeModal={closeModal1} icon = {<CloseIcon />}>
+          <div className = "container">
+            <div className = "col opdia-titulo-modal">
+              <h2>Simulación interrumpida.</h2>
+            </div>
+            <div className = "col opdia-subtitulo-modal">
+              <h4>Se ha producido un colapso logístico</h4>
+            </div>
+            <div className = "col opdia-mensaje-modal">
+              <ul>
+                <li>Tiempo total de simulación:</li>
+                <li>Envíos en proceso:</li>
+                <li>Envíos atendidos: </li>
+                <li>Envíos totales: </li>
+              </ul>
+            </div>
+          </div> 
+          <div className = "container">
+            <div className = "row">
+              <div className = "col-sm">
+                <Button
+                  text="Imprimir Reporte"
+                  link="/OperacionesDiarias"
+                  color="purpleBox"
+                />
+              </div>
+              <div className = "col-sm">
+                <Button
+                  text="Aceptar"
+                  link="/OperacionesDiarias"
+                  color="greenBox"
+                />
+              </div>
+            </div>
+          </div>
+        </Modal>
       </div>
     </>
   );
