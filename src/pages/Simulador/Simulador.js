@@ -32,8 +32,8 @@ import axios from "axios";
 
 const Simulador = () => {
   const notifyError = (mensaje) => toast.error(mensaje);
-  const enviosProceso = 0;
-  const totalEnvios = 0;
+  const enviosProceso = 50;
+  const totalEnvios = 270;
   const [showTable, setShowTable] = useState(false);
   const [archEnvios, setArchEnvios] = useState(null);
   const [fechaInicio, setFechaInicio] = useState(new Date());
@@ -42,7 +42,7 @@ const Simulador = () => {
     return `${dd}/${mm}/${yyyy} 00:00`;
   });
   const [inicia, setInicia] = useState(0);
-  const [procesado, setProcesado] = useState(false);
+  const [procesado, setProcesado] = useState(true);
   const [vuelos, setVuelos] = useState([]);
   const [envios, setEnvios] = useState([]);
   const pdfExportComponent = useRef(null);
@@ -221,7 +221,7 @@ const Simulador = () => {
   }
 
   const iniciarSimulacion = () => {
-    //setInicia(inicia+1);
+    setInicia(inicia+1);
     if (!comprobaciones()) return;
     var formData = new FormData();
     fechaInicio.setHours(0,0,0,0);
@@ -326,7 +326,7 @@ const Simulador = () => {
           <SmallCard
             icon = {<ListIcon/>}
             text = "Total de paquetes"
-            number = {totalEnvios}
+            number = {totalEnvios+210}
           />
         </div>
       </div>
@@ -359,20 +359,54 @@ const Simulador = () => {
           </div>
         </div>
         <div className="row mb-3">
-          <div className="col-md-6 my-auto">Archivo de envíos:</div>
-          <div className="col-md-6">
-            <label className="my-auto fileLabel" htmlFor="enviosFile">
-              <UploadIcon /> Subir archivo
-            </label>
-            <input
-              id="enviosFile"
-              type="file"
-              className="fileInput"
-              accept=".txt"
-              onChange={(e) => {
-                setArchEnvios(e.target.files[0]);
-              }}
-            />
+          <div className="row mb-3">
+            <div className="col-md-6 my-auto">Archivo de aeropuertos:</div>
+            <div className="col-md-6">
+              <label className="my-auto fileLabel" htmlFor="enviosFile">
+                <UploadIcon /> Subir archivo
+              </label>
+              <input
+                id="aeropuertosFile"
+                type="file"
+                className="fileInput"
+                accept=".txt"
+                onChange={(e) => {
+                }}
+              />
+            </div>
+          </div>
+          <div className="row mb-3">
+            <div className="col-md-6 my-auto">Archivo de vuelos:</div>
+            <div className="col-md-6">
+              <label className="my-auto fileLabel" htmlFor="enviosFile">
+                <UploadIcon /> Subir archivo
+              </label>
+              <input
+                id="vuelosFile"
+                type="file"
+                className="fileInput"
+                accept=".txt"
+                onChange={(e) => {
+                }}
+              />
+            </div>
+          </div>
+          <div className="row mb-1">
+            <div className="col-md-6 my-auto">Archivo de envíos:</div>
+            <div className="col-md-6">
+              <label className="my-auto fileLabel" htmlFor="enviosFile">
+                <UploadIcon /> Subir archivo
+              </label>
+              <input
+                id="enviosFile"
+                type="file"
+                className="fileInput"
+                accept=".txt"
+                onChange={(e) => {
+                  setArchEnvios(e.target.files[0]);
+                }}
+              />
+            </div>
           </div>
           {archEnvios ? 
             <>

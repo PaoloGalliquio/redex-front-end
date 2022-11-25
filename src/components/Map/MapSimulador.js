@@ -639,7 +639,7 @@ const MapSimulador = ({inicia, fechaInicio}) => {
       type: "symbol",
       layout: {
         "icon-image": 'myAirplane',
-        "icon-size": 0.20,
+        "icon-size": 0.28,
         "icon-rotate": ["get", "bearing"],
         "icon-rotation-alignment": "map",
         "icon-allow-overlap": true,
@@ -882,7 +882,7 @@ const MapSimulador = ({inicia, fechaInicio}) => {
           duracion: Math.round((element.duracion*1.6/10)*10)/10, //20   o    Math.round((element.duracion*1.6/10)*10)/10,
           duracionTexto: `${String(Math.trunc(element.duracion/60)).padStart(2,'0')}:${String(element.duracion%60).padStart(2,'0')} hrs.`,
           capacidad: element.capacidad,
-          ocupado: 300, //100   o   element.capacidad - element.capacidadActual,
+          ocupado: 140, //100   o   element.capacidad - element.capacidadActual,
           idPartida: element.aeropuertoPartida.id-1,
           idDestino: element.aeropuertoDestino.id-1,
           estado: 0 //0: no atendido, 1: en vuelo, 2: termina
