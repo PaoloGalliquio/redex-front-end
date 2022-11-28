@@ -1,6 +1,6 @@
 import "./Simulador.css";
 import "../../components/fonts.css";
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import FlightIcon from '@mui/icons-material/Flight';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -16,6 +16,9 @@ import RedirectButton from "../../components/RedirectButton/RedirectButton";
 import SmallCard from "../../components/SmallCard/SmallCard";
 import UploadIcon from '@mui/icons-material/Upload';
 import Map from "../../components/Map/MapSimulador";
+import Modal from '@mui/material/Modal';
+import Box from '@mui/material/Box';
+import Button from "../../components/Button/Button";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import FormData from 'form-data';
@@ -34,18 +37,27 @@ const Simulador = () => {
   const notifyError = (mensaje) => toast.error(mensaje);
   const enviosProceso = 50;
   const totalEnvios = 270;
+  const [pruebas, setPruebas] = useState(0);
   const [showTable, setShowTable] = useState(false);
   const [archEnvios, setArchEnvios] = useState(null);
   const [fechaInicio, setFechaInicio] = useState(new Date());
+  const [diasSimu, setDiasSimu] = useState(5);
+  const [simuExitosa, setSimuExitosa] = useState(true);
+  const [fechaSimu, setFechaSimu] = useState(new Date());
+  const [clock, setClock] = useState();
+  const [tiempoTranscurrido, setTiempoTranscurrido] = useState();
   const [cadenaFechaInicio, setCadenaFechaInicio] = useState(() => {
     let [yyyy,mm,dd] = new Date(new Date(fechaInicio).getTime() - new Date(fechaInicio).getTimezoneOffset() * 60000).toISOString().split(/[/:\-T]/);
     return `${dd}/${mm}/${yyyy} 00:00`;
   });
+  const [fechaFin, setFechaFin] = useState(new Date(new Date().setHours(new Date().getHours()+(diasSimu*24))));
   const [inicia, setInicia] = useState(0);
   const [procesado, setProcesado] = useState(true);
   const [vuelos, setVuelos] = useState([]);
   const [envios, setEnvios] = useState([]);
+  const [finSimulacion, setFinSimulacion] = useState(false);
   const pdfExportComponent = useRef(null);
+  const [openModal, setOpenModal] = useState(false);
 
   const styles = {
     field: {
@@ -91,6 +103,18 @@ const Simulador = () => {
         color: "white",
       },
     },
+  };
+
+  const modalStyle = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: '50%',
+    bgcolor: '#393E46',
+    pt: 2,
+    px: 4,
+    pb: 3,
   };
 
   const headerTable = [
@@ -220,8 +244,7 @@ const Simulador = () => {
     return true;
   }
 
-  const iniciarSimulacion = () => {
-    setInicia(inicia+1);
+  const iniciarSimulacion = async () => {
     if (!comprobaciones()) return;
     var formData = new FormData();
     fechaInicio.setHours(0,0,0,0);
@@ -229,15 +252,17 @@ const Simulador = () => {
     formData.append("fecha", fechaInicio);
     (async () => {
       const dataResult = await simulatorInitial(formData);
-      console.log('1era simulacion cargada');
+      setInicia(inicia+1);
+      console.log('iniciamos!!');
+      console.log(dataResult.vuelos);
     })();
-    setTimeout(() => {
+    /*setTimeout(() => {
       (async () => {
         const dataResult = await simulatorPerBlock(1);
         console.log('bloque 1');
         poblarEnvios(dataResult);
       })();
-    }, 10000);
+    }, 10000);*/
   }
 
   const poblarEnvios = (dataResult) => {
@@ -300,7 +325,7 @@ const Simulador = () => {
   const enviosGraficos = (
     <>
     <div className="purpleBox opdia-envio-title">Envíos</div>
-    <div className="blackBox opdia-envio-container p10">
+    <div className="blackBox opdia-envio-container p10" style={{ height: "30vh", overflow: "auto" }}>
       <div className="row">
         <div className="col opdia-envio-card1">
           <CardPercentage
@@ -337,19 +362,56 @@ const Simulador = () => {
   const simulacionData = (
     <>
       <div className="purpleBox opdia-envio-title">Simulación</div>
-      <div className="blackBox opdia-envio-container p10">
+      <div className="blackBox opdia-envio-container p10" style={{ height: "30vh", overflow: "auto" }}>
         <div className="row mb-3 mt-3">
           <div className="col my-auto">Fecha de inicio:</div>
           <div className="col">
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DesktopDatePicker
-                label="Fecha de inicio"
                 inputFormat="DD/MM/YYYY"
                 value={fechaInicio}
+                readOnly={inicia>0}
                 onChange={(nuevaFecha) => {
                   let [yyyy,mm,dd] = new Date(new Date(nuevaFecha.$d).getTime() - new Date(nuevaFecha.$d).getTimezoneOffset() * 60000).toISOString().split(/[/:\-T]/);
                   setCadenaFechaInicio(`${dd}/${mm}/${yyyy} 00:00`);
                   setFechaInicio(nuevaFecha.$d);
+                  setFechaFin(new Date(new Date(nuevaFecha.$d).setHours(new Date(nuevaFecha.$d).getHours()+(diasSimu*24))));
+                }}
+                renderInput={(params) => (
+                  <TextField {...params} variant="standard" sx={styles.field} />
+                )}
+              />
+            </LocalizationProvider>
+          </div>
+        </div>
+        <div className="row mb-3 mt-3">
+          <div className="col my-auto">Duración de Simulación:</div>
+          <div className="col">
+            <TextField
+              id="max-Vuelo-Cont"
+              label="N° Días"
+              disabled={inicia>0}
+              defaultValue={diasSimu}
+              onChange={(e) => {
+                setDiasSimu(e.target.value);
+                setFechaFin(new Date(new Date(fechaInicio).setHours(new Date(fechaInicio).getHours()+(e.target.value*24))));
+              }}
+              variant="standard"
+              type="number"
+              InputProps={{ inputProps: { min: 1, max: 360 } }}
+              sx={styles.field}
+            />
+          </div>
+        </div>
+        <div className="row mb-3 mt-3">
+          <div className="col my-auto">Fecha de fin:</div>
+          <div className="col">
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DesktopDatePicker
+                inputFormat="DD/MM/YYYY"
+                value={fechaFin}
+                readOnly
+                onChange={(e) => {
                 }}
                 renderInput={(params) => (
                   <TextField {...params} variant="standard" sx={styles.field} />
@@ -362,7 +424,7 @@ const Simulador = () => {
           <div className="row mb-3">
             <div className="col-md-6 my-auto">Archivo de aeropuertos:</div>
             <div className="col-md-6">
-              <label className="my-auto fileLabel" htmlFor="enviosFile">
+              <label className="my-auto fileLabel" htmlFor="aeropuertosFile">
                 <UploadIcon /> Subir archivo
               </label>
               <input
@@ -378,7 +440,7 @@ const Simulador = () => {
           <div className="row mb-3">
             <div className="col-md-6 my-auto">Archivo de vuelos:</div>
             <div className="col-md-6">
-              <label className="my-auto fileLabel" htmlFor="enviosFile">
+              <label className="my-auto fileLabel" htmlFor="vuelosFile">
                 <UploadIcon /> Subir archivo
               </label>
               <input
@@ -416,28 +478,33 @@ const Simulador = () => {
             :
             <></>
           }
+
+          {(inicia<=0) && <span 
+            className="w-100" 
+            onClick = {() => {
+              iniciarSimulacion();
+            }}
+          >
+            <RedirectButton text="Iniciar simulación" icon={<ArrowForwardIosIcon/>}/>
+          </span>}
+          {procesado && <span 
+            className="w-100" 
+            onClick = {() => {
+              if(pdfExportComponent.current){
+                pdfExportComponent.current.save();
+              }
+            }}
+          >
+            <RedirectButton text="Exportar planes de vuelo" icon={<MoveToInboxIcon/>}/>
+          </span>}
         </div>
       </div>
-      <span 
-        className="w-100" 
-        onClick = {() => {
-          iniciarSimulacion();
-        }}
-      >
-        <RedirectButton text="Iniciar simulación" icon={<ArrowForwardIosIcon/>}/>
-      </span>
-      {procesado && <span 
-        className="w-100" 
-        onClick = {() => {
-          if(pdfExportComponent.current){
-            pdfExportComponent.current.save();
-          }
-        }}
-      >
-        <RedirectButton text="Exportar planes de vuelo" icon={<MoveToInboxIcon/>}/>
-      </span>}
     </>
   );
+
+  const cerrarModal = () => {
+    setOpenModal(false);
+  };
 
   const enviosEstadisticas = (
     <>
@@ -512,6 +579,59 @@ const Simulador = () => {
           </PDFExport>
         </div>
       </div>
+      <Modal
+        open={openModal}
+        onClose={cerrarModal}
+      >
+        <Box sx={{ ...modalStyle, borderRadius: 5 }}>
+          <div className = "container">
+            {!simuExitosa &&
+            <div>
+              <div className = "col opdia-titulo-modal">
+                <h2>Simulación interrumpida</h2>
+              </div>
+              <div className = "col opdia-subtitulo-modal">
+                <h4>Se ha producido un colapso logístico</h4>
+              </div>
+            </div>}
+            {simuExitosa && 
+            <div className = "col opdia-titulo-modal">
+              <h2>Simulación finalizada con éxito</h2>
+            </div>}
+            <div className = "col opdia-mensaje-modal">
+              <li>Inicio de simulación: {cadenaFechaInicio}</li>
+              <li>Fin de simulación: {clock}</li>
+              <li>Tiempo total de simulación: {tiempoTranscurrido}</li>
+              <li>Envíos en proceso: {enviosProceso/totalEnvios*100}</li>
+              <li>Envíos atendidos: </li>
+              <li>Envíos totales: </li>
+            </div>
+          </div>
+          <div className = "container">
+            <div className = "row">
+              <div className = "col-sm">
+                <span 
+                  className="w-100" 
+                  onClick = {() => {
+                    if(pdfExportComponent.current){
+                      pdfExportComponent.current.save();
+                    }
+                  }}
+                >
+                  <RedirectButton text="Exportar planes de vuelo"/>
+                </span>
+              </div>
+              <div className = "col-sm">
+                <span 
+                  className="w-100"
+                >
+                  <Button text="Aceptar" color="greenBox" link="/Simulador"/>
+                </span>
+              </div>
+            </div>
+          </div>
+        </Box>
+      </Modal>
     </div>
     </>
   );
@@ -520,11 +640,22 @@ const Simulador = () => {
     <>
     <div className="col-md-9 p15 h-100">
       <div className="grayBox shadowBox h-100 opdia-relative">
-        <Map inicia={inicia} fechaInicio={fechaInicio}/>
+        <Map inicia={inicia} fechaInicio={fechaInicio} dias={diasSimu} 
+        fin={finSimulacion} setFin={setFinSimulacion}
+        fechaSimu={fechaSimu} setFechaSimu={setFechaSimu}
+        clock={clock} setClock={setClock}
+        tiempoTranscurrido={tiempoTranscurrido} setTiempoTranscurrido={setTiempoTranscurrido}/>
       </div>
     </div>
     </>
   );
+
+  useEffect(() => {
+    if(finSimulacion){
+      setOpenModal(true);
+    }
+    
+  }, [finSimulacion]);
 
   return(
     <>

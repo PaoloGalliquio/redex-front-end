@@ -5,7 +5,7 @@ const Button = (props) => {
   return (
     <>
       <a href={props.link}>
-        <div className= {`shadowBox button ${props.color}`}>
+        <div className= {`shadowBox button pointer ${props.color}`}>
           {props.text}
         </div>
       </a>
