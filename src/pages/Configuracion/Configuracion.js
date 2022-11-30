@@ -1,14 +1,17 @@
 import "./Configuracion.css"
+import React, { useState, useEffect } from "react";
+
 import AirplanemodeActiveIcon from '@mui/icons-material/AirplanemodeActive';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import UploadIcon from '@mui/icons-material/Upload';
 import DownloadIcon from '@mui/icons-material/Download';
-import React, { useState } from "react";
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { TextField } from "@mui/material";
-import { useEffect } from "react";
 
 import { getAeropuertos } from "../../services/Aeropuertos";
 import { getVuelos } from "../../services/Vuelos";
+import { getConfiguraciones, updateConfiguraciones } from "../../services/Configuraciones";
+import RedirectButton from "../../components/RedirectButton/RedirectButton";
 
 const Configuracion = () => {
   const [archAero, setArchAero] = useState(null);
@@ -25,6 +28,18 @@ const Configuracion = () => {
     }
   ]);
   const [vuelosData, setVuelosData] = useState(null);
+  const [configuracionesData, setConfiguracionesData] = useState({
+    CapacidadAeropuertoAmerica: 
+    {id: "", nombre: "CapacidadAeropuertoAmerica", valor: ""},
+    CapacidadAeropuertoEuropa: 
+    {id: "", nombre: "CapacidadAeropuertoEuropa", valor: ""},
+    CapacidadAvionAmerica: 
+    {id: "", nombre: "CapacidadAvionAmerica", valor: ""},
+    CapacidadAvionEuropa: 
+    {id: "", nombre: "CapacidadAvionEuropa", valor: ""},
+    CapacidadAvionInterc: 
+    {id: "", nombre: "CapacidadAvionInterc", valor: ""}
+  });
 
   const styles = {
     field: {
@@ -49,6 +64,15 @@ const Configuracion = () => {
       "& .MuiSvgIcon-root": {
         color: "white",
       },
+      "& .Mui-disabled": {
+        color: "white",
+      },
+      "& .MuiInputBase-input":{
+        color: "white",
+      },
+      "& .MuiInput-input":{
+        color: "white",
+      }
     },
     select: {
       "&": {
@@ -325,7 +349,7 @@ const Configuracion = () => {
   const reglasNegocio = (
     <>
       <div className="col-md-2 p15 h-100">
-        <div className="shadowbox grayBox h-100">
+        <div className="shadowbox grayBox h-100 position-relative">
           <div className="config-title purpleBox">Reglas de negocio</div>
           <div className="p15">
             <div id="tiempo-envio">
@@ -336,7 +360,7 @@ const Configuracion = () => {
                 <div className="col ps-0">
                   <TextField
                     id="max-Vuelo-Cont"
-                    required
+                    disabled
                     label="Contiental"
                     defaultValue={24}
                     variant="standard"
@@ -347,7 +371,7 @@ const Configuracion = () => {
                 <div className="col ps-0">
                   <TextField
                     id="max-Vuelo-Cont"
-                    required
+                    disabled
                     label="Intercontiental"
                     defaultValue={48}
                     variant="standard"
@@ -367,10 +391,18 @@ const Configuracion = () => {
                     id="max-Vuelo-Intcont"
                     label="América"
                     required
-                    defaultValue={850}
+                    value={configuracionesData.CapacidadAeropuertoAmerica.valor}
                     variant="standard"
                     type="number"
                     sx={styles.field}
+                    onChange={(e) => {
+                      setConfiguracionesData(
+                        {...configuracionesData, 
+                          CapacidadAeropuertoAmerica: {
+                            ...configuracionesData.CapacidadAeropuertoAmerica, 
+                            valor: parseInt(e.target.value)
+                        }});
+                    }}
                   />
                 </div>
                 <div className="col ps-0">
@@ -378,10 +410,18 @@ const Configuracion = () => {
                     id="max-Vuelo-Intcont"
                     label="Europa"
                     required
-                    defaultValue={900}
+                    value={configuracionesData.CapacidadAeropuertoEuropa.valor}
                     variant="standard"
                     type="number"
                     sx={styles.field}
+                    onChange={(e) => {
+                      setConfiguracionesData(
+                        {...configuracionesData, 
+                          CapacidadAeropuertoEuropa: {
+                            ...configuracionesData.CapacidadAeropuertoEuropa, 
+                            valor: parseInt(e.target.value)
+                        }});
+                    }}
                   />
                 </div>
               </div>
@@ -396,10 +436,18 @@ const Configuracion = () => {
                     id="max-Vuelo-Intcont"
                     label="America"
                     required
-                    defaultValue={300}
+                    value={configuracionesData.CapacidadAvionAmerica.valor}
                     variant="standard"
                     type="number"
                     sx={styles.field}
+                    onChange={(e) => {
+                      setConfiguracionesData(
+                        {...configuracionesData, 
+                          CapacidadAvionAmerica: {
+                            ...configuracionesData.CapacidadAvionAmerica, 
+                            valor: parseInt(e.target.value)
+                        }});
+                    }}
                   />
                 </div>
                 <div className="col ps-0">
@@ -407,10 +455,18 @@ const Configuracion = () => {
                     id="max-Vuelo-Intcont"
                     label="Europa"
                     required
-                    defaultValue={250}
+                    value={configuracionesData.CapacidadAvionEuropa.valor}
                     variant="standard"
                     type="number"
                     sx={styles.field}
+                    onChange={(e) => {
+                      setConfiguracionesData(
+                        {...configuracionesData, 
+                          CapacidadAvionEuropa: {
+                            ...configuracionesData.CapacidadAvionEuropa, 
+                            valor: parseInt(e.target.value)
+                        }});
+                    }}
                   />
                 </div>
                 <div className="row mt-3">
@@ -419,16 +475,30 @@ const Configuracion = () => {
                       id="max-Vuelo-Intcont"
                       label="Intecontinentales"
                       required
-                      defaultValue={350}
+                      value={configuracionesData.CapacidadAvionInterc.valor}
                       variant="standard"
                       type="number"
                       sx={styles.field}
+                      onChange={(e) => {
+                        setConfiguracionesData(
+                          {...configuracionesData, 
+                            CapacidadAvionInterc: {
+                              ...configuracionesData.CapacidadAvionInterc, 
+                              valor: parseInt(e.target.value)
+                          }});
+                      }}
                     />
                   </div>
                 </div>
               </div>
             </div>
           </div>
+          <span 
+            className="bottomButton w-100" 
+            onClick = {() => {updateConfiguraciones(configuracionesData); console.log(configuracionesData)}}
+          >
+            <RedirectButton text="Guardar" icon={<ArrowForwardIosIcon/>}/>
+          </span>
         </div>
       </div>
     </>
@@ -440,6 +510,9 @@ const Configuracion = () => {
     })();
     (async () => {
       setVuelosData(await getVuelos());
+    })();
+    (async () => {
+      setConfiguracionesData(await getConfiguraciones());
     })();
   }, []);
 

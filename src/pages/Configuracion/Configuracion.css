@@ -51,3 +51,11 @@
   width: 100%;
   table-layout: fixed;
 }
+
+.css-1x51dt5-MuiInputBase-input-MuiInput-input.Mui-disabled{
+  -webkit-text-fill-color: rgb(255, 255, 255) !important;
+}
+
+.css-1c2i806-MuiFormLabel-root-MuiInputLabel-root.Mui-disabled{
+  color: gray !important;
+}
