@@ -60,3 +60,4 @@
 #### npm i --save-dev @types/mapbox-gl
 #### npm install worker-loader --save-dev
 #### npm i react-toastify@8.0.0
+#### npm install --save @progress/kendo-react-pdf @progress/kendo-drawing @progress/kendo-licensing

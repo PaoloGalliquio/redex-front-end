@@ -1,3 +1,43 @@
 .simulador-SimulacionData{
   margin-top: 15px;
 }
+
+.titularesPDF{
+  font-family: "montserratBolder";
+  line-height: 1.1;
+  margin-left: 10px;
+}
+
+.parametrosInforme{
+  text-align: end; 
+  line-height: 1.1;
+  font-size: 10px;
+  font-family: "montserrat";
+  font-weight: bold;
+}
+
+.tituloReporte{
+  font-family: "montserrat";
+  font-weight: bold;
+  font-size: 15px;
+  margin-top: 10px;
+  margin-bottom: 3px;
+  text-align: center;
+}
+
+.subtituloReporte{
+  font-family: "montserrat";
+  font-weight: bold;
+  font-size: 13px;
+  text-align: center;
+}
+
+.bloqueTitularPDF{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.bloqueTitularPDF2{
+  display: flex;
+  align-items: center;
+}

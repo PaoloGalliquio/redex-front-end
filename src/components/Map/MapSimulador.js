@@ -12,21 +12,23 @@ import airplaneImage from "../../images/avion2.png";
 
 import { getAeropuertos } from "../../services/Aeropuertos";
 import { getVuelos } from "../../services/Vuelos";
+import { simulatorInitial } from "../../services/Simulator";
+import { simulatorPerBlock } from "../../services/Simulator";
 
 mapboxgl.workerClass = MapboxWorker;
+let copiaFin=false;
+let copiaFechaSimu = new Date();
 
-const MapSimulador = ({inicia, fechaInicio}) => {
+const MapSimulador = ({inicia, fechaInicio, dias, fin, setFin, fechaSimu, setFechaSimu, clock, setClock, tiempoTranscurrido, setTiempoTranscurrido}) => {
   mapboxgl.accessToken = process.env.REACT_APP_MAP_KEY;
   const [longitud, setlongitud] = useState(0);
   const [lat, setLat] = useState(0);
   const [zoom, setZoom] = useState(1);
   const mapContainer = useRef(null);
   const map = useRef(null);
-  const [clock, setClock] = useState();
-  const [tiempoTranscurrido, setTiempoTranscurrido] = useState();
   const [htmlAeropuertos, setHtmlAeropuertos] = useState([]);
   const [iniciaSimu, setIniciaSimu] = useState(0);
-  const [fechaSimu, setFechaSimu] = useState(new Date());
+  const [planificador, setPlanificador] = useState(1);
   const [fechaZero, setFechaZero] = useState(new Date());
   const [previosInterval, setPreviousInterval] = useState(-1);
   const [currentInterval, setCurrentInterval] = useState(-1);
@@ -473,13 +475,15 @@ const MapSimulador = ({inicia, fechaInicio}) => {
     }
     return 0;
   }
-  
-  const eliminarVuelos = (index, route, point) => {
+
+  const despacharVuelos = (index, route, point) => {
     if(vuelos[index].ocupado>0){
       almacenarEnAeropuerto(vuelos[index].idDestino, vuelos[index].ocupado);
     }
-    console.log('elimina '+index);
-
+    eliminarVuelos(index, route, point);
+  }
+  
+  const eliminarVuelos = (index, route, point) => {
     //elimina componentes visuales para liberar memoria
     route.features[0].geometry.coordinates = [];
     point.features[0].geometry.coordinates = [];
@@ -498,19 +502,24 @@ const MapSimulador = ({inicia, fechaInicio}) => {
     }
   }
 
-  const animarVuelos = (index, route, point, counter, steps, time) => {
-    setTimeout(() => {
-      const start =
-        route.features[0].geometry.coordinates[
-          counter >= steps ? counter - 1 : counter
-        ];
-      const end =
+  const animarVuelos = async (index, route, point, counter, steps, time) => {
+    let start, end;
+    while(!copiaFin){
+      if(vuelos[index].fechaDestinoUTC.getTime()<=(copiaFechaSimu.getTime()+18000000)){
+        despacharVuelos(index, route, point);
+        break;
+      }
+      start =
+      route.features[0].geometry.coordinates[
+        counter >= steps ? counter - 1 : counter
+      ];
+      end =
         route.features[0].geometry.coordinates[
           counter >= steps ? counter : counter + 1
         ];
       if (!start || !end) {
-        eliminarVuelos(index, route, point);
-        return;
+        despacharVuelos(index, route, point);
+        break;
       }
 
       point.features[0].geometry.coordinates =
@@ -525,12 +534,24 @@ const MapSimulador = ({inicia, fechaInicio}) => {
       map.current.getSource("route"+index).setData(route);
 
       counter = counter + 1;
-      if (counter < steps) {
-        animarVuelos(index, route, point, counter, steps, time);
-      }else{
-        eliminarVuelos(index, route, point);
+      if (counter >= steps) {
+        despacharVuelos(index, route, point);
+        break;
       }
-    }, time);
+      await new Promise(resolve => setTimeout(resolve, time));
+      
+      /*
+      NO BORRAR, artificio q puede resultar útil
+      setFin((valor) => {
+        if(valor){
+          termina=true;
+        }
+        return valor;
+      });*/
+    }
+    if(copiaFin){
+      eliminarVuelos(index, route, point);
+    }
   };
 
   const trazarRutas = (index, route, point, steps) => {
@@ -544,14 +565,12 @@ const MapSimulador = ({inicia, fechaInicio}) => {
 
     route.features[0].geometry.coordinates = arc;
     let counter = 0;
-    let time = 10*vuelos[index].duracion;
+    let time = vuelos[index].duracion;
 
-    setTimeout(() => {
-      animarVuelos(index, route, point, counter, steps, time);
-    }, 1000);
+    animarVuelos(index, route, point, counter, steps, time);
   };
 
-  const vuelosEnMapa = (index) => {
+  const vuelosEnMapa = async (index) => {
     let descColor = vuelos[index].capacidad*0.75<vuelos[index].ocupado ? "#fa0202" :
     vuelos[index].capacidad*0.50<vuelos[index].ocupado ? "#f79205" :
     vuelos[index].capacidad*0.25<vuelos[index].ocupado ? "#f6fa02" : "#25c71a";
@@ -610,7 +629,8 @@ const MapSimulador = ({inicia, fechaInicio}) => {
 
     map.current.addSource("point"+index, {
       type: "geojson",
-      data: point
+      data: point,
+      tolerance: 0
     });
 
     /*
@@ -638,7 +658,7 @@ const MapSimulador = ({inicia, fechaInicio}) => {
       type: "symbol",
       layout: {
         "icon-image": 'myAirplane',
-        "icon-size": 0.15,
+        "icon-size": 0.18,
         "icon-rotate": ["get", "bearing"],
         "icon-rotation-alignment": "map",
         "icon-allow-overlap": true,
@@ -669,7 +689,7 @@ const MapSimulador = ({inicia, fechaInicio}) => {
       popup.remove();
     });
 
-    trazarRutas(index, route, point, 100);
+    trazarRutas(index, route, point, 20);
   }
 
   const setearAeropuertosEnMapa = () => {
@@ -744,11 +764,12 @@ const MapSimulador = ({inicia, fechaInicio}) => {
   };
 
   useEffect(() => {
-    if(iniciaSimu>1){
+    if(fin){
+      console.log('acabado');
       clearInterval(previosInterval);
     }
     
-  }, [currentInterval]);
+  }, [fin]);
 
   useEffect(() => {
     if(indexVuelo>=0 && indexVuelo<vuelos.length && vuelos.length>0){
@@ -757,7 +778,7 @@ const MapSimulador = ({inicia, fechaInicio}) => {
         setIndexVuelo(indexVuelo+1);
       }
     }
-    if(fechaSimu.getTime()%3600000==0){
+    if(fechaSimu.getTime()%3600000==0 && fechaZero.getTime()<fechaSimu.getTime()){
       let options;
       if(map.current.getLayer("daynight")){
         map.current.getSource("daynight").setData(new GeoJSONTerminator(options={
@@ -765,6 +786,13 @@ const MapSimulador = ({inicia, fechaInicio}) => {
           time: fechaSimu
         }));
       }
+    }
+    if(fechaSimu.getTime()%21600000==0 && fechaZero.getTime()<fechaSimu.getTime()){
+      (async () => {
+        const dataResult = await simulatorPerBlock(planificador);
+        console.log(dataResult.vuelos);
+      })();
+      setPlanificador(planificador+1);
     }
     
   }, [indexVuelo, fechaSimu]);
@@ -798,10 +826,15 @@ const MapSimulador = ({inicia, fechaInicio}) => {
         difMM = (difFechas / (1000 * 60)) % 60;
         difHH = (difFechas / (1000 * 60 * 60)) % 24;
         difDD = (difFechas / (1000 * 60 * 60 * 24)) % 365;
+        if(Math.trunc(difDD) == dias){
+          console.log('termino');
+          copiaFin = true;
+          setFin(!fin);
+        }
         setTiempoTranscurrido(`${Math.trunc(difDD)}d ${Math.trunc(difHH)}h ${Math.trunc(difMM)}m`);
         let [yyyy,mm,dd,hh,mi] = fechaSimu.toISOString().split(/[/:\-T]/);
         setClock(`${dd}/${mm}/${yyyy} ${hh}:${mi}`);
-      }, 1600);
+      }, 2500);
 
 
       if(iniciaSimu == 1){
@@ -817,7 +850,7 @@ const MapSimulador = ({inicia, fechaInicio}) => {
 
   useEffect(() => {
     if(vuelos.length>0){
-      console.log(vuelos);
+      //console.log(vuelos);
       setIndexVuelo(indexVuelo+1);
       let date = new Date(fechaInicio), dateZ = new Date(fechaInicio);
       date.setHours(0,0,0);
@@ -826,6 +859,7 @@ const MapSimulador = ({inicia, fechaInicio}) => {
       dateZ = new Date(new Date(dateZ).getTime() - new Date(dateZ).getTimezoneOffset() * 60000);
       setFechaZero(dateZ);
       setFechaSimu(date);
+      copiaFechaSimu = date;
       let [yyyy,mm,dd,hh,mi] = date.toISOString().split(/[/:\-T]/);
       setClock(`${dd}/${mm}/${yyyy} ${hh}:${mi}`);
       setTiempoTranscurrido(`0d 0h 0m`);
@@ -835,29 +869,8 @@ const MapSimulador = ({inicia, fechaInicio}) => {
   }, [vuelos]);
 
   useEffect(() => {
-    if(inicia>0){
-      (async () => {
-        setAeropuertos(await getAeropuertos());
-      })().then(() => {
-        
-      });
-
-      map.current.loadImage(airplaneImage,
-        (error, image) => {
-        if (error) throw error;
-          
-        // Add the image to the map style.
-        map.current.addImage('myAirplane', image, {
-          "sdf": "true"
-        });
-      });
-    }
-    
-  }, [inicia]);
-
-  useEffect(() => {
     if(vuelosProgramados.length>0){
-      let datePartida, datePartidaUTC, dateDestino, datePartidaTexto, dateDestinoTexto;
+      let datePartida, datePartidaUTC, dateDestino, dateDestinoUTC, datePartidaTexto, dateDestinoTexto;
       let yyyy,mm,dd,hh,mi;
       let vuelosPreparados = [];
       vuelosProgramados.forEach((element) => {
@@ -866,6 +879,7 @@ const MapSimulador = ({inicia, fechaInicio}) => {
         datePartidaTexto = `${dd}/${mm}/${yyyy} ${hh}:${mi}`;
         datePartidaUTC = new Date(new Date(element.fechaPartidaUTC0).getTime() + new Date(element.fechaPartidaUTC0).getTimezoneOffset() * 60000);
         dateDestino = new Date(new Date(element.fechaDestino).getTime() + new Date(element.fechaDestino).getTimezoneOffset() * 60000);
+        dateDestinoUTC = new Date(new Date(element.fechaDestinoUTC0).getTime() + new Date(element.fechaDestinoUTC0).getTimezoneOffset() * 60000);
         [yyyy,mm,dd,hh,mi] = new Date(element.fechaDestino).toISOString().split(/[/:\-T]/);
         dateDestinoTexto = `${dd}/${mm}/${yyyy} ${hh}:${mi}`;
         vuelosPreparados.push({
@@ -874,17 +888,18 @@ const MapSimulador = ({inicia, fechaInicio}) => {
           fechaPartidaUTC: datePartidaUTC,
           fechaDestino: dateDestino,
           fechaDestinoTexto: dateDestinoTexto,
-          duracion: Math.round((element.duracion*1.6/10)*10)/10, //20   o    Math.round((element.duracion*1.6/10)*10)/10,
+          fechaDestinoUTC: dateDestinoUTC,
+          duracion: Math.round((element.duracion*2500/10)/20), //20   o    Math.round((element.duracion*1.6/10)*10)/10,
           duracionTexto: `${String(Math.trunc(element.duracion/60)).padStart(2,'0')}:${String(element.duracion%60).padStart(2,'0')} hrs.`,
           capacidad: element.capacidad,
-          ocupado: 300, //100   o   element.capacidad - element.capacidadActual,
+          ocupado: 140, //100   o   element.capacidad - element.capacidadActual,
           idPartida: element.aeropuertoPartida.id-1,
           idDestino: element.aeropuertoDestino.id-1,
           estado: 0 //0: no atendido, 1: en vuelo, 2: termina
         });
       });
       //vuelosPreparados.splice(0, 300);
-      vuelosPreparados.splice(500);
+      //vuelosPreparados.splice(1000);
       setVuelos(vuelosPreparados);
       
     }
@@ -918,31 +933,11 @@ const MapSimulador = ({inicia, fechaInicio}) => {
   }, [aeropuertos]);
 
   useEffect(() => {
-    if (map.current) return;
-    map.current = new mapboxgl.Map({
-      container: mapContainer.current,
-      style: "mapbox://styles/mapbox/streets-v11",
-      center: [longitud, lat],
-      zoom: zoom,
-      dragRotate: false,
-    });
-
-    //evitar copias horizontales del mundo
-    map.current.setRenderWorldCopies(false);
-
-    /*setTimeout(() => {
-      map.current.addLayer({
-        id: "daynight",
-        type: "fill",
-        source: {
-          type: "geojson",
-          data: geoJSON,
-        },
-        layout: {},
-        paint: {
-          "fill-color": "#000",
-          "fill-opacity": 0.2,
-        },
+    if(inicia>0){
+      (async () => {
+        setAeropuertos(await getAeropuertos());
+      })().then(() => {
+        
       });
 
       map.current.loadImage(airplaneImage,
@@ -954,18 +949,22 @@ const MapSimulador = ({inicia, fechaInicio}) => {
           "sdf": "true"
         });
       });
+    }
+    
+  }, [inicia]);
 
-      //setearAeropuertosEnMapa();
-      //setearVuelosEnMapa();
+  useEffect(() => {
+    if (map.current) return;
+    map.current = new mapboxgl.Map({
+      container: mapContainer.current,
+      style: "mapbox://styles/mapbox/streets-v11",
+      center: [longitud, lat],
+      zoom: zoom,
+      dragRotate: false,
+    });
 
-      setTimeout(() => {
-        for(let i=0; i<aeropuertos.length; i++){
-          console.log('editando');
-          aeropuertos[i].ocupado += 50;
-        }
-        console.log(aeropuertos);
-      }, 5000);
-    }, 3000);*/
+    //evitar copias horizontales del mundo
+    map.current.setRenderWorldCopies(false);
   }, []);
 
   return (
