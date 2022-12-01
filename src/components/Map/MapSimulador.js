@@ -20,7 +20,7 @@ mapboxgl.workerClass = MapboxWorker;
 let copiaFin=false;
 let copiaFechaSimu = new Date();
 
-const MapSimulador = ({inicia, fechaInicio, dias, fin, setFin, fechaSimu, setFechaSimu, clock, setClock, tiempoTranscurrido, setTiempoTranscurrido}) => {
+const MapSimulador = ({inicia, fechaInicio, dias, fin, setFin, fechaSimu, setFechaSimu, clock, setClock, tiempoTranscurrido, setTiempoTranscurrido, vuelos, setVuelos, envios, setEnvios, poblarEnvios, enviosEnProceso, setEnviosEnProceso, enviosAtendidos, setEnviosAtendidos, totalPaquetes, setTotalPaquetes, enviosFin, setEnviosFin}) => {
   mapboxgl.accessToken = process.env.REACT_APP_MAP_KEY;
   const [longitud, setlongitud] = useState(0);
   const [lat, setLat] = useState(0);
@@ -36,430 +36,23 @@ const MapSimulador = ({inicia, fechaInicio, dias, fin, setFin, fechaSimu, setFec
   const [aeropuertosCargados, setAeropuertosCargados] = useState(0);
   const [aeroEventosCargados, setAeroEventosCargados] = useState(0);
   const [indexVuelo, setIndexVuelo] = useState(-1);
-
-  /*const [aeropuertos, setAeropuertos] = useState([
-    {
-      id: 1,
-      codigo: "SKBO",
-      latitud: 4.704457625807202,
-      longitud: -74.14592553862266,
-      capacidad: 100,
-      ocupado: 0
-    },
-    {
-      id: 2,
-      codigo: "SEQM",
-      latitud: -0.12060877412654421,
-      longitud: -78.36038245001657,
-      capacidad: 100,
-      ocupado: 0
-    },
-    {
-      id: 3,
-      codigo: "SVMI",
-      latitud: 10.603585774287888,
-      longitud: -66.99926476931259,
-      capacidad: 100,
-      ocupado: 0
-    },
-    {
-      id: 4,
-      codigo: "SBBR",
-      latitud: -15.867744180870947,
-      longitud: -47.9170702850104,
-      capacidad: 100,
-      ocupado: 0
-    },
-    {
-      id: 5,
-      codigo: "SPIM",
-      latitud: -12.021386327455675,
-      longitud: -77.11223668106244,
-      capacidad: 100,
-      ocupado: 0
-    },
-    {
-      id: 6,
-      codigo: "SLLP",
-      latitud: -16.5080229674137,
-      longitud: -68.18832159557982,
-      capacidad: 100,
-      ocupado: 0
-    },
-    {
-      id: 7,
-      codigo: "SCEL",
-      latitud: -33.38526198149922,
-      longitud: -70.79533826282814,
-      capacidad: 100,
-      ocupado: 0
-    },
-    {
-      id: 8,
-      codigo: "SABE",
-      latitud: -34.55619741712162,
-      longitud: -58.41682447234023,
-      capacidad: 100,
-      ocupado: 0
-    },
-    {
-      id: 9,
-      codigo: "SGAS",
-      latitud: -25.239659530183463,
-      longitud: -57.51424786952118,
-      capacidad: 100,
-      ocupado: 0
-    },
-    {
-      id: 10,
-      codigo: "SUAA",
-      latitud: -34.78692639523177,
-      longitud: -56.26113988232748,
-      capacidad: 100,
-      ocupado: 0
-    },
-    {
-      id: 11,
-      codigo: "LATI",
-      latitud: 41.4209817952829,
-      longitud: 19.71327991181606,
-      capacidad: 100,
-      ocupado: 0
-    },
-    {
-      id: 12,
-      codigo: "EDDI",
-      latitud: 52.48351662691871,
-      longitud: 13.388972479586295,
-      capacidad: 100,
-      ocupado: 0
-    },
-    {
-      id: 13,
-      codigo: "LOWW",
-      latitud: 48.11524377772697,
-      longitud: 16.57502442375078,
-      capacidad: 100,
-      ocupado: 0
-    },
-    {
-      id: 14,
-      codigo: "EBCI",
-      latitud: 50.46387289916686,
-      longitud: 4.459408105873757,
-      capacidad: 100,
-      ocupado: 0
-    },
-    {
-      id: 15,
-      codigo: "UMMS",
-      latitud: 53.89367910728258,
-      longitud: 28.033559281483136,
-      capacidad: 100,
-      ocupado: 0
-    },
-    {
-      id: 16,
-      codigo: "LBSF",
-      latitud: 42.69628213861569,
-      longitud: 23.40786669999999,
-      capacidad: 100,
-      ocupado: 0
-    },
-    {
-      id: 17,
-      codigo: "LKPR",
-      latitud: 50.10643253372774,
-      longitud: 14.262667601907156,
-      capacidad: 100,
-      ocupado: 0
-    },
-    {
-      id: 18,
-      codigo: "LDZA",
-      latitud: 45.74210504730452,
-      longitud: 16.06740629403184,
-      capacidad: 100,
-      ocupado: 0
-    },
-    {
-      id: 19,
-      codigo: "EKCH",
-      latitud: 55.614567319376846,
-      longitud: 12.646925088713543,
-      capacidad: 100,
-      ocupado: 0
-    },
-    {
-      id: 20,
-      codigo: "LZIB",
-      latitud: 48.17213285086396,
-      longitud: 17.210418470988174,
-      capacidad: 100,
-      ocupado: 0
-    },
-    {
-      id: 21,
-      codigo: "LJLJ",
-      latitud: 46.22821450233051,
-      longitud: 14.455699722911326,
-      capacidad: 100,
-      ocupado: 0
-    },
-    {
-      id: 22,
-      codigo: "LEMD",
-      latitud: 40.49952332657222,
-      longitud: -3.567769861360249,
-      capacidad: 100,
-      ocupado: 0
-    },
-    {
-      id: 23,
-      codigo: "EETN",
-      latitud: 59.41725887730289,
-      longitud: 24.80033350503511,
-      capacidad: 100,
-      ocupado: 0
-    },
-    {
-      id: 24,
-      codigo: "EFHK",
-      latitud: 60.321789519609084,
-      longitud: 24.948512787169907,
-      capacidad: 100,
-      ocupado: 0
-    },
-    {
-      id: 25,
-      codigo: "LFPG",
-      latitud: 49.01353604427941,
-      longitud: 2.551239313841362,
-      capacidad: 100,
-      ocupado: 0
-    },
-    {
-      id: 26,
-      codigo: "LGAV",
-      latitud: 37.93897092592914,
-      longitud: 23.948353338704067,
-      capacidad: 100,
-      ocupado: 0
-    },
-    {
-      id: 27,
-      codigo: "EHAM",
-      latitud: 52.312571254314875,
-      longitud: 4.76846916344911,
-      capacidad: 100,
-      ocupado: 0
-    },
-    {
-      id: 28,
-      codigo: "LHBP",
-      latitud: 47.440387265365715,
-      longitud: 19.252291034123,
-      capacidad: 100,
-      ocupado: 0
-    },
-    {
-      id: 29,
-      codigo: "EIDW",
-      latitud: 53.42782445522474,
-      longitud: -6.250544859231624,
-      capacidad: 100,
-      ocupado: 0
-    },
-    {
-      id: 30,
-      codigo: "BIKF",
-      latitud: 63.98278871892899,
-      longitud: -22.62826032202545,
-      capacidad: 100,
-      ocupado: 0
-    },
-    {
-      id: 31,
-      codigo: "LIRA",
-      latitud: 41.80076628382644,
-      longitud: 12.592924321405766,
-      capacidad: 100,
-      ocupado: 0
-    },
-    {
-      id: 32,
-      codigo: "EVRA",
-      latitud: 56.92318434838864,
-      longitud: 23.973243050746508,
-      capacidad: 100,
-      ocupado: 0
-    },
-    {
-      id: 33,
-      codigo: "ELLX",
-      latitud: 49.629888059730796,
-      longitud: 6.214778561912179,
-      capacidad: 100,
-      ocupado: 0
-    },
-    {
-      id: 34,
-      codigo: "LMML",
-      latitud: 35.85370564095991,
-      longitud: 14.48668827717019,
-      capacidad: 100,
-      ocupado: 0
-    },
-    {
-      id: 35,
-      codigo: "ENGM",
-      latitud: 60.19883955623137,
-      longitud: 11.099930511792262,
-      capacidad: 100,
-      ocupado: 0
-    },
-    {
-      id: 36,
-      codigo: "EPMO",
-      latitud: 52.44991829138718,
-      longitud: 20.65111449261625,
-      capacidad: 100,
-      ocupado: 0
-    },
-    {
-      id: 37,
-      codigo: "LPPT",
-      latitud: 38.776165600572774,
-      longitud: -9.135459995633068,
-      capacidad: 100,
-      ocupado: 0
-    },
-    {
-      id: 38,
-      codigo: "EGLL",
-      latitud: 51.4715284787471,
-      longitud: -0.45449582855018344,
-      capacidad: 100,
-      ocupado: 0
-    },
-    {
-      id: 39,
-      codigo: "ESKN",
-      latitud: 58.78968375571363,
-      longitud: 16.91538633907585,
-      capacidad: 100,
-      ocupado: 0
-    },
-    {
-      id: 40,
-      codigo: "LSZB",
-      latitud: 46.91260059480198,
-      longitud: 7.4989953374621265,
-      capacidad: 100,
-      ocupado: 0
-    },
-  ]);*/
-
-  /*const [vuelosProgramados, setVuelosProgramados] = useState([
-    {
-      id: 1,
-      idPartida: 0,
-      idDestino: 29,
-      tiempo: 20, //segundos,
-      intercontinental: true,
-      capacidad: 100,
-      ocupado: 50
-    },
-    {
-      id: 2,
-      idPartida: 4,
-      idDestino: 23,
-      tiempo: 30,
-      intercontinental: true,
-      capacidad: 100,
-      ocupado: 80
-    },
-    {
-      id: 3,
-      idPartida: 6,
-      idDestino: 28,
-      tiempo: 40,
-      intercontinental: true,
-      capacidad: 100,
-      ocupado: 20
-    },
-    {
-      id: 4,
-      idPartida: 35,
-      idDestino: 2,
-      tiempo: 60,
-      intercontinental: true,
-      capacidad: 100,
-      ocupado: 10
-    },
-    {
-      id: 5,
-      idPartida: 5,
-      idDestino: 3,
-      tiempo: 10,
-      intercontinental: false,
-      capacidad: 100,
-      ocupado: 40
-    },
-    {
-      id: 6,
-      idPartida: 1,
-      idDestino: 9,
-      tiempo: 15,
-      intercontinental: false,
-      capacidad: 100,
-      ocupado: 90
-    },
-    {
-      id: 7,
-      idPartida: 34,
-      idDestino: 23,
-      tiempo: 15,
-      intercontinental: false,
-      capacidad: 100,
-      ocupado: 20
-    },
-    {
-      id: 8,
-      idPartida: 11,
-      idDestino: 33,
-      tiempo: 15,
-      intercontinental: false,
-      capacidad: 100,
-      ocupado: 45
-    },
-    {
-      id: 9,
-      idPartida: 14,
-      idDestino: 25,
-      tiempo: 15,
-      intercontinental: false,
-      capacidad: 100,
-      ocupado: 60
-    },
-    {
-      id: 10,
-      idPartida: 30,
-      idDestino: 33,
-      tiempo: 15,
-      intercontinental: false,
-      capacidad: 100,
-      ocupado: 10
-    }
-  ]);*/
+  const [indexEnvio, setIndexEnvio] = useState(-1);
 
   const [aeropuertos, setAeropuertos] = useState([]);
   let ocupadoAero = [];
-  const [vuelos, setVuelos] = useState([]);
   const [vuelosProgramados, setVuelosProgramados] = useState([]);
 
   function almacenarEnAeropuerto (cod, cant) {
     const event = new CustomEvent('updateCant', {
+      detail:{
+        cantidad: cant
+      }
+    });
+    htmlAeropuertos[cod].dispatchEvent(event);
+  }
+
+  function retirarDeAeropuerto (cod, cant) {
+    const event = new CustomEvent('envioEnd', {
       detail:{
         cantidad: cant
       }
@@ -506,10 +99,10 @@ const MapSimulador = ({inicia, fechaInicio, dias, fin, setFin, fechaSimu, setFec
   const animarVuelos = async (index, route, point, counter, steps, time) => {
     let start, end;
     while(!copiaFin){
-      if(vuelos[index].fechaDestinoUTC.getTime()<=(copiaFechaSimu.getTime()+18000000)){
+      /*if(vuelos[index].fechaDestinoUTC.getTime()<=(copiaFechaSimu.getTime()+18000000)){
         despacharVuelos(index, route, point);
         break;
-      }
+      }*/
       start =
       route.features[0].geometry.coordinates[
         counter >= steps ? counter - 1 : counter
@@ -567,6 +160,7 @@ const MapSimulador = ({inicia, fechaInicio, dias, fin, setFin, fechaSimu, setFec
     route.features[0].geometry.coordinates = arc;
     let counter = 0;
     let time = vuelos[index].duracion;
+    retirarDeAeropuerto(vuelos[index].idPartida, vuelos[index].ocupado);
 
     animarVuelos(index, route, point, counter, steps, time);
   };
@@ -744,6 +338,18 @@ const MapSimulador = ({inicia, fechaInicio, dias, fin, setFin, fechaSimu, setFec
         element.capacidad*0.25<ocupadoAero[element.id-1] ? "invert(82%) sepia(63%) saturate(882%) hue-rotate(11deg) brightness(113%) contrast(107%)" : "invert(75%) sepia(53%) saturate(5119%) hue-rotate(73deg) brightness(96%) contrast(95%)";
       });
 
+      //retirar envio
+      arrayHtml[element.id-1].addEventListener("envioEnd", (e) => {
+        ocupadoAero[element.id-1] -= e.detail.cantidad;
+        descColor = element.capacidad*0.75<ocupadoAero[element.id-1] ? "#fa0202" :
+        element.capacidad*0.50<ocupadoAero[element.id-1] ? "#f79205" :
+        element.capacidad*0.25<ocupadoAero[element.id-1] ? "#f6fa02" : "#25c71a";
+        description = `Aeropuerto <b style="font-weight:800;">${element.codigo}</b> (<b style="font-weight:800;">${UTC}</b>)<br><hr style="margin: 0; border-top: black 3px solid;">Capacidad: <b style="font-weight:800;">${element.capacidad}</b> paquetes<br>Uso efectivo: ${ocupadoAero[element.id-1]}/${element.capacidad} <b style="font-weight:800; background: ${descColor};">(${Math.round((ocupadoAero[element.id-1]*100/element.capacidad)*10)/10}% en uso)</b>`;
+        arrayHtml[element.id-1].style.filter = element.capacidad*0.75<ocupadoAero[element.id-1] ? "invert(21%) sepia(79%) saturate(6123%) hue-rotate(355deg) brightness(92%) contrast(116%)" :
+        element.capacidad*0.50<ocupadoAero[element.id-1] ? "invert(58%) sepia(33%) saturate(3553%) hue-rotate(3deg) brightness(105%) contrast(96%)" :
+        element.capacidad*0.25<ocupadoAero[element.id-1] ? "invert(82%) sepia(63%) saturate(882%) hue-rotate(11deg) brightness(113%) contrast(107%)" : "invert(75%) sepia(53%) saturate(5119%) hue-rotate(73deg) brightness(96%) contrast(95%)";
+      });
+
       const popup = new mapboxgl.Popup({
         closeButton: false,
         closeOnClick: false,
@@ -773,31 +379,54 @@ const MapSimulador = ({inicia, fechaInicio, dias, fin, setFin, fechaSimu, setFec
   }, [fin]);
 
   useEffect(() => {
-    if(indexVuelo>=0 && indexVuelo<vuelos.length && vuelos.length>0){
+    /*if(indexVuelo>=0 && indexVuelo<vuelos.length && vuelos.length>0){
       if(vuelos[indexVuelo].fechaPartidaUTC.getTime()<=(fechaSimu.getTime()+18000000)){
         vuelosEnMapa(indexVuelo);
         setIndexVuelo(indexVuelo+1);
       }
+    }*/
+    if(indexEnvio>=0 && indexEnvio<envios.length && envios.length>0){
+      if(envios[indexEnvio].fechaEnvioUTC.getTime()<=(fechaSimu.getTime()+18000000)){
+        setTotalPaquetes(totalPaquetes+envios[indexEnvio].paquetes);
+        almacenarEnAeropuerto(envios[indexEnvio].idPartida, envios[indexEnvio].paquetes);
+        setEnviosEnProceso(enviosEnProceso+1);
+        setIndexEnvio(indexEnvio+1);
+      }
     }
     if(fechaSimu.getTime()%3600000==0 && fechaZero.getTime()<fechaSimu.getTime()){
-      let options;
+      let options, compFechaSimu = fechaSimu.getTime()+18000000;
       if(map.current.getLayer("daynight")){
         map.current.getSource("daynight").setData(new GeoJSONTerminator(options={
           resolution:2,
           time: fechaSimu
         }));
       }
+      for(let i=0; i<vuelos.length; i++){
+        if(vuelos[i].fechaPartidaUTC.getTime()<=compFechaSimu && vuelos[i].estado == 0){
+          vuelos[i].estado = 1;
+          vuelosEnMapa(i);
+        }
+      }
+      for(let i=0; i<enviosFin.length; i++){
+        if(enviosFin[i].fechaFin.getTime()<=compFechaSimu && enviosFin[i].estado == 0){
+          enviosFin[i].estado = 1;
+          setEnviosEnProceso(enviosEnProceso-1);
+          setEnviosAtendidos(enviosAtendidos+1);
+          retirarDeAeropuerto(envios[i].idDestino, envios[i].paquetes);
+        }
+      }
     }
-    if((fechaSimu.getTime() + 3600000)%21600000==0 && fechaZero.getTime()<fechaSimu.getTime()){
+    if((fechaSimu.getTime()+14400000)%21600000==0 && fechaZero.getTime()<fechaSimu.getTime()){
+      let planAux = planificador;
       (async () => {
-        const dataResult = await simulatorPerBlock(planificador);
-        await restartBlock(planificador);
-        setPlanificador(planificador+1);
-        console.log(dataResult);
+        const dataResult = await simulatorPerBlock(planAux);
+        poblarEnvios(dataResult);
+        await restartBlock(planAux);
       })();
+      setPlanificador(planificador+1);
     }
     
-  }, [indexVuelo, fechaSimu]);
+  }, [indexVuelo, indexEnvio, fechaSimu]);
 
   useEffect(() => {
     let refreshId, difFechas, difDD, difHH, difMM, options;
@@ -852,26 +481,6 @@ const MapSimulador = ({inicia, fechaInicio, dias, fin, setFin, fechaSimu, setFec
   }, [iniciaSimu]);
 
   useEffect(() => {
-    if(vuelos.length>0){
-      //console.log(vuelos);
-      setIndexVuelo(indexVuelo+1);
-      let date = new Date(fechaInicio), dateZ = new Date(fechaInicio);
-      date.setHours(0,0,0);
-      date = new Date(new Date(date).getTime() - new Date(date).getTimezoneOffset() * 60000);
-      dateZ.setHours(0,0,0);
-      dateZ = new Date(new Date(dateZ).getTime() - new Date(dateZ).getTimezoneOffset() * 60000);
-      setFechaZero(dateZ);
-      setFechaSimu(date);
-      copiaFechaSimu = date;
-      let [yyyy,mm,dd,hh,mi] = date.toISOString().split(/[/:\-T]/);
-      setClock(`${dd}/${mm}/${yyyy} ${hh}:${mi}`);
-      setTiempoTranscurrido(`0d 0h 0m`);
-      setIniciaSimu(iniciaSimu+1);
-    }
-    
-  }, [vuelos]);
-
-  useEffect(() => {
     if(vuelosProgramados.length>0){
       let datePartida, datePartidaUTC, dateDestino, dateDestinoUTC, datePartidaTexto, dateDestinoTexto;
       let yyyy,mm,dd,hh,mi;
@@ -911,11 +520,25 @@ const MapSimulador = ({inicia, fechaInicio, dias, fin, setFin, fechaSimu, setFec
 
   useEffect(() => {
     if(aeropuertosCargados==1 && aeroEventosCargados==1){
-      (async () => {
+      setIndexVuelo(indexVuelo+1);
+      setIndexEnvio(indexEnvio+1);
+      let date = new Date(fechaInicio), dateZ = new Date(fechaInicio);
+      date.setHours(0,0,0);
+      date = new Date(new Date(date).getTime() - new Date(date).getTimezoneOffset() * 60000);
+      dateZ.setHours(0,0,0);
+      dateZ = new Date(new Date(dateZ).getTime() - new Date(dateZ).getTimezoneOffset() * 60000);
+      setFechaZero(dateZ);
+      setFechaSimu(date);
+      copiaFechaSimu = date;
+      let [yyyy,mm,dd,hh,mi] = date.toISOString().split(/[/:\-T]/);
+      setClock(`${dd}/${mm}/${yyyy} ${hh}:${mi}`);
+      setTiempoTranscurrido(`0d 0h 0m`);
+      setIniciaSimu(iniciaSimu+1);
+      /*(async () => {
         setVuelosProgramados(await getVuelos());
       })().then(() => {
         
-      });
+      });*/
     }
     
   }, [aeropuertosCargados, aeroEventosCargados]);

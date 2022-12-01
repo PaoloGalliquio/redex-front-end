@@ -35,8 +35,6 @@ import axios from "axios";
 
 const Simulador = () => {
   const notifyError = (mensaje) => toast.error(mensaje);
-  const enviosProceso = 50;
-  const totalEnvios = 270;
   const [pruebas, setPruebas] = useState(0);
   const [showTable, setShowTable] = useState(false);
   const [archEnvios, setArchEnvios] = useState(null);
@@ -55,6 +53,10 @@ const Simulador = () => {
   const [procesado, setProcesado] = useState(true);
   const [vuelos, setVuelos] = useState([]);
   const [envios, setEnvios] = useState([]);
+  const [enviosFin, setEnviosFin] = useState([]);
+  const [enviosEnProceso, setEnviosEnProceso] = useState(0);
+  const [enviosAtendidos, setEnviosAtendidos] = useState(0);
+  const [totalPaquetes, setTotalPaquetes] = useState(0);
   const [finSimulacion, setFinSimulacion] = useState(false);
   const pdfExportComponent = useRef(null);
   const [openModal, setOpenModal] = useState(false);
@@ -147,6 +149,16 @@ const Simulador = () => {
       name: "Tiempo recorrido"
     }
   ];
+
+  function ordenarEnvios( a, b ) {
+    if ( a.fechaEnvioUTC.getTime() < b.fechaEnvioUTC.getTime() ){
+      return -1;
+    }
+    if ( a.fechaEnvioUTC.getTime() > b.fechaEnvioUTC.getTime() ){
+      return 1;
+    }
+    return 0;
+  }
 
   /*const envios = [
     {
@@ -252,9 +264,9 @@ const Simulador = () => {
     formData.append("fecha", fechaInicio);
     (async () => {
       const dataResult = await simulatorInitial(formData);
+      poblarEnvios(dataResult);
       setInicia(inicia+1);
       console.log('iniciamos!!');
-      console.log(dataResult.vuelos);
     })();
     /*setTimeout(() => {
       (async () => {
@@ -266,60 +278,108 @@ const Simulador = () => {
   }
 
   const poblarEnvios = (dataResult) => {
-    let enviosArray = [];
-    let dateFechaEnvio, dateFechaPartida, dateFechaDestino, yyyy, mm, dd, hh, mi;
+    let enviosArray = [], vuelosArray=[];
+    let dateFechaEnvio, dateFechaPartida, dateFechaDestino, dateFechaDestinoUTC, dateFechaEnvioUTC, yyyy, mm, dd, hh, mi;
     dataResult.envios.forEach((element) => {
       let planes = [], planIndex=0;
-      if(element.planesDeVuelo == null){
-        element.planesDeVuelo = [];
-      }
-
-      element.planesDeVuelo.forEach((elem) => {
-        let escalas = [], vueloIndex=0;
-        planIndex++;
-        if(elem.vuelosPorPlanDeVuelo == null){
-          elem.vuelosPorPlanDeVuelo = [];
-        }
-
-        elem.vuelosPorPlanDeVuelo.forEach((e) => {
-          vueloIndex++;
-          [yyyy,mm,dd,hh,mi] = new Date(e.vuelo.fechaPartida).toISOString().split(/[/:\-T]/);
-          dateFechaPartida = `${dd}/${mm}/${yyyy} ${hh}:${mi}`;
-          [yyyy,mm,dd,hh,mi] = new Date(e.vuelo.fechaDestino).toISOString().split(/[/:\-T]/);
-          dateFechaDestino = `${dd}/${mm}/${yyyy} ${hh}:${mi}`;
-          
-          escalas.push({
-            num: vueloIndex,
-            aeroPartida: e.vuelo.aeropuertoPartida.codigo,
-            aeroDestino: e.vuelo.aeropuertoDestino.codigo,
-            fechaPartida: dateFechaPartida,
-            fechaDestino: dateFechaDestino,
-            duracion: `${String(Math.trunc(e.vuelo.duracion/60)).padStart(2,'0')}:${String(e.vuelo.duracion%60).padStart(2,'0')} hrs.`,
+      if(element.planesDeVuelo != null && element.planesDeVuelo.length>0){
+        element.planesDeVuelo.forEach((elem) => {
+          let escalas = [], vueloIndex=0;
+          planIndex++;
+          if(elem.vuelosPorPlanDeVuelo == null){
+            elem.vuelosPorPlanDeVuelo = [];
+          }
+  
+          elem.vuelosPorPlanDeVuelo.forEach((e) => {
+            vueloIndex++;
+            [yyyy,mm,dd,hh,mi] = new Date(e.vuelo.fechaPartida).toISOString().split(/[/:\-T]/);
+            dateFechaPartida = `${dd}/${mm}/${yyyy} ${hh}:${mi}`;
+            [yyyy,mm,dd,hh,mi] = new Date(e.vuelo.fechaDestino).toISOString().split(/[/:\-T]/);
+            dateFechaDestino = `${dd}/${mm}/${yyyy} ${hh}:${mi}`;
+            dateFechaDestinoUTC = new Date(new Date(e.vuelo.fechaDestinoUTC0).getTime() + new Date(e.vuelo.fechaDestinoUTC0).getTimezoneOffset() * 60000);
+            llenarVuelos(e.vuelo, vuelosArray);
+            
+            escalas.push({
+              num: vueloIndex,
+              aeroPartida: e.vuelo.aeropuertoPartida.codigo,
+              aeroDestino: e.vuelo.aeropuertoDestino.codigo,
+              fechaPartida: dateFechaPartida,
+              fechaDestino: dateFechaDestino,
+              fechaDestinoUTC: dateFechaDestinoUTC,
+              duracion: `${String(Math.trunc(e.vuelo.duracion/60)).padStart(2,'0')}:${String(e.vuelo.duracion%60).padStart(2,'0')} hrs.`,
+            });
+          });
+  
+          planes.push({
+            num: planIndex,
+            paquetes: elem.numeroPaquetes,
+            duracionTotal: `${String(Math.trunc(elem.duracionTotal/60)).padStart(2,'0')}:${String(elem.duracionTotal%60).padStart(2,'0')} hrs.`,
+            vuelos: escalas
           });
         });
-
-        planes.push({
-          num: planIndex,
-          paquetes: elem.numeroPaquetes,
-          duracionTotal: `${String(Math.trunc(elem.duracionTotal/60)).padStart(2,'0')}:${String(elem.duracionTotal%60).padStart(2,'0')} hrs.`,
-          vuelos: escalas
+  
+        [yyyy,mm,dd,hh,mi] = new Date(new Date(element.fechaEnvio).getTime() - new Date(element.fechaEnvio).getTimezoneOffset() * 60000).toISOString().split(/[/:\-T]/);
+        dateFechaEnvio = `${dd}/${mm}/${yyyy} ${hh}:${mi}`;
+        dateFechaEnvioUTC = new Date(new Date(element.fechaEnvioUTC).getTime() + new Date(element.fechaEnvioUTC).getTimezoneOffset() * 60000);
+  
+        enviosArray.push({
+          codigo: element.codigo,
+          fechaEnvio: dateFechaEnvio,
+          fechaEnvioUTC: dateFechaEnvioUTC,
+          paquetes: element.numeroPaquetes,
+          aeroPartida: element.aeropuertoPartida.codigo,
+          aeroDestino: element.aeropuertoDestino.codigo,
+          idPartida: element.aeropuertoPartida.id-1,
+          idDestino: element.aeropuertoDestino.id-1,
+          planVuelo: planes
         });
-      });
-
-      [yyyy,mm,dd,hh,mi] = new Date(new Date(element.fechaEnvio).getTime() - new Date(element.fechaEnvio).getTimezoneOffset() * 60000).toISOString().split(/[/:\-T]/);
-      dateFechaEnvio = `${dd}/${mm}/${yyyy} ${hh}:${mi}`;
-
-      enviosArray.push({
-        codigo: element.codigo,
-        fechaEnvio: dateFechaEnvio,
-        paquetes: element.numeroPaquetes,
-        aeroPartida: element.aeropuertoPartida.codigo,
-        aeroDestino: element.aeropuertoDestino.codigo,
-        planVuelo: planes
-      });
+      }
     });
-    setEnvios(enviosArray);
-    setProcesado(!procesado);
+    enviosArray.sort(ordenarEnvios);
+    llenarFechaFin(enviosArray);
+    setVuelos(arr => [...arr, ...vuelosArray]);
+    setEnvios(arr => [...arr, ...enviosArray]);
+  }
+
+  const llenarFechaFin = (enviosArray) => {
+    let DateAux=[], iVuelo=0;
+    for(let i=0; i<enviosArray.length; i++){
+      iVuelo = enviosArray[i].planVuelo[0].vuelos.length-1;
+      DateAux.push({
+        fechaFin: enviosArray[i].planVuelo[0].vuelos[iVuelo].fechaDestinoUTC,
+        estado: 0
+      });
+    }
+    setEnviosFin(arr => [...arr, ...DateAux]);
+  }
+
+  const llenarVuelos = (vuelo, vuelosArray) => {
+    let datePartida, datePartidaUTC, dateDestino, dateDestinoUTC, datePartidaTexto, dateDestinoTexto;
+    let yyyy,mm,dd,hh,mi;
+
+    datePartida = new Date(new Date(vuelo.fechaPartida).getTime() + new Date(vuelo.fechaPartida).getTimezoneOffset() * 60000);
+    [yyyy,mm,dd,hh,mi] = new Date(vuelo.fechaPartida).toISOString().split(/[/:\-T]/);
+    datePartidaTexto = `${dd}/${mm}/${yyyy} ${hh}:${mi}`;
+    datePartidaUTC = new Date(new Date(vuelo.fechaPartidaUTC0).getTime() + new Date(vuelo.fechaPartidaUTC0).getTimezoneOffset() * 60000);
+    dateDestino = new Date(new Date(vuelo.fechaDestino).getTime() + new Date(vuelo.fechaDestino).getTimezoneOffset() * 60000);
+    dateDestinoUTC = new Date(new Date(vuelo.fechaDestinoUTC0).getTime() + new Date(vuelo.fechaDestinoUTC0).getTimezoneOffset() * 60000);
+    [yyyy,mm,dd,hh,mi] = new Date(vuelo.fechaDestino).toISOString().split(/[/:\-T]/);
+    dateDestinoTexto = `${dd}/${mm}/${yyyy} ${hh}:${mi}`;
+    vuelosArray.push({
+      fechaPartida: datePartida,
+      fechaPartidaTexto: datePartidaTexto,
+      fechaPartidaUTC: datePartidaUTC,
+      fechaDestino: dateDestino,
+      fechaDestinoTexto: dateDestinoTexto,
+      fechaDestinoUTC: dateDestinoUTC,
+      duracion: Math.round((vuelo.duracion*2500/10)/20), //20   o    Math.round((element.duracion*1.6/10)*10)/10,
+      duracionTexto: `${String(Math.trunc(vuelo.duracion/60)).padStart(2,'0')}:${String(vuelo.duracion%60).padStart(2,'0')} hrs.`,
+      capacidad: vuelo.capacidad,
+      ocupado: vuelo.capacidad-vuelo.capacidadActual, //100   o   element.capacidad - element.capacidadActual,
+      idPartida: vuelo.aeropuertoPartida.id-1,
+      idDestino: vuelo.aeropuertoDestino.id-1,
+      estado: 0 //0: no atendido, 1: en vuelo, 2: termina
+    });
   }
 
   const enviosGraficos = (
@@ -331,8 +391,8 @@ const Simulador = () => {
           <CardPercentage
             icon = {<FlightIcon className="rotate45"/>}
             title = "En proceso"
-            info = {`${enviosProceso} envíos en proceso`}
-            percentage = {enviosProceso/totalEnvios*100}
+            info = {`${enviosEnProceso} envíos en proceso`}
+            percentage = {enviosEnProceso/envios.length*100}
             positive = {true}
           />
         </div>
@@ -340,8 +400,8 @@ const Simulador = () => {
           <CardPercentage
             icon = {<CheckCircleIcon/>}
             title = "Atendidos"
-            info = {`${totalEnvios-enviosProceso} envíos atendidos`}
-            percentage = {(totalEnvios-enviosProceso)/totalEnvios*100}
+            info = {`${enviosAtendidos} envíos atendidos`}
+            percentage = {enviosAtendidos/envios.length*100}
             positive = {false}
           />
         </div>
@@ -351,7 +411,7 @@ const Simulador = () => {
           <SmallCard
             icon = {<ListIcon/>}
             text = "Total de paquetes"
-            number = {totalEnvios+210}
+            number = {totalPaquetes}
           />
         </div>
       </div>
@@ -421,7 +481,7 @@ const Simulador = () => {
           </div>
         </div>
         <div className="row mb-3">
-          <div className="row mb-3">
+          {/*<div className="row mb-3">
             <div className="col-md-6 my-auto">Archivo de aeropuertos:</div>
             <div className="col-md-6">
               <label className="my-auto fileLabel" htmlFor="aeropuertosFile">
@@ -452,7 +512,7 @@ const Simulador = () => {
                 }}
               />
             </div>
-          </div>
+              </div>*/}
           <div className="row mb-1">
             <div className="col-md-6 my-auto">Archivo de envíos:</div>
             <div className="col-md-6">
@@ -524,7 +584,7 @@ const Simulador = () => {
                 </div>
                 <div className="parametrosInforme">
                   <p className="m-0">Inicio de Simulación</p><p style={{ marginBottom: "5px" }}>{cadenaFechaInicio}</p>
-                  <p className="m-0">Última Actualización</p><p className="m-0">{cadenaFechaInicio}</p>
+                  <p className="m-0">Última Actualización</p><p className="m-0">{clock}</p>
                 </div>
               </div>
               <h1 className="tituloReporte">Relación de Envíos Planificados</h1>
@@ -552,7 +612,7 @@ const Simulador = () => {
                         </div>
                         <div style={{ marginLeft: "30px" }}>
                           <p className="m-0"><span style={{ marginRight: "10px" }}> Paquetes trasladados: </span> <span style={{ fontWeight: "bold" }}>{elem.paquetes}</span></p>
-                          <p className="m-0"><span style={{ marginRight: "54px" }}> Duración Total: </span> <span style={{ fontWeight: "bold" }}>{elem.duracionTotal}</span></p>
+                          {/*<p className="m-0"><span style={{ marginRight: "54px" }}> Duración Total: </span> <span style={{ fontWeight: "bold" }}>{elem.duracionTotal}</span></p>*/}
                           <p className="m-0"><span style={{ marginRight: "98px" }}> #Vuelos: </span> <span style={{ fontWeight: "bold" }}>{elem.vuelos.length}</span></p>
 
                           {elem.vuelos.map((e) => (
@@ -602,9 +662,9 @@ const Simulador = () => {
               <li>Inicio de simulación: {cadenaFechaInicio}</li>
               <li>Fin de simulación: {clock}</li>
               <li>Tiempo total de simulación: {tiempoTranscurrido}</li>
-              <li>Envíos en proceso: {enviosProceso/totalEnvios*100}</li>
-              <li>Envíos atendidos: </li>
-              <li>Envíos totales: </li>
+              <li>Envíos en proceso: {enviosEnProceso}</li>
+              <li>Envíos atendidos: {enviosAtendidos}</li>
+              <li>Envíos totales: {envios.length}</li>
             </div>
           </div>
           <div className = "container">
@@ -644,7 +704,12 @@ const Simulador = () => {
         fin={finSimulacion} setFin={setFinSimulacion}
         fechaSimu={fechaSimu} setFechaSimu={setFechaSimu}
         clock={clock} setClock={setClock}
-        tiempoTranscurrido={tiempoTranscurrido} setTiempoTranscurrido={setTiempoTranscurrido}/>
+        tiempoTranscurrido={tiempoTranscurrido} setTiempoTranscurrido={setTiempoTranscurrido}
+        vuelos={vuelos} setVuelos={setVuelos} envios={envios} setEnvios={setEnvios}
+        poblarEnvios={poblarEnvios} enviosEnProceso={enviosEnProceso} setEnviosEnProceso={setEnviosEnProceso} 
+        enviosAtendidos={enviosAtendidos} setEnviosAtendidos={setEnviosAtendidos}
+        totalPaquetes={totalPaquetes} setTotalPaquetes={setTotalPaquetes}
+        enviosFin={enviosFin} setEnviosFin={setEnviosFin}/>
       </div>
     </div>
     </>
@@ -656,6 +721,27 @@ const Simulador = () => {
     }
     
   }, [finSimulacion]);
+
+  useEffect(() => {
+    if(envios.length>0){
+      console.log(envios);
+    }
+    
+  }, [envios]);
+
+  useEffect(() => {
+    if(enviosFin.length>0){
+      console.log(enviosFin);
+    }
+    
+  }, [enviosFin]);
+
+  useEffect(() => {
+    if(vuelos.length>0){
+      console.log(vuelos);
+    }
+    
+  }, [vuelos]);
 
   return(
     <>
