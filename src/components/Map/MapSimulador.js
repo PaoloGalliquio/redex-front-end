@@ -14,6 +14,7 @@ import { getAeropuertos } from "../../services/Aeropuertos";
 import { getVuelos } from "../../services/Vuelos";
 import { simulatorInitial } from "../../services/Simulator";
 import { simulatorPerBlock } from "../../services/Simulator";
+import { restartBlock } from "../../services/Simulator";
 
 mapboxgl.workerClass = MapboxWorker;
 let copiaFin=false;
@@ -787,12 +788,13 @@ const MapSimulador = ({inicia, fechaInicio, dias, fin, setFin, fechaSimu, setFec
         }));
       }
     }
-    if(fechaSimu.getTime()%21600000==0 && fechaZero.getTime()<fechaSimu.getTime()){
+    if((fechaSimu.getTime() + 3600000)%21600000==0 && fechaZero.getTime()<fechaSimu.getTime()){
       (async () => {
         const dataResult = await simulatorPerBlock(planificador);
-        console.log(dataResult.vuelos);
+        await restartBlock(planificador);
+        setPlanificador(planificador+1);
+        console.log(dataResult);
       })();
-      setPlanificador(planificador+1);
     }
     
   }, [indexVuelo, fechaSimu]);
@@ -801,6 +803,7 @@ const MapSimulador = ({inicia, fechaInicio, dias, fin, setFin, fechaSimu, setFec
     let refreshId, difFechas, difDD, difHH, difMM, options;
     if(iniciaSimu>0){
       console.log(vuelos);
+      setVuelos([]);
       map.current.addSource("daynight", {
         type: "geojson",
         data: new GeoJSONTerminator(options={

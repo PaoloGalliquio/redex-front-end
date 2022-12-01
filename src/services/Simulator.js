@@ -24,3 +24,14 @@ export const simulatorPerBlock = async (blockNumber) => {
   };
   return await ajax(optionsRequest);
 }
+
+export const restartBlock = async (blockNumber) => {
+  const optionsRequest = {
+    method: "POST",
+    url: process.env.REACT_APP_BACK_UL + url + "/restartBlock",
+    params: {
+      block: blockNumber
+    }
+  };
+  return await ajax(optionsRequest);
+}
