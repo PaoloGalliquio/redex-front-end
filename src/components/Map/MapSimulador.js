@@ -416,7 +416,7 @@ const MapSimulador = ({inicia, fechaInicio, dias, fin, setFin, fechaSimu, setFec
         }
       }
     }
-    if((fechaSimu.getTime()+14400000)%21600000==0 && fechaZero.getTime()<fechaSimu.getTime()){
+    if((fechaSimu.getTime()+7200000)%21600000==0 && fechaZero.getTime()<fechaSimu.getTime()){
       let planAux = planificador;
       (async () => {
         const dataResult = await simulatorPerBlock(planAux);

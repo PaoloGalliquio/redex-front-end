@@ -31,6 +31,7 @@ import RedexEnvio from "../../images/box.png";
 import { sendFile } from "../../services/Envios";
 import { simulatorInitial } from "../../services/Simulator";
 import { simulatorPerBlock } from "../../services/Simulator";
+import { restartBlock } from "../../services/Simulator";
 import axios from "axios";
 
 const Simulador = () => {
@@ -266,7 +267,7 @@ const Simulador = () => {
       const dataResult = await simulatorInitial(formData);
       poblarEnvios(dataResult);
       setInicia(inicia+1);
-      console.log('iniciamos!!');
+      await restartBlock(0);
     })();
     /*setTimeout(() => {
       (async () => {
