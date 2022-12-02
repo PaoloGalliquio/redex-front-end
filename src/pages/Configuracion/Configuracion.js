@@ -16,17 +16,7 @@ import RedirectButton from "../../components/RedirectButton/RedirectButton";
 const Configuracion = () => {
   const [archAero, setArchAero] = useState(null);
   const [archVuel, setArchVuel] = useState(null);
-  const [aeropuertosData, setAeropuertosData] = useState([
-    {
-      id: 1,
-      codigo: "SKBO",
-      ciudad: "Bogota",
-      pais: "Colombia",
-      continente: "America del Sur",
-      latitud: "4.704457",
-      longitud: "-74.145925"
-    }
-  ]);
+  const [aeropuertosData, setAeropuertosData] = useState(null);
   const [vuelosData, setVuelosData] = useState(null);
   const [configuracionesData, setConfiguracionesData] = useState({
     CapacidadAeropuertoAmerica: 
@@ -96,133 +86,6 @@ const Configuracion = () => {
     },
   };
 
-  // const aeropuertosData = [
-  //   {
-  //     id: 1,
-  //     codigo: "SKBO",
-  //     ciudad: "Bogota",
-  //     pais: "Colombia",
-  //     continente: "America del Sur",
-  //     latitud: "4.704457",
-  //     longitud: "-74.145925"
-  //   },
-  //   {
-  //     id: 2,
-  //     codigo: "SKBO",
-  //     ciudad: "Bogota",
-  //     pais: "Colombia",
-  //     continente: "America del Sur",
-  //     latitud: "4.704457",
-  //     longitud: "-74.145925"
-  //   },
-  //   {
-  //     id: 3,
-  //     codigo: "SKBO",
-  //     ciudad: "Bogota",
-  //     pais: "Colombia",
-  //     continente: "America del Sur",
-  //     latitud: "4.704457",
-  //     longitud: "-74.145925"
-  //   },
-  //   {
-  //     id: 4,
-  //     codigo: "SKBO",
-  //     ciudad: "Bogota",
-  //     pais: "Colombia",
-  //     continente: "America del Sur",
-  //     latitud: "4.704457",
-  //     longitud: "-74.145925"
-  //   },
-  //   {
-  //     id: 5,
-  //     codigo: "SKBO",
-  //     ciudad: "Bogota",
-  //     pais: "Colombia",
-  //     continente: "America del Sur",
-  //     latitud: "4.704457",
-  //     longitud: "-74.145925"
-  //   },
-  //   {
-  //     id: 6,
-  //     codigo: "SKBO",
-  //     ciudad: "Bogota",
-  //     pais: "Colombia",
-  //     continente: "America del Sur",
-  //     latitud: "4.704457",
-  //     longitud: "-74.145925"
-  //   },
-  //   {
-  //     id: 7,
-  //     codigo: "SKBO",
-  //     ciudad: "Bogota",
-  //     pais: "Colombia",
-  //     continente: "America del Sur",
-  //     latitud: "4.704457",
-  //     longitud: "-74.145925"
-  //   },
-  //   {
-  //     id: 8,
-  //     codigo: "SKBO",
-  //     ciudad: "Bogota",
-  //     pais: "Colombia",
-  //     continente: "America del Sur",
-  //     latitud: "4.704457",
-  //     longitud: "-74.145925"
-  //   },
-  //   {
-  //     id: 9,
-  //     codigo: "SKBO",
-  //     ciudad: "Bogota",
-  //     pais: "Colombia",
-  //     continente: "America del Sur",
-  //     latitud: "4.704457",
-  //     longitud: "-74.145925"
-  //   }
-  // ];
-
-  // const vuelosData = [
-  //   {
-  //     id: 1,
-  //     origen: "Lima - Perú",
-  //     detino: "Madrid - España",
-  //     horaDePartida: "00:40",
-  //     horaDeLlegada: "06:25",
-  //     tiempoDeVuelo: "11h 45m"
-  //   },
-  //   {
-  //     id: 3,
-  //     origen: "Lima - Perú",
-  //     detino: "Madrid - España",
-  //     horaDePartida: "00:40",
-  //     horaDeLlegada: "06:25",
-  //     tiempoDeVuelo: "11h 45m"
-  //   },
-  //   {
-  //     id: 4,
-  //     origen: "Lima - Perú",
-  //     detino: "Madrid - España",
-  //     horaDePartida: "00:40",
-  //     horaDeLlegada: "06:25",
-  //     tiempoDeVuelo: "11h 45m"
-  //   },
-  //   {
-  //     id: 5,
-  //     origen: "Lima - Perú",
-  //     detino: "Madrid - España",
-  //     horaDePartida: "00:40",
-  //     horaDeLlegada: "06:25",
-  //     tiempoDeVuelo: "11h 45m"
-  //   },
-  //   {
-  //     id: 6,
-  //     origen: "Lima - Perú",
-  //     detino: "Madrid - España",
-  //     horaDePartida: "00:40",
-  //     horaDeLlegada: "06:25",
-  //     tiempoDeVuelo: "11h 45m"
-  //   }
-  // ];
-
   const tableAeropuertos =(
     <div className="config-table-container">
       <table className="w-100">
@@ -238,7 +101,7 @@ const Configuracion = () => {
           </tr>
         </thead>
         <tbody>
-          {aeropuertosData.map(aeropuerto => {
+          {aeropuertosData != null ? aeropuertosData.map(aeropuerto => {
             return (
               <tr key={aeropuerto.id}>
                 <td className="text-end config-table-id">{aeropuerto.id}</td>
@@ -250,7 +113,12 @@ const Configuracion = () => {
                 <td>{Math.round(aeropuerto.longitud * 1000000) / 1000000}</td>
               </tr>
             );
-          })}
+            })
+            :
+            <tr>
+              <td className="text-center">No hay registros para mostrar</td>
+            </tr>
+          }
         </tbody>
       </table>
     </div>
