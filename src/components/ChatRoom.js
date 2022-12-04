@@ -23,7 +23,7 @@ const ChatRoom = () => {
   const onConnected = () => {
     setUserData({ ...userData, connected: true });
     stompClient.subscribe("/chatroom/public", onMessageReceived);
-    stompClient.subscribe("/topic/greetings", onGreeting);
+    stompClient.subscribe("/greetings", onGreeting);
     stompClient.subscribe("/user/" + userData.username + "/private", onPrivateMessage);
     userJoin();
   };
@@ -37,7 +37,7 @@ const ChatRoom = () => {
   };
 
   const onGreeting = (payload) => {
-    console.log(JSON.parse(payload.body));
+    console.log(payload.body);
   }
 
   const onMessageReceived = (payload) => {

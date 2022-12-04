@@ -7,26 +7,26 @@ import NuevoEnvio from "./pages/NuevoEnvio/NuevoEnvio";
 import ChatRoom from './components/ChatRoom';
 import React from 'react';
 
-// function App() {
-//   return (
-//     <div className="App contenedor">
-//       <BrowserRouter>
-//         <Routes>
-//           <Route path="/" element={<OperacionesDiarias />} />
-//           <Route path="OperacionesDiarias" element={<OperacionesDiarias />} />
-//           <Route path="Simulador" element={<Simulador />} />
-//           <Route path="ColapsoLogistico" element={<OperacionesDiarias />} />
-//           <Route path="Configuracion" element={<Configuracion />} />
-//           <Route path="NuevoEnvio" element={<NuevoEnvio />} />
-//         </Routes>
-//       </BrowserRouter>
-//     </div>
-//   );
-// }
+function App() {
+  return (
+    <div className="App contenedor">
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<OperacionesDiarias />} />
+          <Route path="OperacionesDiarias" element={<OperacionesDiarias />} />
+          <Route path="Simulador" element={<Simulador />} />
+          <Route path="ColapsoLogistico" element={<OperacionesDiarias />} />
+          <Route path="Configuracion" element={<Configuracion />} />
+          <Route path="NuevoEnvio" element={<NuevoEnvio />} />
+        </Routes>
+      </BrowserRouter>
+    </div>
+  );
+}
 
 // Chat de web socket
-function App() {
-  return <ChatRoom />;
-}
+// function App() {
+//   return <ChatRoom />;
+// }
 
 export default App;
