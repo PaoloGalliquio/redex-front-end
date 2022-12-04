@@ -385,6 +385,17 @@ const MapSimulador = ({inicia, fechaInicio, dias, fin, setFin, fechaSimu, setFec
         setIndexVuelo(indexVuelo+1);
       }
     }*/
+    if((fechaSimu.getTime()+14400000)%21600000==0 && fechaZero.getTime()<fechaSimu.getTime()){
+      /*let planAux = planificador;
+      (async () => {
+        const dataResult = await simulatorPerBlock(planAux);
+        poblarEnvios(dataResult);
+        await restartBlock(planAux);
+      })();
+      setPlanificador(planificador+1);*/
+      console.log('holas '+planificador);
+      setPlanificador(planificador+1);
+    }
     if(indexEnvio>=0 && indexEnvio<envios.length && envios.length>0){
       if(envios[indexEnvio].fechaEnvioUTC.getTime()<=(fechaSimu.getTime()+18000000)){
         setTotalPaquetes(totalPaquetes+envios[indexEnvio].paquetes);
@@ -415,15 +426,6 @@ const MapSimulador = ({inicia, fechaInicio, dias, fin, setFin, fechaSimu, setFec
           retirarDeAeropuerto(envios[i].idDestino, envios[i].paquetes);
         }
       }
-    }
-    if((fechaSimu.getTime()+7200000)%21600000==0 && fechaZero.getTime()<fechaSimu.getTime()){
-      let planAux = planificador;
-      (async () => {
-        const dataResult = await simulatorPerBlock(planAux);
-        poblarEnvios(dataResult);
-        await restartBlock(planAux);
-      })();
-      setPlanificador(planificador+1);
     }
     
   }, [indexVuelo, indexEnvio, fechaSimu]);
