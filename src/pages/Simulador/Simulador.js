@@ -27,6 +27,8 @@ import RedexLogo from "../../images/avionRedex.png";
 import RedexVuelo from "../../images/airplane.png";
 import RedexPlan from "../../images/list.png";
 import RedexEnvio from "../../images/box.png";
+import SockJS from "sockjs-client";
+import { over } from "stompjs";
 
 import { sendFile } from "../../services/Envios";
 import { simulatorInitial } from "../../services/Simulator";
@@ -34,6 +36,7 @@ import { simulatorPerBlock } from "../../services/Simulator";
 import { restartBlock } from "../../services/Simulator";
 import axios from "axios";
 
+var stompClient = null;
 const Simulador = () => {
   const notifyError = (mensaje) => toast.error(mensaje);
   const [pruebas, setPruebas] = useState(0);
@@ -246,10 +249,10 @@ const Simulador = () => {
   ];*/
 
   const comprobaciones = () => {
-    if (archEnvios == null){
-      notifyError("Seleccione un archivo de envíos");
-      return false;
-    }
+    // if (archEnvios == null){
+    //   notifyError("Seleccione un archivo de envíos");
+    //   return false;
+    // }
     if (fechaInicio == null){
       notifyError("Seleccione una fecha de inicio");
       return false;
@@ -257,18 +260,51 @@ const Simulador = () => {
     return true;
   }
 
+  const connect = () => {
+    let Sock = new SockJS("http://localhost:8080/ws");
+    stompClient = over(Sock);
+    stompClient.connect({}, onConnected, onError);
+  };
+
+  const onConnected = () => {
+    stompClient.subscribe("/simulator", onSimulation);
+    stompClient.subscribe("/simulator/response", onSimulationResponse);
+    sendDate();
+  };
+
+  const sendDate = () => {
+    var date = {
+      fecha: fechaInicio
+    };
+    stompClient.send("/app/simulator", {}, JSON.stringify(date));
+  };
+
+  const onSimulation = (payload) => {
+    console.log(payload.body);
+  }
+
+  const onSimulationResponse = (payload) => {
+    console.log(payload.body);
+  }
+
+
+  const onError = (err) => {
+    console.log(err);
+  };
+
   const iniciarSimulacion = async () => {
     if (!comprobaciones()) return;
     var formData = new FormData();
     fechaInicio.setHours(0,0,0,0);
     formData.append("file", archEnvios);
     formData.append("fecha", fechaInicio);
-    (async () => {
-      const dataResult = await simulatorInitial(formData);
-      poblarEnvios(dataResult);
-      setInicia(inicia+1);
-      await restartBlock(0);
-    })();
+    connect();
+    // (async () => {
+    //   const dataResult = await simulatorInitial(formData);
+    //   poblarEnvios(dataResult);
+    //   setInicia(inicia+1);
+    //   await restartBlock(0);
+    // })();
     /*setTimeout(() => {
       (async () => {
         const dataResult = await simulatorPerBlock(1);
@@ -445,7 +481,7 @@ const Simulador = () => {
             </LocalizationProvider>
           </div>
         </div>
-        <div className="row mb-3 mt-3">
+        {/* <div className="row mb-3 mt-3">
           <div className="col my-auto">Duración de Simulación:</div>
           <div className="col">
             <TextField
@@ -480,7 +516,7 @@ const Simulador = () => {
               />
             </LocalizationProvider>
           </div>
-        </div>
+        </div> */}
         <div className="row mb-3">
           {/*<div className="row mb-3">
             <div className="col-md-6 my-auto">Archivo de aeropuertos:</div>
@@ -514,7 +550,7 @@ const Simulador = () => {
               />
             </div>
               </div>*/}
-          <div className="row mb-1">
+          {/* <div className="row mb-1">
             <div className="col-md-6 my-auto">Archivo de envíos:</div>
             <div className="col-md-6">
               <label className="my-auto fileLabel" htmlFor="enviosFile">
@@ -530,7 +566,7 @@ const Simulador = () => {
                 }}
               />
             </div>
-          </div>
+          </div> */}
           {archEnvios ? 
             <>
               <div className="col-md-6"></div>
