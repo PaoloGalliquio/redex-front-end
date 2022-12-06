@@ -20,7 +20,7 @@ mapboxgl.workerClass = MapboxWorker;
 let copiaFin=false;
 let copiaFechaSimu = new Date();
 
-const MapSimulador = ({inicia, setInicia, fechaInicio, dias, fin, setFin, fechaSimu, setFechaSimu, clock, setClock, tiempoTranscurrido, setTiempoTranscurrido, vuelos, setVuelos, envios, setEnvios, poblarEnvios, enviosEnProceso, setEnviosEnProceso, enviosAtendidos, setEnviosAtendidos, totalPaquetes, setTotalPaquetes, enviosFin, setEnviosFin}) => {
+const MapSimulador = ({inicia, setInicia, fechaInicio, dias, fin, setFin, fechaSimu, setFechaSimu, clock, setClock, tiempoTranscurrido, setTiempoTranscurrido, vuelos, setVuelos, envios, setEnvios, poblarEnvios, enviosEnProceso, setEnviosEnProceso, enviosAtendidos, setEnviosAtendidos, totalPaquetes, setTotalPaquetes, enviosFin, setEnviosFin, lines}) => {
   mapboxgl.accessToken = process.env.REACT_APP_MAP_KEY;
   const [longitud, setlongitud] = useState(-27.490544872911897);
   const [lat, setLat] = useState(21.104512028667855);
@@ -33,8 +33,6 @@ const MapSimulador = ({inicia, setInicia, fechaInicio, dias, fin, setFin, fechaS
   const [fechaZero, setFechaZero] = useState(new Date());
   const [cadaHora, setCadaHora] = useState(-1);
   const [cada10Min, setCada10Min] = useState(-1);
-  const [previosInterval, setPreviousInterval] = useState(-1);
-  const [currentInterval, setCurrentInterval] = useState(-1);
   const [aeropuertosCargados, setAeropuertosCargados] = useState(0);
   const [aeroEventosCargados, setAeroEventosCargados] = useState(0);
   const [indexVuelo, setIndexVuelo] = useState(-1);
@@ -60,6 +58,14 @@ const MapSimulador = ({inicia, setInicia, fechaInicio, dias, fin, setFin, fechaS
       }
     });
     htmlAeropuertos[cod].dispatchEvent(event);
+  }
+
+  function verRutasAviones () {
+    for(let i=0; i<=indexVuelo; i++){
+      if(map.current.getLayer("route"+i)){
+        map.current.setPaintProperty('route'+i, 'line-width', lines ? 1 : 0);
+      }
+    }
   }
 
   function ordenarFechas( a, b ) {
@@ -229,25 +235,16 @@ const MapSimulador = ({inicia, setInicia, fechaInicio, dias, fin, setFin, fechaS
       data: point,
       tolerance: 0
     });
-
-    /*
-    //posible solucion si no se muestran todos los aviones
-    this.map.addSource(`example-source`, <any>{
-      type: 'geojson',
-      data: exampleData,
-      tolerance: 0
-    });
-    */
-
-    /*map.current.addLayer({
+    
+    map.current.addLayer({
       id: "route"+index,
       source: "route"+index,
       type: "line",
       paint: {
-        "line-width": 1,
-        "line-color": "#1a638a"
+        "line-width": lines ? 1 : 0,
+        "line-color": "#203f4f"
       }
-    });*/
+    });
 
     map.current.addLayer({
       id: "point"+index,
@@ -383,6 +380,13 @@ const MapSimulador = ({inicia, setInicia, fechaInicio, dias, fin, setFin, fechaS
   }, [fin]);
 
   useEffect(() => {
+    if(inicia>0){
+      verRutasAviones();
+    }
+    
+  }, [lines]);
+
+  useEffect(() => {
     if(indexVuelo>=0 && indexVuelo<vuelos.length && vuelos.length>0){
       if(vuelos[indexVuelo].fechaPartidaUTC.getTime()<=(fechaSimu.getTime()+18000000)){
         vuelosEnMapa(indexVuelo);
@@ -426,7 +430,6 @@ const MapSimulador = ({inicia, setInicia, fechaInicio, dias, fin, setFin, fechaS
   useEffect(() => {
     let idMin, idHour, difFechas, difDD, difHH, difMM, options;
     if(iniciaSimu>0){
-      console.log(vuelos);
       map.current.addSource("daynight", {
         type: "geojson",
         data: new GeoJSONTerminator(options={
@@ -508,7 +511,7 @@ const MapSimulador = ({inicia, setInicia, fechaInicio, dias, fin, setFin, fechaS
         });
       });
       //vuelosPreparados.splice(0, 300);
-      vuelosPreparados.splice(30);
+      vuelosPreparados.splice(20);
       setVuelos(vuelosPreparados);
       
     }
@@ -582,7 +585,7 @@ const MapSimulador = ({inicia, setInicia, fechaInicio, dias, fin, setFin, fechaS
 
     (async () => {
       setAeropuertos(await getAeropuertos());
-      //setVuelosProgramados(await getVuelos());
+      setVuelosProgramados(await getVuelos());
     })();
   }, []);
 

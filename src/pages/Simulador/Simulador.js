@@ -27,6 +27,7 @@ import RedexLogo from "../../images/avionRedex.png";
 import RedexVuelo from "../../images/airplane.png";
 import RedexPlan from "../../images/list.png";
 import RedexEnvio from "../../images/box.png";
+import Checkbox from '@mui/material/Checkbox';
 import SockJS from "sockjs-client";
 import { over } from "stompjs";
 
@@ -57,11 +58,13 @@ const Simulador = () => {
   const [procesado, setProcesado] = useState(true);
   const [vuelos, setVuelos] = useState([]);
   const [envios, setEnvios] = useState([]);
+  const [enviosReporte, setEnviosReporte] = useState([]);
   const [enviosFin, setEnviosFin] = useState([]);
   const [enviosEnProceso, setEnviosEnProceso] = useState(0);
   const [enviosAtendidos, setEnviosAtendidos] = useState(0);
   const [totalPaquetes, setTotalPaquetes] = useState(0);
   const [finSimulacion, setFinSimulacion] = useState(false);
+  const [checked, setChecked] = React.useState(false);
   const pdfExportComponent = useRef(null);
   const [openModal, setOpenModal] = useState(false);
 
@@ -164,6 +167,10 @@ const Simulador = () => {
     return 0;
   }
 
+  const handleChangeCheckbox = (event) => {
+    setChecked(event.target.checked);
+  };
+
   const comprobaciones = () => {
     // if (archEnvios == null){
     //   notifyError("Seleccione un archivo de envíos");
@@ -203,7 +210,7 @@ const Simulador = () => {
     //para ver solo uno en especifico
     //console.log(JSON.parse(payload.body).envios);
     console.log(JSON.parse(payload.body));
-
+    poblarEnvios(JSON.parse(payload.body).envios);
     /*if(inicia==0){
       setInicia(inicia+1);
     }*/
@@ -237,10 +244,10 @@ const Simulador = () => {
     }, 10000);*/
   }
 
-  const poblarEnvios = (dataResult) => {
+  const poblarEnvios = (envios) => {
     let enviosArray = [], vuelosArray=[];
     let dateFechaEnvio, dateFechaPartida, dateFechaDestino, dateFechaDestinoUTC, dateFechaEnvioUTC, yyyy, mm, dd, hh, mi;
-    dataResult.envios.forEach((element) => {
+    envios.forEach((element) => {
       let planes = [], planIndex=0;
       if(element.planesDeVuelo != null && element.planesDeVuelo.length>0){
         element.planesDeVuelo.forEach((elem) => {
@@ -257,7 +264,7 @@ const Simulador = () => {
             [yyyy,mm,dd,hh,mi] = new Date(e.vuelo.fechaDestino).toISOString().split(/[/:\-T]/);
             dateFechaDestino = `${dd}/${mm}/${yyyy} ${hh}:${mi}`;
             dateFechaDestinoUTC = new Date(new Date(e.vuelo.fechaDestinoUTC0).getTime() + new Date(e.vuelo.fechaDestinoUTC0).getTimezoneOffset() * 60000);
-            llenarVuelos(e.vuelo, vuelosArray);
+            //llenarVuelos(e.vuelo, vuelosArray);
             
             escalas.push({
               num: vueloIndex,
@@ -278,7 +285,7 @@ const Simulador = () => {
           });
         });
   
-        [yyyy,mm,dd,hh,mi] = new Date(new Date(element.fechaEnvio).getTime() - new Date(element.fechaEnvio).getTimezoneOffset() * 60000).toISOString().split(/[/:\-T]/);
+        [yyyy,mm,dd,hh,mi] = new Date(new Date(element.fechaEnvio).getTime()).toISOString().split(/[/:\-T]/);
         dateFechaEnvio = `${dd}/${mm}/${yyyy} ${hh}:${mi}`;
         dateFechaEnvioUTC = new Date(new Date(element.fechaEnvioUTC).getTime() + new Date(element.fechaEnvioUTC).getTimezoneOffset() * 60000);
   
@@ -296,8 +303,9 @@ const Simulador = () => {
       }
     });
     enviosArray.sort(ordenarEnvios);
-    llenarFechaFin(enviosArray);
-    setVuelos(arr => [...arr, ...vuelosArray]);
+    //llenarFechaFin(enviosArray);
+    //setVuelos(arr => [...arr, ...vuelosArray]);
+    setEnviosReporte(enviosArray.slice(-30));
     setEnvios(arr => [...arr, ...enviosArray]);
   }
 
@@ -402,6 +410,18 @@ const Simulador = () => {
                 )}
               />
             </LocalizationProvider>
+          </div>
+        </div>
+        <div className="row mb-3 mt-3">
+          <div className="col my-auto">Ver rutas de vuelos</div>
+          <div className="col-4">
+            <Checkbox
+              checked={checked}
+              onChange={handleChangeCheckbox}
+              inputProps={{ 'aria-label': 'controlled' }}
+              style={{ background: "#bce8ea" }}
+              disabled={inicia<=0}
+            />
           </div>
         </div>
         {/* <div className="row mb-3 mt-3">
@@ -551,7 +571,7 @@ const Simulador = () => {
               <h1 className="subtituloReporte">({envios.length} Envíos Planificados)</h1>
               <hr style={{ margin: "0", marginBottom: "10px", borderTop: "white 3px dotted" }}></hr>
               <div style={{ fontFamily: "montserrat", fontSize: "13px" }}>
-                {envios.map((element) => (
+                {enviosReporte.map((element) => (
                   <div>
                     <div className="bloqueTitularPDF2" style={{ marginBottom: "5px" }}>
                       <img src={RedexEnvio} height="20px" width="20px"/>
@@ -572,7 +592,7 @@ const Simulador = () => {
                         </div>
                         <div style={{ marginLeft: "30px" }}>
                           <p className="m-0"><span style={{ marginRight: "10px" }}> Paquetes trasladados: </span> <span style={{ fontWeight: "bold" }}>{elem.paquetes}</span></p>
-                          {/*<p className="m-0"><span style={{ marginRight: "54px" }}> Duración Total: </span> <span style={{ fontWeight: "bold" }}>{elem.duracionTotal}</span></p>*/}
+                          <p className="m-0"><span style={{ marginRight: "54px" }}> Duración Total: </span> <span style={{ fontWeight: "bold" }}>{elem.duracionTotal}</span></p>
                           <p className="m-0"><span style={{ marginRight: "98px" }}> #Vuelos: </span> <span style={{ fontWeight: "bold" }}>{elem.vuelos.length}</span></p>
 
                           {elem.vuelos.map((e) => (
@@ -669,7 +689,8 @@ const Simulador = () => {
         poblarEnvios={poblarEnvios} enviosEnProceso={enviosEnProceso} setEnviosEnProceso={setEnviosEnProceso} 
         enviosAtendidos={enviosAtendidos} setEnviosAtendidos={setEnviosAtendidos}
         totalPaquetes={totalPaquetes} setTotalPaquetes={setTotalPaquetes}
-        enviosFin={enviosFin} setEnviosFin={setEnviosFin}/>
+        enviosFin={enviosFin} setEnviosFin={setEnviosFin}
+        lines={checked}/>
       </div>
     </div>
     </>
@@ -688,6 +709,13 @@ const Simulador = () => {
     }
     
   }, [envios]);
+
+  useEffect(() => {
+    if(enviosReporte.length>0){
+      console.log(enviosReporte);
+    }
+    
+  }, [enviosReporte]);
 
   useEffect(() => {
     if(enviosFin.length>0){
