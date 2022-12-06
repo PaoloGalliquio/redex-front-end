@@ -53,7 +53,7 @@ const Simulador = () => {
     return `${dd}/${mm}/${yyyy} 00:00`;
   });
   const [fechaFin, setFechaFin] = useState(new Date(new Date().setHours(new Date().getHours()+(diasSimu*24))));
-  const [inicia, setInicia] = useState(0);
+  const [inicia, setInicia] = useState(-1);
   const [procesado, setProcesado] = useState(true);
   const [vuelos, setVuelos] = useState([]);
   const [envios, setEnvios] = useState([]);
@@ -164,90 +164,6 @@ const Simulador = () => {
     return 0;
   }
 
-  /*const envios = [
-    {
-      id: 90584,
-      carga: "320",
-      origen: "Lima - Perú",
-      detino: "Moscú - Rusia",
-      horaSalida: "05:55 PM",
-      horaLlegada: "11:10 PM",
-      tiempoRecorrido: "02:05"
-    },
-    {
-      id: 90585,
-      carga: "320",
-      origen: "Lima - Perú",
-      detino: "Moscú - Rusia",
-      horaSalida: "05:55 PM",
-      horaLlegada: "11:10 PM",
-      tiempoRecorrido: "02:05"
-    },
-    {
-      id: 90586,
-      carga: "320",
-      origen: "Lima - Perú",
-      detino: "Moscú - Rusia",
-      horaSalida: "05:55 PM",
-      horaLlegada: "11:10 PM",
-      tiempoRecorrido: "02:05"
-    },
-    {
-      id: 90587,
-      carga: "320",
-      origen: "Lima - Perú",
-      detino: "Moscú - Rusia",
-      horaSalida: "05:55 PM",
-      horaLlegada: "11:10 PM",
-      tiempoRecorrido: "02:05"
-    },
-    {
-      id: 90588,
-      carga: "320",
-      origen: "Lima - Perú",
-      detino: "Moscú - Rusia",
-      horaSalida: "05:55 PM",
-      horaLlegada: "11:10 PM",
-      tiempoRecorrido: "02:05"
-    },
-    {
-      id: 90666,
-      carga: "320",
-      origen: "Lima - Perú",
-      detino: "Moscú - Rusia",
-      horaSalida: "05:55 PM",
-      horaLlegada: "11:10 PM",
-      tiempoRecorrido: "02:05"
-    },
-    {
-      id: 90890,
-      carga: "320",
-      origen: "Lima - Perú",
-      detino: "Moscú - Rusia",
-      horaSalida: "05:55 PM",
-      horaLlegada: "11:10 PM",
-      tiempoRecorrido: "02:05"
-    },
-    {
-      id: 906663,
-      carga: "320",
-      origen: "Lima - Perú",
-      detino: "Moscú - Rusia",
-      horaSalida: "05:55 PM",
-      horaLlegada: "11:10 PM",
-      tiempoRecorrido: "02:05"
-    },
-    {
-      id: 908903,
-      carga: "320",
-      origen: "Lima - Perú",
-      detino: "Moscú - Rusia",
-      horaSalida: "05:55 PM",
-      horaLlegada: "11:10 PM",
-      tiempoRecorrido: "02:05"
-    }
-  ];*/
-
   const comprobaciones = () => {
     // if (archEnvios == null){
     //   notifyError("Seleccione un archivo de envíos");
@@ -260,7 +176,7 @@ const Simulador = () => {
     return true;
   }
 
-  const connect = () => {
+  const connect = async () => {
     let Sock = new SockJS("http://localhost:8080/ws");
     stompClient = over(Sock);
     stompClient.connect({}, onConnected, onError);
@@ -284,7 +200,13 @@ const Simulador = () => {
   }
 
   const onSimulationResponse = (payload) => {
-    console.log(payload.body);
+    //para ver solo uno en especifico
+    //console.log(JSON.parse(payload.body).envios);
+    console.log(JSON.parse(payload.body));
+
+    /*if(inicia==0){
+      setInicia(inicia+1);
+    }*/
   }
 
 
@@ -294,11 +216,12 @@ const Simulador = () => {
 
   const iniciarSimulacion = async () => {
     if (!comprobaciones()) return;
-    var formData = new FormData();
     fechaInicio.setHours(0,0,0,0);
+    setInicia(inicia+1);
+    /*var formData = new FormData();
     formData.append("file", archEnvios);
-    formData.append("fecha", fechaInicio);
-    connect();
+    formData.append("fecha", fechaInicio);*/
+    await connect();
     // (async () => {
     //   const dataResult = await simulatorInitial(formData);
     //   poblarEnvios(dataResult);
@@ -576,7 +499,7 @@ const Simulador = () => {
             <></>
           }
 
-          {(inicia<=0) && <span 
+          {(inicia==0) && <span 
             className="w-100" 
             onClick = {() => {
               iniciarSimulacion();
@@ -737,7 +660,7 @@ const Simulador = () => {
     <>
     <div className="col-md-9 p15 h-100">
       <div className="grayBox shadowBox h-100 opdia-relative">
-        <Map inicia={inicia} fechaInicio={fechaInicio} dias={diasSimu} 
+        <Map inicia={inicia} setInicia={setInicia} fechaInicio={fechaInicio} dias={diasSimu} 
         fin={finSimulacion} setFin={setFinSimulacion}
         fechaSimu={fechaSimu} setFechaSimu={setFechaSimu}
         clock={clock} setClock={setClock}

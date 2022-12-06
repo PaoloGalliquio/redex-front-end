@@ -20,17 +20,19 @@ mapboxgl.workerClass = MapboxWorker;
 let copiaFin=false;
 let copiaFechaSimu = new Date();
 
-const MapSimulador = ({inicia, fechaInicio, dias, fin, setFin, fechaSimu, setFechaSimu, clock, setClock, tiempoTranscurrido, setTiempoTranscurrido, vuelos, setVuelos, envios, setEnvios, poblarEnvios, enviosEnProceso, setEnviosEnProceso, enviosAtendidos, setEnviosAtendidos, totalPaquetes, setTotalPaquetes, enviosFin, setEnviosFin}) => {
+const MapSimulador = ({inicia, setInicia, fechaInicio, dias, fin, setFin, fechaSimu, setFechaSimu, clock, setClock, tiempoTranscurrido, setTiempoTranscurrido, vuelos, setVuelos, envios, setEnvios, poblarEnvios, enviosEnProceso, setEnviosEnProceso, enviosAtendidos, setEnviosAtendidos, totalPaquetes, setTotalPaquetes, enviosFin, setEnviosFin}) => {
   mapboxgl.accessToken = process.env.REACT_APP_MAP_KEY;
-  const [longitud, setlongitud] = useState(0);
-  const [lat, setLat] = useState(0);
-  const [zoom, setZoom] = useState(1);
+  const [longitud, setlongitud] = useState(-27.490544872911897);
+  const [lat, setLat] = useState(21.104512028667855);
+  const [zoom, setZoom] = useState(1.8);
   const mapContainer = useRef(null);
   const map = useRef(null);
   const [htmlAeropuertos, setHtmlAeropuertos] = useState([]);
   const [iniciaSimu, setIniciaSimu] = useState(0);
   const [planificador, setPlanificador] = useState(1);
   const [fechaZero, setFechaZero] = useState(new Date());
+  const [cadaHora, setCadaHora] = useState(-1);
+  const [cada10Min, setCada10Min] = useState(-1);
   const [previosInterval, setPreviousInterval] = useState(-1);
   const [currentInterval, setCurrentInterval] = useState(-1);
   const [aeropuertosCargados, setAeropuertosCargados] = useState(0);
@@ -160,7 +162,7 @@ const MapSimulador = ({inicia, fechaInicio, dias, fin, setFin, fechaSimu, setFec
     route.features[0].geometry.coordinates = arc;
     let counter = 0;
     let time = vuelos[index].duracion;
-    retirarDeAeropuerto(vuelos[index].idPartida, vuelos[index].ocupado);
+    //retirarDeAeropuerto(vuelos[index].idPartida, vuelos[index].ocupado);
 
     animarVuelos(index, route, point, counter, steps, time);
   };
@@ -253,19 +255,20 @@ const MapSimulador = ({inicia, fechaInicio, dias, fin, setFin, fechaSimu, setFec
       type: "symbol",
       layout: {
         "icon-image": 'myAirplane',
-        "icon-size": 0.18,
+        "icon-size": 0.19,
         "icon-rotate": ["get", "bearing"],
         "icon-rotation-alignment": "map",
         "icon-allow-overlap": true,
         "icon-ignore-placement": true,
       },
       paint: {
-        "icon-color": "#186a7a"
-        /* vuelos[index].capacidad*0.75<vuelos[index].ocupado ? "#fa0202" :
-        vuelos[index].capacidad*0.50<vuelos[index].ocupado ? "#f79205" :
-        vuelos[index].capacidad*0.25<vuelos[index].ocupado ? "#f6fa02" : "#25c71a"*/
+        "icon-color": vuelos[index].capacidad*0.75<vuelos[index].ocupado ? "#f56770" :
+        vuelos[index].capacidad*0.50<vuelos[index].ocupado ? "#fcca56" :
+        vuelos[index].capacidad*0.25<vuelos[index].ocupado ? "#eff53d" : "#86e39a",
+        "icon-halo-color": "black",
+        "icon-halo-width": 0.4
         //capacidad: [0-25]=>verde, ]25,50]=>amarillo, ]50,75]=>naranja, ]75,100]=>rojo
-        //#25c71a: verde, #f6fa02: amarillo, #f79205:naranja, #fa0202:rojo
+        //#86e39a: verde, #eff53d: amarillo, #fcca56:naranja, #f56770:rojo
       }
     });
 
@@ -303,9 +306,9 @@ const MapSimulador = ({inicia, fechaInicio, dias, fin, setFin, fechaSimu, setFec
       arrayHtml[element.id-1].style.backgroundImage = `url(${airportImage})`;
       arrayHtml[element.id-1].style.filter = element.capacidad*0.75<ocupadoAero[element.id-1] ? "invert(21%) sepia(79%) saturate(6123%) hue-rotate(355deg) brightness(92%) contrast(116%)" :
       element.capacidad*0.50<ocupadoAero[element.id-1] ? "invert(58%) sepia(33%) saturate(3553%) hue-rotate(3deg) brightness(105%) contrast(96%)" :
-      element.capacidad*0.25<ocupadoAero[element.id-1] ? "invert(82%) sepia(63%) saturate(882%) hue-rotate(11deg) brightness(113%) contrast(107%)" : "invert(75%) sepia(53%) saturate(5119%) hue-rotate(73deg) brightness(96%) contrast(95%)";
-      arrayHtml[element.id-1].style.width = `20px`;
-      arrayHtml[element.id-1].style.height = `20px`;
+      element.capacidad*0.25<ocupadoAero[element.id-1] ? "invert(82%) sepia(63%) saturate(882%) hue-rotate(11deg) brightness(113%) contrast(107%)" : "invert(38%) sepia(100%) saturate(1028%) hue-rotate(85deg) brightness(106%) contrast(96%)";
+      arrayHtml[element.id-1].style.width = `15px`;
+      arrayHtml[element.id-1].style.height = `15px`;
       arrayHtml[element.id-1].style.backgroundSize = "100%";
 
       //al posar el cursor sobre el ícono de aeropuerto..
@@ -335,7 +338,7 @@ const MapSimulador = ({inicia, fechaInicio, dias, fin, setFin, fechaSimu, setFec
         description = `Aeropuerto <b style="font-weight:800;">${element.codigo}</b> (<b style="font-weight:800;">${UTC}</b>)<br><hr style="margin: 0; border-top: black 3px solid;">Capacidad: <b style="font-weight:800;">${element.capacidad}</b> paquetes<br>Uso efectivo: ${ocupadoAero[element.id-1]}/${element.capacidad} <b style="font-weight:800; background: ${descColor};">(${Math.round((ocupadoAero[element.id-1]*100/element.capacidad)*10)/10}% en uso)</b>`;
         arrayHtml[element.id-1].style.filter = element.capacidad*0.75<ocupadoAero[element.id-1] ? "invert(21%) sepia(79%) saturate(6123%) hue-rotate(355deg) brightness(92%) contrast(116%)" :
         element.capacidad*0.50<ocupadoAero[element.id-1] ? "invert(58%) sepia(33%) saturate(3553%) hue-rotate(3deg) brightness(105%) contrast(96%)" :
-        element.capacidad*0.25<ocupadoAero[element.id-1] ? "invert(82%) sepia(63%) saturate(882%) hue-rotate(11deg) brightness(113%) contrast(107%)" : "invert(75%) sepia(53%) saturate(5119%) hue-rotate(73deg) brightness(96%) contrast(95%)";
+        element.capacidad*0.25<ocupadoAero[element.id-1] ? "invert(82%) sepia(63%) saturate(882%) hue-rotate(11deg) brightness(113%) contrast(107%)" : "invert(38%) sepia(100%) saturate(1028%) hue-rotate(85deg) brightness(106%) contrast(96%)";
       });
 
       //retirar envio
@@ -347,7 +350,7 @@ const MapSimulador = ({inicia, fechaInicio, dias, fin, setFin, fechaSimu, setFec
         description = `Aeropuerto <b style="font-weight:800;">${element.codigo}</b> (<b style="font-weight:800;">${UTC}</b>)<br><hr style="margin: 0; border-top: black 3px solid;">Capacidad: <b style="font-weight:800;">${element.capacidad}</b> paquetes<br>Uso efectivo: ${ocupadoAero[element.id-1]}/${element.capacidad} <b style="font-weight:800; background: ${descColor};">(${Math.round((ocupadoAero[element.id-1]*100/element.capacidad)*10)/10}% en uso)</b>`;
         arrayHtml[element.id-1].style.filter = element.capacidad*0.75<ocupadoAero[element.id-1] ? "invert(21%) sepia(79%) saturate(6123%) hue-rotate(355deg) brightness(92%) contrast(116%)" :
         element.capacidad*0.50<ocupadoAero[element.id-1] ? "invert(58%) sepia(33%) saturate(3553%) hue-rotate(3deg) brightness(105%) contrast(96%)" :
-        element.capacidad*0.25<ocupadoAero[element.id-1] ? "invert(82%) sepia(63%) saturate(882%) hue-rotate(11deg) brightness(113%) contrast(107%)" : "invert(75%) sepia(53%) saturate(5119%) hue-rotate(73deg) brightness(96%) contrast(95%)";
+        element.capacidad*0.25<ocupadoAero[element.id-1] ? "invert(82%) sepia(63%) saturate(882%) hue-rotate(11deg) brightness(113%) contrast(107%)" : "invert(38%) sepia(100%) saturate(1028%) hue-rotate(85deg) brightness(106%) contrast(96%)";
       });
 
       const popup = new mapboxgl.Popup({
@@ -361,7 +364,7 @@ const MapSimulador = ({inicia, fechaInicio, dias, fin, setFin, fechaSimu, setFec
         .addTo(map.current);
 
       //#25c71a: verde, #f6fa02: amarillo, #f79205:naranja, #fa0202:rojo
-      //verde: invert(75%) sepia(53%) saturate(5119%) hue-rotate(73deg) brightness(96%) contrast(95%)
+      //verde: invert(38%) sepia(100%) saturate(1028%) hue-rotate(85deg) brightness(106%) contrast(96%)
       //amarillo: invert(82%) sepia(63%) saturate(882%) hue-rotate(11deg) brightness(113%) contrast(107%)
       //naranja: invert(58%) sepia(33%) saturate(3553%) hue-rotate(3deg) brightness(105%) contrast(96%)
       //rojo: invert(21%) sepia(79%) saturate(6123%) hue-rotate(355deg) brightness(92%) contrast(116%)
@@ -373,28 +376,18 @@ const MapSimulador = ({inicia, fechaInicio, dias, fin, setFin, fechaSimu, setFec
   useEffect(() => {
     if(fin){
       console.log('acabado');
-      clearInterval(previosInterval);
+      clearInterval(cada10Min);
+      clearInterval(cadaHora);
     }
     
   }, [fin]);
 
   useEffect(() => {
-    /*if(indexVuelo>=0 && indexVuelo<vuelos.length && vuelos.length>0){
+    if(indexVuelo>=0 && indexVuelo<vuelos.length && vuelos.length>0){
       if(vuelos[indexVuelo].fechaPartidaUTC.getTime()<=(fechaSimu.getTime()+18000000)){
         vuelosEnMapa(indexVuelo);
         setIndexVuelo(indexVuelo+1);
       }
-    }*/
-    if((fechaSimu.getTime()+14400000)%21600000==0 && fechaZero.getTime()<fechaSimu.getTime()){
-      /*let planAux = planificador;
-      (async () => {
-        const dataResult = await simulatorPerBlock(planAux);
-        poblarEnvios(dataResult);
-        await restartBlock(planAux);
-      })();
-      setPlanificador(planificador+1);*/
-      console.log('holas '+planificador);
-      setPlanificador(planificador+1);
     }
     if(indexEnvio>=0 && indexEnvio<envios.length && envios.length>0){
       if(envios[indexEnvio].fechaEnvioUTC.getTime()<=(fechaSimu.getTime()+18000000)){
@@ -404,7 +397,7 @@ const MapSimulador = ({inicia, fechaInicio, dias, fin, setFin, fechaSimu, setFec
         setIndexEnvio(indexEnvio+1);
       }
     }
-    if(fechaSimu.getTime()%3600000==0 && fechaZero.getTime()<fechaSimu.getTime()){
+    /*if(fechaSimu.getTime()%3600000==0 && fechaZero.getTime()<fechaSimu.getTime()){
       let options, compFechaSimu = fechaSimu.getTime()+18000000;
       if(map.current.getLayer("daynight")){
         map.current.getSource("daynight").setData(new GeoJSONTerminator(options={
@@ -426,15 +419,14 @@ const MapSimulador = ({inicia, fechaInicio, dias, fin, setFin, fechaSimu, setFec
           retirarDeAeropuerto(envios[i].idDestino, envios[i].paquetes);
         }
       }
-    }
+    }*/
     
   }, [indexVuelo, indexEnvio, fechaSimu]);
 
   useEffect(() => {
-    let refreshId, difFechas, difDD, difHH, difMM, options;
+    let idMin, idHour, difFechas, difDD, difHH, difMM, options;
     if(iniciaSimu>0){
       console.log(vuelos);
-      setVuelos([]);
       map.current.addSource("daynight", {
         type: "geojson",
         data: new GeoJSONTerminator(options={
@@ -450,11 +442,11 @@ const MapSimulador = ({inicia, fechaInicio, dias, fin, setFin, fechaSimu, setFec
         layout: {},
         paint: {
           "fill-color": "#000",
-          "fill-opacity": 0.2,
+          "fill-opacity": 0.3,
         },
       });
     
-      refreshId = setInterval(() => {
+      idMin = setInterval(() => {
         setFechaSimu(new Date(fechaSimu.setMinutes(fechaSimu.getMinutes()+10)));
         difFechas = fechaSimu.getTime() - fechaZero.getTime();
         difMM = (difFechas / (1000 * 60)) % 60;
@@ -470,14 +462,17 @@ const MapSimulador = ({inicia, fechaInicio, dias, fin, setFin, fechaSimu, setFec
         setClock(`${dd}/${mm}/${yyyy} ${hh}:${mi}`);
       }, 2500);
 
+      idHour = setInterval(() => {
+        if(map.current.getLayer("daynight")){
+          map.current.getSource("daynight").setData(new GeoJSONTerminator(options={
+            resolution:2,
+            time: fechaSimu
+          }));
+        }
+      }, 15000);
 
-      if(iniciaSimu == 1){
-        setPreviousInterval(refreshId);
-        setCurrentInterval(refreshId); 
-      }else if(iniciaSimu>1){
-        setPreviousInterval(currentInterval);
-        setCurrentInterval(refreshId);
-      }
+      setCadaHora(idHour);
+      setCada10Min(idMin);
     }
     
   }, [iniciaSimu]);
@@ -506,14 +501,14 @@ const MapSimulador = ({inicia, fechaInicio, dias, fin, setFin, fechaSimu, setFec
           duracion: Math.round((element.duracion*2500/10)/20), //20   o    Math.round((element.duracion*1.6/10)*10)/10,
           duracionTexto: `${String(Math.trunc(element.duracion/60)).padStart(2,'0')}:${String(element.duracion%60).padStart(2,'0')} hrs.`,
           capacidad: element.capacidad,
-          ocupado: 140, //100   o   element.capacidad - element.capacidadActual,
+          ocupado: 10, //100   o   element.capacidad - element.capacidadActual,
           idPartida: element.aeropuertoPartida.id-1,
           idDestino: element.aeropuertoDestino.id-1,
           estado: 0 //0: no atendido, 1: en vuelo, 2: termina
         });
       });
       //vuelosPreparados.splice(0, 300);
-      //vuelosPreparados.splice(1000);
+      vuelosPreparados.splice(30);
       setVuelos(vuelosPreparados);
       
     }
@@ -521,7 +516,7 @@ const MapSimulador = ({inicia, fechaInicio, dias, fin, setFin, fechaSimu, setFec
   }, [vuelosProgramados]);
 
   useEffect(() => {
-    if(aeropuertosCargados==1 && aeroEventosCargados==1){
+    if(inicia>0){
       setIndexVuelo(indexVuelo+1);
       setIndexEnvio(indexEnvio+1);
       let date = new Date(fechaInicio), dateZ = new Date(fechaInicio);
@@ -543,11 +538,12 @@ const MapSimulador = ({inicia, fechaInicio, dias, fin, setFin, fechaSimu, setFec
       });*/
     }
     
-  }, [aeropuertosCargados, aeroEventosCargados]);
+  }, [inicia]);
 
   useEffect(() => {
     if(htmlAeropuertos.length>0 && aeroEventosCargados==0){
       setAeroEventosCargados(aeroEventosCargados+1);
+      setInicia(inicia+1);
     }
     
   }, [htmlAeropuertos]);
@@ -561,27 +557,6 @@ const MapSimulador = ({inicia, fechaInicio, dias, fin, setFin, fechaSimu, setFec
   }, [aeropuertos]);
 
   useEffect(() => {
-    if(inicia>0){
-      (async () => {
-        setAeropuertos(await getAeropuertos());
-      })().then(() => {
-        
-      });
-
-      map.current.loadImage(airplaneImage,
-        (error, image) => {
-        if (error) throw error;
-          
-        // Add the image to the map style.
-        map.current.addImage('myAirplane', image, {
-          "sdf": "true"
-        });
-      });
-    }
-    
-  }, [inicia]);
-
-  useEffect(() => {
     if (map.current) return;
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
@@ -593,6 +568,22 @@ const MapSimulador = ({inicia, fechaInicio, dias, fin, setFin, fechaSimu, setFec
 
     //evitar copias horizontales del mundo
     map.current.setRenderWorldCopies(false);
+
+    //cargar imagen de aviones para los posteriores vuelos
+    map.current.loadImage(airplaneImage,
+      (error, image) => {
+      if (error) throw error;
+        
+      // Add the image to the map style.
+      map.current.addImage('myAirplane', image, {
+        "sdf": "true"
+      });
+    });
+
+    (async () => {
+      setAeropuertos(await getAeropuertos());
+      //setVuelosProgramados(await getVuelos());
+    })();
   }, []);
 
   return (
