@@ -363,7 +363,7 @@ const Configuracion = () => {
           </div>
           <span 
             className="bottomButton w-100" 
-            onClick = {() => {updateConfiguraciones(configuracionesData); console.log(configuracionesData)}}
+            onClick = {() => {updateConfiguraciones(configuracionesData)}}
           >
             <RedirectButton text="Guardar" icon={<ArrowForwardIosIcon/>}/>
           </span>
