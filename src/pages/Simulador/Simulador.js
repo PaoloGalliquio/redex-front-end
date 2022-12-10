@@ -351,7 +351,8 @@ const Simulador = () => {
           aeroDestino: element.aeropuertoDestino.codigo,
           idPartida: element.aeropuertoPartida.id-1,
           idDestino: element.aeropuertoDestino.id-1,
-          planVuelo: planes
+          planVuelo: planes,
+          estado: 0
         });
         paq+=element.numeroPaquetes;
       }
@@ -436,7 +437,7 @@ const Simulador = () => {
 
   const enviosGraficos = (
     <>
-    <div className="purpleBox opdia-envio-title">Envíos</div>
+    {/* <div className="purpleBox opdia-envio-title">Envíos</div>
     <div className="blackBox opdia-envio-container p10" style={{ height: "30vh", overflow: "auto" }}>
       <div className="row">
         <div className="col opdia-envio-card1">
@@ -467,14 +468,14 @@ const Simulador = () => {
           />
         </div>
       </div>
-    </div>
+    </div> */}
     </>
   );
 
   const simulacionData = (
     <>
       <div className="purpleBox opdia-envio-title">Simulación</div>
-      <div className="blackBox opdia-envio-container p10" style={{ height: "30vh", overflow: "auto" }}>
+      <div className="blackBox opdia-envio-container p10" style={{ height: "100%", overflow: "auto" }}>
         <div className="row mb-3 mt-3">
           <div className="col my-auto">Fecha de inicio:</div>
           <div className="col">

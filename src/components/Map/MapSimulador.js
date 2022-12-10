@@ -323,24 +323,24 @@ const MapSimulador = ({inicia, setInicia, fechaInicio, dias, fin, setFin, fechaS
           setFin(true);
         }
         descColor = element.capacidad*6<ocupadoAero[element.id-1] ? "#fa0202" :
-        element.capacidad*0.50<ocupadoAero[element.id-1] ? "#f79205" :
-        element.capacidad*0.25<ocupadoAero[element.id-1] ? "#f6fa02" : "#25c71a";
+        element.capacidad*4<ocupadoAero[element.id-1] ? "#f79205" :
+        element.capacidad*2<ocupadoAero[element.id-1] ? "#f6fa02" : "#25c71a";
         description = `Aeropuerto <b style="font-weight:800;">${element.codigo}</b> (<b style="font-weight:800;">${UTC}</b>)<br><hr style="margin: 0; border-top: black 3px solid;">Capacidad: <b style="font-weight:800;">${element.capacidad}</b> paquetes<br>Uso efectivo: <b style="font-weight:800; background: ${descColor};">(${Math.round((ocupadoAero[element.id-1]*100/(5*element.capacidad))*10)/10}% en uso)</b>`;
         arrayHtml[element.id-1].style.filter = element.capacidad*6<ocupadoAero[element.id-1] ? "invert(21%) sepia(79%) saturate(6123%) hue-rotate(355deg) brightness(92%) contrast(116%)" :
-        element.capacidad*0.50<ocupadoAero[element.id-1] ? "invert(58%) sepia(33%) saturate(3553%) hue-rotate(3deg) brightness(105%) contrast(96%)" :
-        element.capacidad*0.25<ocupadoAero[element.id-1] ? "invert(82%) sepia(63%) saturate(882%) hue-rotate(11deg) brightness(113%) contrast(107%)" : "invert(38%) sepia(100%) saturate(1028%) hue-rotate(85deg) brightness(106%) contrast(96%)";
+        element.capacidad*4<ocupadoAero[element.id-1] ? "invert(58%) sepia(33%) saturate(3553%) hue-rotate(3deg) brightness(105%) contrast(96%)" :
+        element.capacidad*2<ocupadoAero[element.id-1] ? "invert(82%) sepia(63%) saturate(882%) hue-rotate(11deg) brightness(113%) contrast(107%)" : "invert(38%) sepia(100%) saturate(1028%) hue-rotate(85deg) brightness(106%) contrast(96%)";
       });
 
       //retirar envio
       arrayHtml[element.id-1].addEventListener("envioEnd", (e) => {
         ocupadoAero[element.id-1] -= e.detail.cantidad;
         descColor = element.capacidad*6<ocupadoAero[element.id-1] ? "#fa0202" :
-        element.capacidad*0.50<ocupadoAero[element.id-1] ? "#f79205" :
-        element.capacidad*0.25<ocupadoAero[element.id-1] ? "#f6fa02" : "#25c71a";
+        element.capacidad*4<ocupadoAero[element.id-1] ? "#f79205" :
+        element.capacidad*2<ocupadoAero[element.id-1] ? "#f6fa02" : "#25c71a";
         description = `Aeropuerto <b style="font-weight:800;">${element.codigo}</b> (<b style="font-weight:800;">${UTC}</b>)<br><hr style="margin: 0; border-top: black 3px solid;">Capacidad: <b style="font-weight:800;">${element.capacidad}</b> paquetes<br>Uso efectivo: <b style="font-weight:800; background: ${descColor};">(${Math.round((ocupadoAero[element.id-1]*100/(5*element.capacidad))*10)/10}% en uso)</b>`;
         arrayHtml[element.id-1].style.filter = element.capacidad*6<ocupadoAero[element.id-1] ? "invert(21%) sepia(79%) saturate(6123%) hue-rotate(355deg) brightness(92%) contrast(116%)" :
-        element.capacidad*0.50<ocupadoAero[element.id-1] ? "invert(58%) sepia(33%) saturate(3553%) hue-rotate(3deg) brightness(105%) contrast(96%)" :
-        element.capacidad*0.25<ocupadoAero[element.id-1] ? "invert(82%) sepia(63%) saturate(882%) hue-rotate(11deg) brightness(113%) contrast(107%)" : "invert(38%) sepia(100%) saturate(1028%) hue-rotate(85deg) brightness(106%) contrast(96%)";
+        element.capacidad*4<ocupadoAero[element.id-1] ? "invert(58%) sepia(33%) saturate(3553%) hue-rotate(3deg) brightness(105%) contrast(96%)" :
+        element.capacidad*2<ocupadoAero[element.id-1] ? "invert(82%) sepia(63%) saturate(882%) hue-rotate(11deg) brightness(113%) contrast(107%)" : "invert(38%) sepia(100%) saturate(1028%) hue-rotate(85deg) brightness(106%) contrast(96%)";
       });
 
       const popup = new mapboxgl.Popup({
@@ -381,20 +381,19 @@ const MapSimulador = ({inicia, setInicia, fechaInicio, dias, fin, setFin, fechaS
   }, [lines]);
 
   useEffect(() => {
-    if(indexVuelo>=0 && indexVuelo<vuelos.length && vuelos.length>0){
-      if(vuelos[indexVuelo].fechaPartidaUTC<=(fechaSimu.getTime()+18000000)){
-        vuelosEnMapa(indexVuelo);
-        setIndexVuelo(indexVuelo+1);
+    for(let i=0; i < vuelos.length; i++){
+      if(vuelos[i].fechaPartidaUTC<=(fechaSimu.getTime()+18000000) && vuelos[i].estado==0){
+        vuelos[i].estado = 1;
+        vuelosEnMapa(i);
       }
     }
-    if(indexEnvio>=0 && indexEnvio<envios.length && envios.length>0){
-      if(envios[indexEnvio].fechaEnvioUTC<=(fechaSimu.getTime()+18000000)){
-        almacenarEnAeropuerto(envios[indexEnvio].idPartida, envios[indexEnvio].paquetes);
-        setIndexEnvio(indexEnvio+1);
+    for(let i=0; i < envios.length; i++){
+      if(envios[i].fechaEnvioUTC<=(fechaSimu.getTime()+18000000) && envios[i].estado==0){
+        envios[i].estado = 1;
+        almacenarEnAeropuerto(envios[i].idPartida, envios[i].paquetes);
       }
     }
-    
-  }, [indexVuelo, indexEnvio, fechaSimu]);
+  }, [fechaSimu]);
 
   useEffect(() => {
     let idMin, idHour, idPaq, difFechas, difDD, difHH, difMM, options;
