@@ -7,7 +7,7 @@ import RedexLogo from "../../images/avionRedex.png";
 const NavBar = () => {
   const [activeIndex, setActiveIndex] = useState(0);
 
-  const tabs = [
+  /*const tabs = [
     {
       id: 0,
       text: 'Operaciones Diarias',
@@ -32,6 +32,24 @@ const NavBar = () => {
       id: 4,
       text: 'Nuevo envío',
       link: '/NuevoEnvio'
+    }
+  ];*/
+
+  const tabs = [
+    {
+      id: 1,
+      text: 'Simulador',
+      link: '/Simulador'
+    },
+    {
+      id: 2,
+      text: 'Colapso lógístico',
+      link: '/ColapsoLogistico'
+    },
+    {
+      id: 3,
+      text: 'Configuración',
+      link: '/Configuracion'
     }
   ];
 

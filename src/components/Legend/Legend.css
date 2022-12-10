@@ -2,9 +2,9 @@
   position: absolute;
   border-radius: 20px;
   overflow: hidden;
-  left: 0;
+  right: 0;
   bottom: 0;
-  margin-left: 10px;
+  margin-right: 10px;
   margin-bottom: 10px;
 }
 

@@ -12,7 +12,7 @@ function App() {
     <div className="App contenedor">
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<OperacionesDiarias />} />
+          <Route path="/" element={<Simulador />} />
           <Route path="OperacionesDiarias" element={<OperacionesDiarias />} />
           <Route path="Simulador" element={<Simulador />} />
           <Route path="ColapsoLogistico" element={<OperacionesDiarias />} />
