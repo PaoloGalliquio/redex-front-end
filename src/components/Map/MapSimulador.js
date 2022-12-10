@@ -20,7 +20,7 @@ mapboxgl.workerClass = MapboxWorker;
 let copiaFin=false;
 let copiaFechaSimu = new Date();
 
-const MapSimulador = ({inicia, setInicia, fechaInicio, dias, fin, setFin, fechaSimu, setFechaSimu, clock, setClock, tiempoTranscurrido, setTiempoTranscurrido, vuelos, setVuelos, envios, setEnvios, poblarEnvios, enviosEnProceso, setEnviosEnProceso, enviosAtendidos, setEnviosAtendidos, totalPaquetes, setTotalPaquetes, lines, aeropuertos, setAeropuertos, iniciaSimu, setIniciaSimu, verificar, setVerificar}) => {
+const MapSimulador = ({inicia, setInicia, fechaInicio, dias, fin, setFin, fechaSimu, setFechaSimu, clock, setClock, tiempoTranscurrido, setTiempoTranscurrido, vuelos, envios, setEnvios, poblarEnvios, enviosEnProceso, setEnviosEnProceso, enviosAtendidos, setEnviosAtendidos, totalPaquetes, setTotalPaquetes, lines, aeropuertos, setAeropuertos, iniciaSimu, setIniciaSimu, verificar, setVerificar}) => {
   mapboxgl.accessToken = process.env.REACT_APP_MAP_KEY;
   const [longitud, setlongitud] = useState(-10.490544872911897);
   const [lat, setLat] = useState(21.104512028667855);
@@ -31,6 +31,7 @@ const MapSimulador = ({inicia, setInicia, fechaInicio, dias, fin, setFin, fechaS
   const [planificador, setPlanificador] = useState(1);
   const [fechaZero, setFechaZero] = useState(new Date());
   const [cadaHora, setCadaHora] = useState(-1);
+  const [cadaVuelo, setCadaVuelo] = useState(-1);
   const [cada10Min, setCada10Min] = useState(-1);
   const [aeropuertosCargados, setAeropuertosCargados] = useState(0);
   const [aeroEventosCargados, setAeroEventosCargados] = useState(0);
@@ -369,6 +370,7 @@ const MapSimulador = ({inicia, setInicia, fechaInicio, dias, fin, setFin, fechaS
       copiaFin = true;
       clearInterval(cada10Min);
       clearInterval(cadaHora);
+      clearInterval(cadaVuelo);
     }
     
   }, [fin]);
@@ -379,21 +381,6 @@ const MapSimulador = ({inicia, setInicia, fechaInicio, dias, fin, setFin, fechaS
     }
     
   }, [lines]);
-
-  useEffect(() => {
-    for(let i=0; i < vuelos.length; i++){
-      if(vuelos[i].fechaPartidaUTC<=(fechaSimu.getTime()+18000000) && vuelos[i].estado==0){
-        vuelos[i].estado = 1;
-        vuelosEnMapa(i);
-      }
-    }
-    for(let i=0; i < envios.length; i++){
-      if(envios[i].fechaEnvioUTC<=(fechaSimu.getTime()+18000000) && envios[i].estado==0){
-        envios[i].estado = 1;
-        almacenarEnAeropuerto(envios[i].idPartida, envios[i].paquetes);
-      }
-    }
-  }, [fechaSimu]);
 
   useEffect(() => {
     let idMin, idHour, idPaq, difFechas, difDD, difHH, difMM, options;
@@ -442,8 +429,25 @@ const MapSimulador = ({inicia, setInicia, fechaInicio, dias, fin, setFin, fechaS
         }
       }, 15000);
 
+      idPaq = setInterval(() => {
+        console.log(vuelos.length);
+        for(let i=0; i < vuelos.length; i++){
+          if(vuelos[i].fechaPartidaUTC<=(fechaSimu.getTime()+18000000) && vuelos[i].estado==0){
+            vuelos[i].estado = 1;
+            vuelosEnMapa(i);
+          }
+        }
+        for(let i=0; i < envios.length; i++){
+          if(envios[i].fechaEnvioUTC<=(fechaSimu.getTime()+18000000) && envios[i].estado==0){
+            envios[i].estado = 1;
+            almacenarEnAeropuerto(envios[i].idPartida, envios[i].paquetes);
+          }
+        }
+      }, 15000)
+
       setCadaHora(idHour);
       setCada10Min(idMin);
+      setCadaVuelo(idPaq);
     }
     
   }, [iniciaSimu]);
@@ -480,7 +484,7 @@ const MapSimulador = ({inicia, setInicia, fechaInicio, dias, fin, setFin, fechaS
       });
       //vuelosPreparados.splice(0, 300);
       vuelosPreparados.splice(20);
-      setVuelos(vuelosPreparados);
+      //setVuelos(vuelosPreparados);
       
     }
     

@@ -39,6 +39,7 @@ import axios from "axios";
 
 var stompClient = null;
 let enviosFin=[];
+let vuelos = [];
 let inicioAux=0;
 let enviosEnProcesoFin = 0;
 let enviosAtendidosFin = 0;
@@ -69,7 +70,7 @@ const Simulador = () => {
   const [fechaFin, setFechaFin] = useState(new Date(new Date().setHours(new Date().getHours()+(diasSimu*24))));
   const [inicia, setInicia] = useState(-1);
   const [procesado, setProcesado] = useState(true);
-  const [vuelos, setVuelos] = useState([]);
+  //const [vuelos, setVuelos] = useState([]);
   const [envios, setEnvios] = useState([]);
   const [aeropuertos, setAeropuertos] = useState([]);
   const [enviosReporte, setEnviosReporte] = useState([]);
@@ -404,9 +405,9 @@ const Simulador = () => {
         vuelosArray.push({
           codigo: element.codigo,
           fechaPartidaTexto: datePartidaTexto,
-          fechaPartidaUTC: datePartidaUTC.getTime(),
+          fechaPartidaUTC: datePartidaUTC.getTime() - 18000000,
           fechaDestinoTexto: dateDestinoTexto,
-          fechaDestinoUTC: dateDestinoUTC.getTime(),
+          fechaDestinoUTC: dateDestinoUTC.getTime() - 18000000,
           duracion: Math.round((element.duracion*2500/10)/20), //20   o    Math.round((element.duracion*1.6/10)*10)/10,
           duracionTexto: `${String(Math.trunc(element.duracion/60)).padStart(2,'0')}:${String(element.duracion%60).padStart(2,'0')} hrs.`,
           capacidad: element.capacidad,
@@ -431,8 +432,10 @@ const Simulador = () => {
     }else{
       setVuelosTabla(vuelosArray);
     }
-
-    setVuelos(arr => [...arr, ...vuelosArray]);
+    
+    vuelos = vuelos.concat(vuelosArray);
+    console.log(vuelos);
+    //setVuelos(arr => [...arr, ...vuelosArray]);
   }
 
   const enviosGraficos = (
@@ -718,7 +721,7 @@ const Simulador = () => {
                         <p style={{ marginBottom: "0px", marginLeft: "10px"}}><u>Plan de Vuelo #{elem.num}</u></p>
                         {elem.vuelos.map((e) => (
                           <div>
-                          <p style={{ marginBottom: "0px", marginLeft: "10px"}}>Vuelo {e.codigo} --> DE [{e.aeroPartida}]: {e.fechaPartida} A [{e.aeroDestino}]: {e.fechaDestino}</p>
+                          <p style={{ marginBottom: "0px", marginLeft: "10px"}}>Vuelo {e.codigo} {"-->"} DE [{e.aeroPartida}]: {e.fechaPartida} A [{e.aeroDestino}]: {e.fechaDestino}</p>
                           <p style={{ marginBottom: "0px", marginLeft: "10px"}}>Duracion del Vuelo: ({e.duracion})</p> 
                           </div>
                         ))}
@@ -961,7 +964,7 @@ const Simulador = () => {
         fechaSimu={fechaSimu} setFechaSimu={setFechaSimu}
         clock={clock} setClock={setClock}
         tiempoTranscurrido={tiempoTranscurrido} setTiempoTranscurrido={setTiempoTranscurrido}
-        vuelos={vuelos} setVuelos={setVuelos} envios={envios} setEnvios={setEnvios}
+        vuelos={vuelos} envios={envios} setEnvios={setEnvios}
         poblarEnvios={poblarEnvios} enviosEnProceso={enviosEnProceso} setEnviosEnProceso={setEnviosEnProceso} 
         enviosAtendidos={enviosAtendidos} setEnviosAtendidos={setEnviosAtendidos}
         totalPaquetes={totalPaquetes} setTotalPaquetes={setTotalPaquetes}
@@ -1024,13 +1027,6 @@ const Simulador = () => {
     }
     
   }, [enviosReporte]);
-
-  useEffect(() => {
-    if(vuelos.length>0){
-      console.log(vuelos);
-    }
-    
-  }, [vuelos]);
 
   useEffect(() => {
     if(vuelosReporte.length>0){
