@@ -40,6 +40,15 @@ import axios from "axios";
 var stompClient = null;
 let enviosFin=[];
 let inicioAux=0;
+let enviosEnProcesoFin = 0;
+let enviosAtendidosFin = 0;
+let envioUltimo = {
+  codigo: '',
+  fechaEnvio: '',
+  paquetes: -1,
+  aeroPartida: '',
+  aeroDestino: ''
+};
 
 
 const Simulador = () => {
@@ -78,6 +87,7 @@ const Simulador = () => {
   const pdfExportComponentEnvio = useRef(null);
   const pdfExportComponentVuelo = useRef(null);
   const [openModal, setOpenModal] = useState(false);
+  const [verificar, setVerificar] = useState({cod: -1, paq: 0});
 
   const styles = {
     field: {
@@ -249,12 +259,23 @@ const Simulador = () => {
   const onSimulationResponse = (payload) => {
     //para ver solo uno en especifico
     //console.log(JSON.parse(payload.body).envios);
-    console.log(JSON.parse(payload.body));
-    poblarEnvios(JSON.parse(payload.body).envios);
-    poblarVuelos(JSON.parse(payload.body).vuelos);
-    console.log('impresiones');
+
+    if(JSON.parse(payload.body).ultimoEnvio == null){
+      console.log(JSON.parse(payload.body));
+      poblarEnvios(JSON.parse(payload.body).envios);
+      poblarVuelos(JSON.parse(payload.body).vuelos);
+    }else{
+      let auxFinal = JSON.parse(payload.body).ultimoEnvio;
+      let [yyyy,mm,dd,hh,mi] = new Date(new Date(auxFinal.fechaEnvio).getTime()).toISOString().split(/[/:\-T]/);
+      envioUltimo.codigo = auxFinal.codigo;
+      envioUltimo.fechaEnvio = `${dd}/${mm}/${yyyy} ${hh}:${mi}`;
+      envioUltimo.paquetes = auxFinal.numeroPaquetes;
+      envioUltimo.aeroPartida = auxFinal.aeropuertoPartida.codigo;
+      envioUltimo.aeroDestino = auxFinal.aeropuertoDestino.codigo;
+      setFinSimulacion(true);
+    }
+
     if(inicioAux==0){
-      console.log('vamos goooo');
       inicioAux++;
       setInicia(inicia+1);
     }
@@ -338,19 +359,19 @@ const Simulador = () => {
 
     enviosArray.sort(ordenarEnvios);
     llenarFechaFin(enviosArray);
-    if(enviosArray.length>50){
-      setEnviosReporte(enviosArray.slice(-50));
+    if(enviosArray.length>80){
+      setEnviosReporte(enviosArray.slice(0,80));
     }else{
       setEnviosReporte(enviosArray);
     }
-    if(enviosArray.length>40){
-      setEnviosTabla(enviosArray.slice(-40));
+    if(enviosArray.length>60){
+      setEnviosTabla(enviosArray.slice(0,60));
     }else{
       setEnviosTabla(enviosArray);
     }
-    setEnviosEnProceso(enviosEnProceso+enviosArray.length);
+    enviosEnProcesoFin+=enviosArray.length;
     setTotalPaquetes(totalPaquetes+paq);
-    //setEnvios(arr => [...arr, ...enviosArray]);
+    setEnvios(arr => [...arr, ...enviosArray]);
     
   }
 
@@ -370,7 +391,6 @@ const Simulador = () => {
     let vuelosArray=[];
     
     vuelosRpta.forEach((element) => {
-      if(element.envios != null && element.envios.length>0){
         datePartida = new Date(new Date(element.fechaPartida).getTime() + new Date(element.fechaPartida).getTimezoneOffset() * 60000);
         [yyyy,mm,dd,hh,mi] = new Date(element.fechaPartida).toISOString().split(/[/:\-T]/);
         datePartidaTexto = `${dd}/${mm}/${yyyy} ${hh}:${mi}`;
@@ -395,23 +415,23 @@ const Simulador = () => {
           envios: element.envios,
           estado: 0 //0: no atendido, 1: en vuelo, 2: termina
         });
-      }
+      
     });
 
     vuelosArray.sort(ordenarVuelos);
 
-    if(vuelosArray.length>50){
-      setVuelosReporte(vuelosArray.slice(-50));
+    if(vuelosArray.length>80){
+      setVuelosReporte(vuelosArray.slice(0,80));
     }else{
       setVuelosReporte(vuelosArray);
     }
-    if(vuelosArray.length>40){
-      setVuelosTabla(vuelosArray.slice(-40));
+    if(vuelosArray.length>60){
+      setVuelosTabla(vuelosArray.slice(0,60));
     }else{
       setVuelosTabla(vuelosArray);
     }
 
-    //setVuelos(arr => [...arr, ...vuelosArray]);
+    setVuelos(arr => [...arr, ...vuelosArray]);
   }
 
   const enviosGraficos = (
@@ -423,8 +443,8 @@ const Simulador = () => {
           <CardPercentage
             icon = {<FlightIcon className="rotate45"/>}
             title = "En proceso"
-            info = {`${enviosEnProceso} envíos en proceso`}
-            percentage = {enviosEnProceso/envios.length*100}
+            info = {`${enviosEnProcesoFin} envíos en proceso`}
+            percentage = {enviosEnProcesoFin/envios.length*100}
             positive = {true}
           />
         </div>
@@ -432,8 +452,8 @@ const Simulador = () => {
           <CardPercentage
             icon = {<CheckCircleIcon/>}
             title = "Atendidos"
-            info = {`${enviosAtendidos} envíos atendidos`}
-            percentage = {enviosAtendidos/envios.length*100}
+            info = {`${enviosAtendidosFin} envíos atendidos`}
+            percentage = {enviosAtendidosFin/envios.length*100}
             positive = {true}
           />
         </div>
@@ -758,6 +778,23 @@ const Simulador = () => {
               </div>
               <h1 className="tituloReporte">Relación de Envíos Planificados</h1>
               <h1 className="subtituloReporte">({envios.length} Envíos Planificados)</h1>
+              {envioUltimo.paquetes>0 && (
+                <>
+                  <hr style={{ margin: "0", marginBottom: "10px", borderTop: "white 3px dotted" }}></hr>
+                  <h1 className="subtituloReporte">Colapso logístico al intentar procesar envío</h1>
+                  <div style={{ fontFamily: "montserrat", fontSize: "13px" }}>
+                    <div className="bloqueTitularPDF2" style={{ marginBottom: "5px" }}>
+                      <img src={RedexEnvio} height="20px" width="20px"/>
+                      <p className="m-0" style={{ paddingLeft: "10px" }}>Envío '<span style={{ fontWeight: "bold" }}><u>{envioUltimo.codigo}</u></span>'</p>
+                    </div>
+                    <p className="m-0"><span style={{ marginRight: "36px" }}>Fecha de Registro:</span> <span style={{ fontWeight: "bold" }}>{envioUltimo.fechaEnvio}</span></p>
+                    <p className="m-0"><span style={{ marginRight: "38px" }}>Total de Paquetes:</span> <span style={{ fontWeight: "bold" }}>{envioUltimo.paquetes}</span></p>
+                    <p className="m-0"><span style={{ marginRight: "8px" }}>Aeropuerto de Partida:</span> <span style={{ fontWeight: "bold" }}>{envioUltimo.aeroPartida}</span></p>
+                    <p className="m-0"><span style={{ marginRight: "5px" }}>Aeropuerto de Destino:</span> <span style={{ fontWeight: "bold" }}>{envioUltimo.aeroDestino}</span></p>
+                  </div>
+                </>
+              )}
+              
               <hr style={{ margin: "0", marginBottom: "10px", borderTop: "white 3px dotted" }}></hr>
               <div style={{ fontFamily: "montserrat", fontSize: "13px" }}>
                 {enviosReporte.map((element) => (
@@ -869,7 +906,7 @@ const Simulador = () => {
               <li>Inicio de simulación: {cadenaFechaInicio}</li>
               <li>Fin de simulación: {clock}</li>
               <li>Tiempo total de simulación: {tiempoTranscurrido}</li>
-              <li>Envíos atendidos: {enviosAtendidos}</li>
+              <li>Envíos atendidos: {enviosAtendidosFin}</li>
               <li>Envíos totales: {envios.length}</li>
             </div>
           </div>
@@ -928,7 +965,8 @@ const Simulador = () => {
         enviosAtendidos={enviosAtendidos} setEnviosAtendidos={setEnviosAtendidos}
         totalPaquetes={totalPaquetes} setTotalPaquetes={setTotalPaquetes}
         lines={checked} aeropuertos={aeropuertos} setAeropuertos={setAeropuertos}
-        iniciaSimu={iniciaSimu} setIniciaSimu={setIniciaSimu}/>
+        iniciaSimu={iniciaSimu} setIniciaSimu={setIniciaSimu}
+        verificar={verificar} setVerificar={setVerificar}/>
       </div>
     </div>
     </>
@@ -946,18 +984,21 @@ const Simulador = () => {
     let idPaq;
     if(iniciaSimu>0){
       idPaq = setInterval(() => {
-        let enviosAux=enviosAtendidos, enviosArr=[];
+        let enviosAux=enviosAtendidosFin, enviosArr=[];
         enviosFin.forEach((element) => {
           if(element.fechaFin<=(fechaSimu.getTime()+18000000)){
             enviosAux++;
+            enviosAtendidosFin++;
+            enviosEnProcesoFin--;
+            setVerificar({cod: element.idDestino, paq: element.paquetes});
             //retirarDeAeropuerto(element.idDestino, element.paquetes);
           }else{
             enviosArr.push(element);
           }
         });
-        if(enviosAux>enviosAtendidos){
-          setEnviosEnProceso(enviosEnProceso-(enviosAux-enviosAtendidos));
-          setEnviosAtendidos(enviosAux);
+        if(enviosAux>enviosAtendidosFin){
+          //setEnviosEnProceso(enviosEnProceso-(enviosAux-enviosAtendidos));
+          //setEnviosAtendidos(enviosAux);
           enviosFin.splice(0,enviosFin.length);
           enviosFin = [];
           enviosFin = enviosArr;
