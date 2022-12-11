@@ -1155,7 +1155,7 @@ const Simulador = () => {
               <li>Fin de simulación: {clock}</li>
               <li>Tiempo total de simulación: {tiempoTranscurrido}</li>
               <li>Envíos atendidos: {enviosAtendidosFin}</li>
-              <li>Envíos totales: {envios.length}</li>
+              {/*<li>Envíos totales: {envios.length}</li>*/}
             </div>
           </div>
           <div className = "container">
