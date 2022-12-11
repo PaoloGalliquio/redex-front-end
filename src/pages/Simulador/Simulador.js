@@ -680,10 +680,20 @@ const Simulador = () => {
 
     enviosArray.sort(ordenarEnvios);
     llenarFechaFin(enviosArray);
-    if(enviosArray.length>80){
-      setEnviosReporte(enviosArray.slice(0,80));
+    let enviosConVuelos = [];
+    let prob;
+    enviosArray.map((envio) => {
+      if(envio.planVuelo[0].vuelos.length > 1)
+        enviosConVuelos.push(envio);
+      else{
+        prob = Math.floor(Math.random() * 100);
+        if(prob === 0) enviosConVuelos.push(envio);
+      }
+    })
+    if(enviosConVuelos.length>80){
+      setEnviosReporte(enviosConVuelos.slice(0,80));
     }else{
-      setEnviosReporte(enviosArray);
+      setEnviosReporte(enviosConVuelos.concat(enviosReporte).slice(0,80));
     }
     if(enviosArray.length>60){
       setEnviosTabla(enviosArray.slice(0,60));
@@ -883,6 +893,7 @@ const Simulador = () => {
       </div>
     </>
   );
+
   const tablas = (
     <>
       <div className="p10">
