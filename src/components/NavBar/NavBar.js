@@ -37,17 +37,17 @@ const NavBar = () => {
 
   const tabs = [
     {
-      id: 1,
+      id: 0,
       text: 'Simulador',
       link: '/Simulador'
     },
     {
-      id: 2,
+      id: 1,
       text: 'Colapso lógístico',
       link: '/ColapsoLogistico'
     },
     {
-      id: 3,
+      id: 2,
       text: 'Configuración',
       link: '/Configuracion'
     }
