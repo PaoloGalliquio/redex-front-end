@@ -41,3 +41,36 @@
   display: flex;
   align-items: center;
 }
+
+.mapboxgl-popup {
+  max-width: 00px;
+  font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+  color:black;
+  }
+
+.reloj {
+  position: absolute;
+  justify-content: flex-end;
+  display: flex;
+  top: 10px;
+  width: 100%;
+  }
+
+.reloj-texto {
+  background: #292323;
+  font-size: 18px;
+  padding: 10px 20px;
+  border-radius: 20px;
+  margin-right: 10px;
+  text-align: center;
+  }
+
+.linea-reloj {
+  margin: 5px -20px;
+  border-top: white 4px solid;
+  }
+
+.linea-vuelo {
+  margin: 0;
+  border-top: black 4px solid;
+  }

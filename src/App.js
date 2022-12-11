@@ -15,7 +15,7 @@ function App() {
           <Route path="/" element={<Simulador />} />
           <Route path="OperacionesDiarias" element={<OperacionesDiarias />} />
           <Route path="Simulador" element={<Simulador />} />
-          <Route path="ColapsoLogistico" element={<OperacionesDiarias />} />
+          <Route path="ColapsoLogistico" element={<Simulador />} />
           <Route path="Configuracion" element={<Configuracion />} />
           <Route path="NuevoEnvio" element={<NuevoEnvio />} />
         </Routes>
