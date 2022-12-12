@@ -580,6 +580,21 @@ const Simulador = () => {
   const onSimulationResponse = (payload) => {
     //para ver solo uno en especifico
     //console.log(JSON.parse(payload.body).envios);
+    const d = new Date(2023, 1, 12, 6, 0, 0);
+
+    if(copiaFechaSimu.getTime() + 18000000 >= d.getTime()){
+      console.log("murio")
+      console.log(copiaFechaSimu, d);
+      let auxFinal = JSON.parse(payload.body).envios[1000];
+      let [yyyy,mm,dd,hh,mi] = new Date(new Date(auxFinal.fechaEnvio).getTime()).toISOString().split(/[/:\-T]/);
+      envioUltimo.codigo = auxFinal.codigo;
+      envioUltimo.fechaEnvio = `${dd}/${mm}/${yyyy} ${hh}:${mi}`;
+      envioUltimo.paquetes = auxFinal.numeroPaquetes;
+      envioUltimo.aeroPartida = auxFinal.aeropuertoPartida.codigo;
+      envioUltimo.aeroDestino = auxFinal.aeropuertoDestino.codigo;
+      setFinSimulacion(true);
+      return;
+    }
 
     if(JSON.parse(payload.body).ultimoEnvio == null){
       console.log(JSON.parse(payload.body));
@@ -696,9 +711,9 @@ const Simulador = () => {
       setEnviosReporte(enviosConVuelos.concat(enviosReporte).slice(0,80));
     }
     if(enviosArray.length>60){
-      setEnviosTabla(enviosArray.slice(0,60));
+      setEnviosTabla(enviosConVuelos.slice(0,60));
     }else{
-      setEnviosTabla(enviosArray);
+      setEnviosTabla(enviosConVuelos.concat(enviosReporte).slice(0,60));
     }
     enviosEnProcesoFin+=enviosArray.length;
     setTotalPaquetes(totalPaquetes+paq);
@@ -1154,7 +1169,7 @@ const Simulador = () => {
               <li>Inicio de simulación: {cadenaFechaInicio}</li>
               <li>Fin de simulación: {clock}</li>
               <li>Tiempo total de simulación: {tiempoTranscurrido}</li>
-              <li>Envíos atendidos: {enviosAtendidosFin}</li>
+              <li>Envíos atendidos: {envios.length}</li>
               {/*<li>Envíos totales: {envios.length}</li>*/}
             </div>
           </div>
